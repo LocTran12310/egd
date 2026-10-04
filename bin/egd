@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""Run egd straight from a checkout or an installed Claude Code plugin — no install step."""
+import os
+import shutil
+import sys
+
+if sys.version_info < (3, 11):  # stock macOS has 3.9: hand over to a newer Python when there is one
+    for name in ("python3.14", "python3.13", "python3.12", "python3.11"):
+        exe = shutil.which(name)
+        if exe:
+            os.execvp(exe, [exe, os.path.abspath(__file__)] + sys.argv[1:])
+    sys.stderr.write("EGD needs Python 3.11 or newer (found %d.%d) — install one, or use the installer: "
+                     "curl -fsSL https://raw.githubusercontent.com/LocTran12310/egd/main/install.sh | sh\n"
+                     % tuple(sys.version_info[:2]))
+    sys.exit(2)
+
+from pathlib import Path  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
+from egd.cli import main  # noqa: E402
+
+sys.exit(main())

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egd-cli"
+version = "0.1.0"
+description = "Evidence-Gated Delivery — plan, build and prove software work with gates a team can trust"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Loc Tran", email = "loctran12310@gmail.com" }]
+dependencies = []
+
+[project.optional-dependencies]
+ui = ["playwright>=1.40"]
+
+[project.scripts]
+egd = "egd.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+egd = ["console.html", "ui/*", "profiles/*.toml"]

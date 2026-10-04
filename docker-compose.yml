@@ -1,0 +1,45 @@
+# EGD Console in a container → http://127.0.0.1:${EGD_CONSOLE_PORT:-8780}
+#
+#   EGD_USER="Your Name" docker compose up -d
+#
+# Add repositories in the console (Repositories → Add repository…). It can browse
+# EGD_BROWSE (default ~/Documents), mounted at /host — read-write so the console can set up
+# EGD in a folder and record actions; use EGD_BROWSE_MODE=ro for a view-only console.
+# Published on 127.0.0.1 only, which is why it runs without a token. Settings can live in a
+# local .env file next to this one (EGD_USER, EGD_CONSOLE_PORT, EGD_BROWSE, EGD_BROWSE_MODE,
+# EGD_UID, EGD_GID, EGD_GIT_CONFIG).
+#
+# It runs as uid 1000, so what it writes in your repositories is yours, not root's. Linux with
+# another uid: echo "EGD_UID=$(id -u)" >> .env && echo "EGD_GID=$(id -g)" >> .env
+name: egd
+
+services:
+  console:
+    build: .
+    image: egd:0.1.0
+    user: "${EGD_UID:-1000}:${EGD_GID:-1000}"
+    # no token: the port below is published on 127.0.0.1 only, so only this machine reaches it.
+    # Publishing it wider? Drop this line — the image's default asks for a token (see docker logs).
+    # --lan-write: requests arrive from Docker's bridge address, so actions need it.
+    command: ["egd", "console", "serve", "--host", "0.0.0.0", "--port", "8780", "--no-token", "--lan-write"]
+    environment:
+      EGD_CONSOLE_CONFIG: /data/console.toml
+      EGD_BROWSE_ROOTS: /host
+      EGD_USER: ${EGD_USER:-}
+    volumes:
+      - "${EGD_BROWSE:-${HOME}/Documents}:/host:${EGD_BROWSE_MODE:-rw}"
+      - console-data:/data
+      # your global gitignore, so scope checks skip the same local files git does: put
+      # EGD_GIT_CONFIG=${HOME}/.config/git in .env. Never created on the host; the default,
+      # this folder, holds no git config.
+      - type: bind
+        source: ${EGD_GIT_CONFIG:-.}
+        target: /home/egd/.config/git
+        read_only: true
+        bind:
+          create_host_path: false
+    ports: ["127.0.0.1:${EGD_CONSOLE_PORT:-8780}:8780"]
+    restart: unless-stopped
+
+volumes:
+  console-data:

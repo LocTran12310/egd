@@ -1,0 +1,23 @@
+title = "Go service"
+detect = ["go.mod"]
+
+conventions = """
+- Errors are wrapped with context (`fmt.Errorf("…: %w", err)`) and never ignored.
+- `context.Context` is the first argument of anything that does I/O.
+- No panics in library code; return errors.
+- `gofmt` and `go vet` clean.
+"""
+
+review = [
+  "unchecked errors",
+  "goroutines that can leak (no cancel, no done channel)",
+  "shared state without a lock",
+  "context not passed through I/O calls",
+]
+
+[[test]]
+command = "go test {tests}"
+
+[[done_when]]
+touches = ["**/migrations/**"]
+items = ["the migration applies and rolls back on a copy of real data"]

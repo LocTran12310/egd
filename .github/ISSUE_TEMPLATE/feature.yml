@@ -1,0 +1,19 @@
+name: Feature idea
+description: Something EGD should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is hard today, for whom (dev, QA, PM, client)?
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+  - type: textarea
+    id: gate
+    attributes:
+      label: Does it change what a gate checks?
+      description: Gate changes need a RULES bump and a changelog entry.

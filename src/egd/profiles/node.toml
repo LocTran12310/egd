@@ -1,0 +1,35 @@
+title = "Node.js / TypeScript back end"
+detect = ["package.json:express", "package.json:@nestjs", "package.json:fastify", "package.json:koa", "package.json:typeorm", "package.json:prisma"]
+
+conventions = """
+- TypeScript strict; no `any` without a comment saying why.
+- Every promise is awaited or deliberately handled — no floating promises.
+- Input is validated at the edge (DTO, schema) before it reaches the service layer.
+- Errors reach the client as the documented shape; stack traces never do.
+"""
+
+review = [
+  "unawaited promises and unhandled rejections",
+  "N+1 queries in list endpoints",
+  "missing validation on new request fields",
+  "raw SQL with string concatenation",
+  "stack traces or internal errors returned to clients",
+]
+
+[[test]]
+when = ["package.json:vitest"]
+command = "npx vitest run {tests}"
+[[test]]
+when = ["package.json:jest"]
+command = "npx jest {tests}"
+[[test]]
+when = ["package.json:mocha"]
+command = "npx mocha {tests}"
+
+[[done_when]]
+touches = ["**/migrations/**", "**/migration/**"]
+items = ["the migration runs and reverts cleanly"]
+
+[[done_when]]
+touches = ["**/routes/**", "**/controllers/**", "**/resolvers/**", "**/*.controller.ts", "**/*.resolver.ts"]
+items = ["new inputs are validated and errors return the documented shape"]

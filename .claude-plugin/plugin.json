@@ -1,0 +1,18 @@
+{
+  "name": "egd",
+  "description": "Evidence-Gated Delivery — plan, build and prove features through CLI-enforced gates: slices and tasks, separation of duties, scope-locked change requests, HTTP/CLI/test/UI evidence, client UAT, team board and GitHub Issues sync.",
+  "author": {
+    "name": "Loc Tran",
+    "email": "loctran12310@gmail.com"
+  },
+  "repository": "https://github.com/LocTran12310/egd",
+  "license": "MIT",
+  "keywords": [
+    "delivery",
+    "project-management",
+    "qa",
+    "evidence",
+    "planning",
+    "gates"
+  ]
+}

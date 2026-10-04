@@ -1,0 +1,17 @@
+{
+  "name": "egd",
+  "owner": {
+    "name": "Loc Tran",
+    "email": "loctran12310@gmail.com"
+  },
+  "metadata": {
+    "description": "Evidence-Gated Delivery for Claude Code teams"
+  },
+  "plugins": [
+    {
+      "name": "egd",
+      "source": "./",
+      "description": "Evidence-Gated Delivery — CLI-enforced gates, evidence for any kind of work, team board and client reporting."
+    }
+  ]
+}

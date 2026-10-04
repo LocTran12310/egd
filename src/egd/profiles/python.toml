@@ -1,0 +1,32 @@
+title = "Python service or library"
+detect = ["pyproject.toml", "requirements.txt", "setup.py"]
+
+conventions = """
+- Type hints on public functions; the repository's formatter and linter (ruff, black) decide style.
+- No print() in library code — use logging. No bare `except:`; catch what you can handle.
+- Settings and secrets from the environment, never committed.
+- Database migrations (Django, Alembic) are reversible and named for what they do.
+"""
+
+review = [
+  "SQL built with f-strings or % — use parameters",
+  "mutable default arguments",
+  "broad except that swallows errors",
+  "blocking I/O inside async code",
+  "secrets or personal data written to logs",
+]
+
+# the first whose file holds the text wins; {tests} becomes the task's test paths
+[[test]]
+when = ["pyproject.toml:pytest", "requirements.txt:pytest", "requirements-dev.txt:pytest", "pytest.ini", "conftest.py"]
+command = "python -m pytest {tests}"
+[[test]]
+command = "python -m unittest {tests}"
+
+[[done_when]]
+touches = ["**/migrations/**", "**/alembic/**"]
+items = ["the migration applies and rolls back on a copy of real data"]
+
+[[done_when]]
+touches = ["**/api/**", "**/views/**", "**/routes/**", "**/endpoints/**"]
+items = ["invalid input returns a clear 4xx, never a 500"]

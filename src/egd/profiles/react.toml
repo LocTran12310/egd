@@ -1,0 +1,28 @@
+title = "React / Next.js front end"
+detect = ["package.json:\"react\"", "package.json:\"next\""]
+
+conventions = """
+- Components stay small; data fetching lives in hooks or the framework's loaders, not in markup.
+- Every async view has loading, empty and error states.
+- Form fields have labels; interactive elements are buttons or links, reachable by keyboard.
+- No hard-coded API URLs or secrets in client code.
+"""
+
+review = [
+  "list items without stable keys",
+  "effects with missing or wrong dependencies",
+  "loading, empty or error state missing",
+  "unlabelled inputs, clickable divs, missing alt text",
+  "console errors or warnings left in the browser",
+]
+
+[[test]]
+when = ["package.json:vitest"]
+command = "npx vitest run {tests}"
+[[test]]
+when = ["package.json:jest"]
+command = "npx jest {tests}"
+
+[[done_when]]
+touches = ["**/*.tsx", "**/*.jsx"]
+items = ["loading, empty and error states are shown", "no console errors in the browser", "usable at 390px wide"]

@@ -1,0 +1,21 @@
+name: Bug
+description: Something in egd behaves wrongly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command you ran and what it printed. Remove secrets.
+      render: console
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: egd --version and python3 --version
+    validations: { required: true }

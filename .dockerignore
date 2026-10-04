@@ -1,0 +1,7 @@
+# Allowlist: the image needs only the source, the launcher and the licence.
+*
+!src
+!bin/egd
+!LICENSE
+**/__pycache__
+**/*.pyc

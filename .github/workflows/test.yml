@@ -1,0 +1,31 @@
+name: test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -v
+      - name: installer parses
+        run: sh -n install.sh
+      - name: wheel carries the web UI
+        if: matrix.python == '3.13'
+        run: |
+          python -m pip wheel . --no-deps -w dist -q
+          python - <<'EOF'
+          import glob, zipfile
+          names = set(zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist())
+          want = {"egd/console.html", "egd/ui/ui.js", "egd/ui/ui.css", "egd/ui/i18n.js",
+                  "egd/ui/i18n-vi.js", "egd/ui/guide.js", "egd/ui/guide.css"}
+          missing = sorted(want - names)
+          assert not missing, f"missing from the wheel: {missing}"
+          print(f"wheel ok: {len(names)} files")
+          EOF

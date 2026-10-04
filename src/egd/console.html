@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGD Console</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3CclipPath id=%22egd-tile%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22/%3E%3C/clipPath%3E%3Cg clip-path=%22url%28%23egd-tile%29%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%234a55d6%22/%3E%3Cpath d=%22M14 64V31a18 18 0 0 1 36 0v33z%22 fill=%22%236ee7b7%22/%3E%3Cpath d=%22M22.5 41l7 7 12.5-15%22 fill=%22none%22 stroke=%22%231e2340%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3C/svg%3E">
+<style>
+/*EGD_UI_CSS*/
+</style>
+</head>
+<body>
+<button type="button" class="skip" id="skip" data-i18n="Skip to content">Skip to content</button>
+<div class="shell">
+  <aside>
+    <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><clipPath id="egd-tile"><rect width="64" height="64" rx="15"/></clipPath><g clip-path="url(#egd-tile)"><rect width="64" height="64" fill="#4a55d6"/><path d="M14 64V31a18 18 0 0 1 36 0v33z" fill="#6ee7b7"/><path d="M22.5 41l7 7 12.5-15" fill="none" stroke="#1e2340" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g></svg></span><div>EGD<small id="brandsub" data-i18n="Console">Console</small></div></div>
+    <nav class="side" id="nav">
+      <h4 data-i18n="Work">Work</h4>
+      <a href="#/inbox" data-r="inbox"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9l1.5-5h9L14 9v4H2V9zm0 0h3.5l1 1.5h3l1-1.5H14"/></svg><span data-i18n="Inbox">Inbox</span><span class="count" id="c-inbox"></span></a>
+      <a href="#/pickable" data-r="pickable"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 1.5L3.5 9H8l-1 5.5L12.5 7H8l1-5.5z"/></svg><span data-i18n="Pickable">Pickable</span><span class="count" id="c-pick"></span></a>
+      <a href="#/board" data-r="board"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2.5" width="3.5" height="11" rx="1"/><rect x="6.25" y="2.5" width="3.5" height="7" rx="1"/><rect x="10.5" y="2.5" width="3.5" height="9" rx="1"/></svg><span data-i18n="Board">Board</span></a>
+      <h4 data-i18n="Portfolio">Portfolio</h4>
+      <a href="#/features" data-r="features"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></svg><span data-i18n="Features">Features</span><span class="count" id="c-feat"></span></a>
+      <a href="#/people" data-r="people"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 13.5c.6-2.4 2.3-3.5 4.5-3.5s3.9 1.1 4.5 3.5M11 3.5a2.2 2.2 0 010 4.3M12.5 10.3c1 .5 1.7 1.5 2 3.2"/></svg><span data-i18n="People">People</span></a>
+      <a href="#/trail" data-r="trail"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2v12M4 4h8l-2 2.5L12 9H4"/></svg><span data-i18n="Approval trail">Approval trail</span></a>
+      <h4 data-i18n="Guide">Guide</h4>
+      <a href="#/core" data-r="core"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 3h4a1.5 1.5 0 011.5 1.5V13a1.2 1.2 0 00-1.2-1.2H2.5zM13.5 3h-4A1.5 1.5 0 008 4.5V13a1.2 1.2 0 011.2-1.2h4.3z"/></svg><span data-i18n="How EGD works">How EGD works</span></a>
+      <h4 data-console data-i18n="Setup">Setup</h4>
+      <a href="#/repos" data-r="repos" data-console><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2.5h7.5L13 5v8.5H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg><span data-i18n="Repositories">Repositories</span><span class="count" id="c-repo"></span></a>
+    </nav>
+    <div class="me" id="me"></div>
+  </aside>
+  <header class="top">
+    <h1 id="title" data-home tabindex="-1">Inbox</h1>
+    <span class="spacer"></span>
+    <div id="scope"></div>
+    <div id="langsel"></div>
+    <button class="btn hide-sm" id="search" aria-keyshortcuts="Control+K Meta+K /"><span data-i18n="Search">Search</span> <kbd id="searchkbd">⌘K</kbd></button>
+    <button class="icon-btn only-sm" id="search-sm" aria-label="Search" data-i18n-aria="Search" data-i18n-title="Search" title="Search"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg></button>
+    <button class="btn icon" id="refresh" title="Refresh (R)" aria-label="Refresh" data-i18n-title="Refresh (R)" data-i18n-aria="Refresh">↻</button>
+    <button class="btn icon" id="theme" title="Theme" aria-label="Dark theme" aria-pressed="false" data-i18n-title="Theme" data-i18n-aria="Dark theme">◐</button>
+  </header>
+  <main id="main"><div class="page"><p class="muted" data-i18n="Loading…">Loading…</p></div></main>
+  <footer class="status" id="status"></footer>
+</div>
+
+<script>
+/*EGD_UI_JS*/
+</script>
+<script>
+const BOOT = /*EGD_BOOT*/null || { csrf: "", readonly: true, mode: "dashboard" };
+const EMBEDDED = /*EGD_DATA*/null;      // a snapshot (egd site, egd board --html) carries its data inline
+const LIVE = EMBEDDED === null;
+const DASH = BOOT.mode === "dashboard"; // one repository, read-only: egd serve / site / board
+let P = EMBEDDED, lastOk = EMBEDDED ? Date.parse(EMBEDDED.generated) || Date.now() : 0;
+if (DASH) {
+  document.querySelectorAll("[data-console]").forEach(el => el.remove());
+  $("#brandsub").dataset.i18n = N_("Dashboard");
+  $("#scope").remove(); $("#me").remove();
+  if (!LIVE) $("#refresh").remove();
+}
+// a title with inline markdown, as link text: no link inside the link
+const mdText = s => inlineMd(s).replace(/<a [^>]*>([\s\S]*?)<\/a>/g, "$1");
+const fhref = (repo, slug) => `#/r/${encodeURIComponent(repo)}/f/${encodeURIComponent(slug)}`;
+const flink = (repo, slug, text) => `<a class="${text == null || text === slug ? "slug" : "flink"}" href="${fhref(repo, slug)}" data-focus="${esc("fl:" + repo + "/" + slug)}">${text == null || text === slug ? esc(slug) : mdText(text)}</a>`;
+const MAC = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform || navigator.platform || "");
+const KEY_K = MAC ? "⌘K" : "Ctrl K";
+const small = w => matchMedia(`(max-width: ${w}px)`).matches;
+const netErr = e => t("Network error — {msg}", { msg: e.message });
+const httpError = (r, j) => (j && j.error) || t("Server error ({status})", { status: r.status });
+// Every redraw that does not come from the person's own click (a load that finished, a poll) asks
+// here: while a dialog or menu is open it waits, and runs once when they close — a redraw under a
+// dialog would detach the control focus returns to.
+let renderOwed = false;
+function requestRender() {
+  if (UI.busy()) { renderOwed = true; statusbar(); return; }
+  renderOwed = false; render();
+}
+UI.onIdle = () => { if (renderOwed) requestRender(); };
+
+// ---------------------------------------------------------------- data
+// The lists are built once per portfolio and scope: every view of one render shares them.
+// The stored scope is read once, then remembered until store.set("scope", …) changes it.
+let MEMO = {}, SCOPE_NOW;
+{ const set = store.set; store.set = (k, v) => { if (k === "scope") SCOPE_NOW = undefined; set.call(store, k, v); }; }
+function memo() {
+  if (SCOPE_NOW === undefined) SCOPE_NOW = DASH ? "" : store.get("scope", "");
+  let s = SCOPE_NOW;
+  if (s && !P.repos.some(r => r.id === s)) s = "";   // a stored scope whose repository is gone shows everything
+  if (MEMO.p !== P || MEMO.s !== s) {
+    const repos = P.repos.filter(r => !s || r.id === s);
+    const features = repos.flatMap(r => r.features.map(f => ({ ...f, repo: r.id })));
+    // planned in another tool (ai-dlc): read-only by nature. A dashboard's own EGD repository is read-only too, but its inbox is the point.
+    const ro = new Set(P.repos.filter(r => r.readonly && (r.source || "egd") !== "egd").map(r => r.id));
+    // a closed feature (dropped, research, superseded) has no work left: off the board, Pickable and People
+    const inbox = repos.flatMap(r => r.inbox), tasks = features.filter(f => f.gate !== "closed").flatMap(f => f.tasks.map(x => ({ ...x, f })));
+    // what a closed feature left undone: only the board's Closed column shows it
+    const closedTasks = features.filter(f => f.gate === "closed").flatMap(f => f.tasks.filter(x => x.col !== "done").map(x => ({ ...x, col: "closed", f })));
+    const ready = tasks.filter(x => x.col === "ready");
+    MEMO = { p: P, s, repos, features, tasks, closedTasks,
+      actionable: inbox.filter(i => !ro.has(i.repo)), elsewhere: inbox.filter(i => ro.has(i.repo)),
+      pickable: ready.filter(x => !ro.has(x.f.repo)), pickAway: ready.filter(x => ro.has(x.f.repo)).length };
+  }
+  return MEMO;
+}
+const scopeId = () => memo().s;
+const allFeatures = () => memo().features;
+const allTasks = () => memo().tasks;
+
+// "no-cache": the browser revalidates with If-None-Match; on a 304 it hands back its cached 200 —
+// same body, same ETag — so an unchanged ETag keeps the same P object and the poll has nothing to redraw.
+// Loads can overlap (a poll and an action's reload): each is numbered, and a response older than the
+// one already applied is dropped, so the portfolio never goes back in time.
+let etag = null, loadSeq = 0, loadApplied = 0;
+async function load() {
+  if (!LIVE) return true;
+  const seq = ++loadSeq;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), P ? 15000 : 6000);
+  try {
+    const r = await fetch("api/portfolio", { cache: "no-cache", signal: ctl.signal });
+    if (!r.ok) throw new Error(r.status);
+    if (seq < loadApplied) return true;   // a newer answer is already here
+    const tag = r.headers.get("ETag");
+    if (!P || !tag || tag !== etag) {
+      const next = await r.json();
+      if (seq < loadApplied) return true;
+      const first = !P;
+      P = next; etag = tag;
+      clearRepoDetail();  // a new portfolio may mean new settings, a signed map, another team
+      if (first) pruneStore();
+    }
+    loadApplied = seq; lastOk = Date.now(); return true;
+  } catch (e) { return false; } finally { clearTimeout(timer); }
+}
+// After an action: what the repository page read is stale, and the portfolio has moved.
+async function afterChange() { clearRepoDetail(); await load(); requestRender(); }
+
+// Per-table and per-section view state is kept in localStorage. Drop what belongs to features
+// and repositories that are gone, table states that are back to the defaults, and — past a few
+// hundred entries — the ones used longest ago (each carries when it was last set: a table state
+// its `t`, an open section the time it was opened; older entries count as oldest).
+function pruneStore() {
+  try {
+    const repos = new Map(P.repos.map(r => [r.id, r])), keys = [], kept = [];
+    for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+    const featureGone = (rid, slug) => { const r = repos.get(rid); return !r || (!r.error && !r.features.some(f => f.slug === slug)); };
+    for (const k of keys) {
+      if (!k || !k.startsWith("egd:")) continue;
+      const x = k.slice(4); let m, drop = false;
+      if ((m = /^tbl:(?:ftasks|facs|ftrail):([^/]+)\/(.+)$/.exec(x)) || (m = /^acc:([^/]+)\/([^/]+)\//.exec(x))) drop = featureGone(m[1], m[2]);
+      else if ((m = /^tbl:rfeat:(.+)$/.exec(x)) || (m = /^raw:([^/]+)\//.exec(x))) drop = !repos.has(m[1]);
+      else if (/^acc:/.test(x)) drop = true;   // the old key format, which cannot be traced to a feature
+      else if (x === "boardMore") drop = true; // no longer stored: "show more" lasts for the visit
+      const v = store.get(x, null);
+      if (!drop && x.startsWith("tbl:")) {
+        const s = v || {};
+        drop = !s.q && !Object.values(s.f || {}).some(v => v !== "" && v != null) && !s.d && (s.p || 1) === 1 && (s.n || 25) === 25;
+      }
+      if (drop) localStorage.removeItem(k);
+      else if (/^(tbl|acc|raw):/.test(x)) kept.push([k, typeof v === "number" ? v : +(v && v.t) || 0]);
+    }
+    kept.sort((a, b) => b[1] - a[1]).slice(400).forEach(([k]) => localStorage.removeItem(k));
+  } catch (e) {}
+}
+const storeDel = k => { try { localStorage.removeItem("egd:" + k); } catch (e) {} };
+
+// A live portfolio carries each feature as a summary (`partial`): what the lists need. The rest —
+// criteria, slices and their demo scripts, proofs, assumptions, task checklists, the trail, gate
+// checks — comes from api/feature when a feature page or a dialog needs it, and is kept per
+// repository/feature until the summary's `rev` moves (any change to it, an action's included).
+// A snapshot carries every feature in full and never fetches.
+const FDETAIL = {};  // "repo/slug" → { data, want: the rev it was fetched for, loading, error, failed }
+const summaryOf = (rid, slug) => P.repos.find(r => r.id === rid)?.features.find(f => f.slug === slug);
+function loadDetail(rid, slug) {
+  const d = (FDETAIL[rid + "/" + slug] ||= {});
+  if (!d.loading) {
+    const want = summaryOf(rid, slug)?.rev;
+    d.loading = fetch("api/feature?" + new URLSearchParams({ repo: rid, slug }), { cache: "no-cache" })
+      .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(httpError(r, j)); Object.assign(d, { data: j, want, error: null }); })
+      .catch(e => Object.assign(d, { error: e.message, failed: Date.now() }))
+      .finally(() => { d.loading = null; });
+  }
+  return d.loading;
+}
+// The full feature when it is at hand now (undefined when it is not, or there is no such feature).
+function heldFeature(rid, slug) {
+  const s = summaryOf(rid, slug);
+  if (!s?.partial) return s;
+  const d = FDETAIL[rid + "/" + slug];
+  return d?.data && d.want === s.rev ? d.data : undefined;
+}
+async function fullFeature(rid, slug) {
+  const held = heldFeature(rid, slug);
+  if (held || !summaryOf(rid, slug)) return held;
+  await loadDetail(rid, slug);
+  const d = FDETAIL[rid + "/" + slug];
+  if (!d?.data) throw new Error(d?.error || t("Server error ({status})", { status: "?" }));
+  return d.data;
+}
+// For a page: the full feature, or null while its first load runs — after a change the copy at hand
+// shows until the new one is here. The page is redrawn when it arrives, if it still shows it.
+function pageFeature(rid, slug) {
+  const held = heldFeature(rid, slug);
+  if (held) return held;
+  const d = FDETAIL[rid + "/" + slug];
+  const onIt = () => { const p = routeParts(); return p[0] === "r" && p[1] === rid && p[3] === slug; };
+  if (!d?.loading && !(d?.error && Date.now() - d.failed < 5000))
+    loadDetail(rid, slug).then(() => {
+      if (onIt()) requestRender();
+      const e = FDETAIL[rid + "/" + slug];  // a failure is tried again in 5 s while the page shows it
+      if (e?.error) setTimeout(() => { if (onIt()) requestRender(); }, 5100);
+    });
+  return d?.data || null;
+}
+// Opens a "Loading…" dialog for a fetch. The check it returns says whether that dialog is still
+// the one showing — the person may have closed it, or opened another, while the fetch ran.
+function loadingDialog(wide = false) {
+  openDialog(`<p class="muted" aria-busy="true">${esc(t("Loading…"))}</p>`, wide);
+  const mark = $("#dialog").firstElementChild;
+  return () => $("#dialog").classList.contains("on") && $("#dialog").firstElementChild === mark;
+}
+// The submit and UAT dialogs read a feature's detail (checklists, demo scripts): "Loading…" shows
+// until it is here. False when it could not be loaded, or the dialog was closed meanwhile.
+async function dialogFeature(a) {
+  const held = heldFeature(a.repo, a.feature);
+  if (held) return held;
+  const still = loadingDialog();
+  try {
+    const f = await fullFeature(a.repo, a.feature);
+    return still() ? f : false;
+  } catch (e) {
+    if (still()) { closeDialog(); toast(t("Could not load this feature: {msg}", { msg: e.message }), true); }
+    return false;
+  }
+}
+
+// A served page fetches the guide and other languages on first use (BOOT.assets: file → versioned url).
+// A snapshot has them inline and no BOOT.assets, so nothing is fetched.
+const ASSETS = {};
+function needAsset(name) {
+  const url = BOOT.assets && BOOT.assets[name];
+  if (!url) return Promise.resolve();
+  return ASSETS[name] || (ASSETS[name] = new Promise((ok, fail) => {
+    const el = name.endsWith(".css") ? Object.assign(document.createElement("link"), { rel: "stylesheet", href: url })
+      : Object.assign(document.createElement("script"), { src: url });
+    el.onload = () => ok();
+    el.onerror = () => { delete ASSETS[name]; el.remove(); fail(new Error(t("could not load {name}", { name }))); };
+    document.head.appendChild(el);
+  }));
+}
+// resolves once t() can speak `lang`; if the file cannot be fetched, English shows instead
+const needLang = lang => lang === "en" || I18N[lang] ? Promise.resolve() : needAsset(`i18n-${lang}.js`).catch(() => {});
+let guideLoading = null;
+function guide() {
+  if (typeof guidePage === "function") return guidePage();
+  guideLoading ||= Promise.all([needAsset("guide.css"), needAsset("guide.js")]).then(() => requestRender(),
+    e => { guideLoading = null; toast(t("Network error — {msg}", { msg: e.message }), true); });
+  return `<div class="page"><p class="muted">${esc(t("Loading…"))}</p></div>`;
+}
+
+async function post(url, payload, retried = false) {
+  const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "X-EGD-CSRF": BOOT.csrf }, body: JSON.stringify(payload) });
+  let j = {};
+  try { j = (await r.json()) || {}; } catch (e) {}  // a proxy's error page is not JSON
+  if (r.status === 403 && /CSRF/.test(j.error || "") && !retried) {  // server restarted: pick up its new token once
+    try { Object.assign(BOOT, await (await fetch("api/boot", { cache: "no-store" })).json()); } catch (e) {}
+    return post(url, payload, true);
+  }
+  if (!r.ok && !j.error) j.error = httpError(r);
+  return { r, j };
+}
+
+// Fixed sentences the server says (refusals, gate checks), in the reader's language. Anything else
+// is shown as the server wrote it.
+const SERVER_T = [
+  [/^'(.+)' lacks a role allowed to (.+?) \(needs one of: (.+)\)$/, m => t("'{who}' lacks a role allowed to {what} (needs one of: {roles})", { who: m[1], what: m[2], roles: m[3] })],
+  [/^'(.+)' is not in \.egd\/team\.toml$/, m => t("'{who}' is not in .egd/team.toml", { who: m[1] })],
+  [/^((?:brief|design|release)\.md): '## (.+?)' is empty/, m => t("{file}: '## {section}' is empty", { file: m[1], section: m[2] })],
+  [/^no acceptance criteria$/, () => t("no acceptance criteria")],
+  [/^no assumptions recorded/, () => t("no assumptions recorded — every unasked question is one")],
+  [/^(S-[\w.]+): no UAT verdict$/, m => t("{id}: no UAT verdict", { id: m[1] })],
+  [/^(S-[\w.]+): UAT failed — (.*)$/, m => t("{id}: UAT failed — {note}", { id: m[1], note: m[2] })],
+  [/^(T-[\w.-]+): (todo|doing|review|blocked)$/, m => t("{id}: {status}", { id: m[1], status: t(m[2]) })],
+  [/^(A-[\w.]+): assumption still open$/, m => t("{id}: assumption still open", { id: m[1] })],
+  [/^(D-[\w.]+): decision still proposed — (.*)$/, m => t("{id}: decision still proposed — {title}", { id: m[1], title: m[2] })],
+  [/^the map is still the blank template/, () => t("The map is still the blank template — fill it in (the egd-scout agent can draft it), then sign.")],
+  [/^spent must be a number of hours/, () => t("Hours spent must be a number between 0 and 10000")],
+  [/^that folder is outside the folders this console may browse$/, () => t("That folder is outside the folders this console may browse")],
+];
+const trServer = s => { for (const [re, f] of SERVER_T) { const m = re.exec(s || ""); if (m) return f(m); } return s || ""; };
+// who may do what in a repository (its team.toml roles): an action nobody would accept is not offered
+const ACT_ROLE = { pass: "gate", close: "gate", reopen_feature: "gate", resolve: "gate", reject_assumption: "gate",
+  accept: "review", reject: "review", uat: "uat", uat_pass: "uat", uat_fail: "uat", cr_approve: "cr_approve", cr_reject: "cr_approve",
+  start: "work", submit: "work", solo: "work", block: "work", unblock: "work", rollback: "work", sign_map: "work" };
+function canDo(a) {
+  const r = P.repos.find(x => x.id === a.repo);
+  if (!r || !r.team_set || !r.may) return true;
+  const role = a.action === "pass" && a.target === "accept" ? "uat" : ACT_ROLE[a.action];
+  return !role || (r.may[role] || []).some(n => isMe(n, a.repo));
+}
+const ownSubmission = (repo, slug, tid) => isMe(P.repos.find(r => r.id === repo)?.features.find(x => x.slug === slug)
+  ?.tasks.find(x => x.id === tid)?.submitted_by, repo);
+const refocus = el => { const a = document.activeElement; if (el && el.isConnected && !el.disabled && (!a || a === document.body)) el.focus(); };
+
+// One request per action at a time: a second click, or a button redrawn by a poll, cannot send it again.
+const ACTING = new Set();
+const actKey = a => [a.repo, a.feature, a.action, a.target].join("\u0001");
+async function act(payload, btn) {
+  if (P.readonly) { toast(t("This console is read-only."), true); return false; }
+  const key = actKey(payload);
+  if (ACTING.has(key)) return false;
+  ACTING.add(key);
+  if (btn) { if (document.activeElement === btn) UI.held = btn; btn.disabled = true; }  // disabling blurs it: the redraw finds it by UI.held
+  try {
+    const { r, j } = await post("api/action", payload);
+    if (!r.ok) { toast(trServer(j.error) || t("Refused"), true, (j.problems || []).map(trServer)); return false; }
+    toast(doneMsg(j)); closeDialog(); await afterChange(); return true;
+  } catch (e) { toast(netErr(e), true); return false; }
+  finally {
+    ACTING.delete(key);
+    if (btn && btn.isConnected) btn.disabled = false;
+    // a redraw while it ran drew this action's buttons disabled: they are live again
+    document.querySelectorAll("#main [data-act]").forEach(x => { try { if (actKey(JSON.parse(x.dataset.act)) === key) x.disabled = !!P.readonly; } catch (e) {} });
+    // refused, or redrawn while it ran: focus goes back to the button, live again
+    const h = UI.held, a = document.activeElement;
+    if (h && usable(h) && (!a || a === document.body)) { UI.held = null; h.focus({ preventScroll: true }); }
+  }
+}
+
+const NEED_LABEL = { reason: N_("Reason (shown to the submitter)"), note: N_("Note"), resolution: N_("Resolution — who confirmed it, and how"),
+  rollback: N_("Rollback — the exact steps to undo this release, and whether migrations reverse"),
+  outcome: N_("Why it closes"), closing: N_("Reason — why it stops; for research, what it found or where it is written"),
+  "block:reason": N_("Reason — what it is waiting on"), "reopen_feature:note": N_("Why it reopens") };
+const needLabel = (a, n) => { const l = NEED_LABEL[a.action + ":" + n] || NEED_LABEL[n]; return l ? t(l) : n; };
+// a need with fixed answers is a choice, not free text
+const NEED_CHOICES = { outcome: [["dropped", N_("Dropped — it will not ship")], ["research", N_("Research — a spike; the reason says what it found")],
+  ["superseded", N_("Superseded — replaced by other work")]] };
+// action labels come from the server in English; show them in the reader's language by action
+const ACT_LABEL = { start: N_("Start"), submit: N_("Submit"), block: N_("Block"), unblock: N_("Unblock"), accept: N_("Accept"), reject: N_("Reject"), solo: N_("Finish solo"),
+  cr_approve: N_("Approve"), cr_reject: N_("Reject"), resolve: N_("Confirm"), reject_assumption: N_("Reject"),
+  uat_pass: N_("UAT pass"), uat_fail: N_("UAT fail"), uat: N_("Run UAT"), sign_map: N_("Read & sign"), rollback: N_("Write rollback"),
+  close: N_("Close feature"), reopen_feature: N_("Reopen") };
+const actLabel = a => a.action === "pass" && a.target ? t("Pass {gate}", { gate: a.target }) : ACT_LABEL[a.action] ? t(ACT_LABEL[a.action]) : a.label;
+// what an action did, by action — the server's English `message` when it is one this page does not know
+const ACT_DONE = { sign_map: N_("map signed by {by}"), pass: N_("passed {target}"), start: N_("{target} → doing (@{by})"),
+  accept: N_("{target} accepted"), reject: N_("{target} sent back"), block: N_("{target} blocked"), unblock: N_("{target} unblocked"),
+  submit: N_("{target} → review"), solo: N_("{target} done (no review)"), cr_approve: N_("{target} approved"), cr_reject: N_("{target} rejected"),
+  uat_pass: N_("UAT {target}: pass"), uat_fail: N_("UAT {target}: fail"), resolve: N_("{target} confirmed"), reject_assumption: N_("{target} rejected"), rollback: N_("rollback written"),
+  close: N_("feature closed"), reopen_feature: N_("feature reopened") };
+const doneMsg = j => ACT_DONE[j.action] ? t(ACT_DONE[j.action], { target: String(j.target ?? ""), by: j.by || "" }) : j.message;
+
+function startAction(a, btn) {
+  const me = signerFor(a.repo) || t("(no name set)");
+  if (a.action === "sign_map") return signMap(a);
+  if (a.action === "submit" || a.action === "solo") return submitTask(a);
+  if (["uat", "uat_pass", "uat_fail"].includes(a.action)) return uatDialog(a);
+  if (a.action === "accept" && isMe(P.repos.find(r => r.id === a.repo)?.features.find(x => x.slug === a.feature)
+    ?.tasks.find(x => x.id === a.target)?.submitted_by, a.repo)) return submitTask({ ...a, action: "solo" });
+  if (!a.needs || !a.needs.length) return act(a, btn);
+  openDialog(`<h3>${esc(actLabel(a))}${a.target ? ` · <span class="mono">${esc(a.target)}</span>` : ""}</h3>
+    <div class="muted small">${esc(a.feature || "")}</div>
+    ${a.needs.map(n => `<label for="f-${esc(n)}">${esc(needLabel(a, n))}</label>${NEED_CHOICES[n]
+      ? `<select class="input" id="f-${esc(n)}">${NEED_CHOICES[n].map(([v, l]) => `<option value="${esc(v)}">${esc(t(l))}</option>`).join("")}</select>`
+      : `<textarea class="input" id="f-${esc(n)}" aria-describedby="e-${esc(n)}"></textarea><div class="field-err" id="e-${esc(n)}" role="alert"></div>`}`).join("")}
+    <div class="foot"><span class="why">${esc(t("Recorded on the trail, signed {who}", { who: me }))}</span>
+      <button class="btn" data-close>${esc(t("Cancel"))}</button><button class="btn primary" id="go">${esc(actLabel(a))}</button></div>`);
+  const go = $("#go");
+  go.onclick = async () => {
+    const extra = {};
+    for (const n of a.needs) {
+      const el = document.getElementById("f-" + n), err = document.getElementById("e-" + n);
+      extra[n] = el.value.trim();
+      if (err) err.textContent = "";
+      el.removeAttribute("aria-invalid");
+      if (!extra[n]) {   // said next to the field, which takes focus
+        if (err) err.textContent = t("{field} is required", { field: needLabel(a, n) });
+        el.setAttribute("aria-invalid", "true"); return el.focus();
+      }
+    }
+    await act({ ...a, ...extra }, go);
+  };
+}
+
+async function signMap(a) {
+  const still = loadingDialog(true);
+  let text = "", err = null;
+  try {
+    const r = await fetch("api/map?repo=" + encodeURIComponent(a.repo), { cache: "no-store" });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(httpError(r, j));
+    text = j.text || "";
+  } catch (e) { err = e.message; }
+  if (!still()) return;
+  if (!err && !text.trim()) err = t("The map is empty — write .egd/map.md before signing.");
+  if (err) {
+    openDialog(`<h3>${esc(t("Repository map — {repo}", { repo: a.repo }))}</h3>
+      <div class="callout">${esc(t("Could not read the repository map: {msg}", { msg: err }))}</div>
+      <div class="foot"><button class="btn" data-close>${esc(t("Close"))}</button></div>`);
+    return;
+  }
+  const blank = /^##\s/m.test(text) && !text.replace(/<!--[\s\S]*?-->/g, "").split(/^##.*$/m).slice(1).some(s => s.trim());
+  openDialog(`<h3>${esc(t("Repository map — {repo}", { repo: a.repo }))}</h3>
+    <p class="muted small">${esc(t("Your signature says this map is true. Planners and agents rely on it."))}</p>
+    ${blank ? `<div class="callout">${esc(t("This map is still the blank template — fill it in before signing."))}</div>` : ""}
+    <pre class="map" tabindex="0" role="region" aria-label="${esc(t("Repository map — {repo}", { repo: a.repo }))}">${esc(text)}</pre>
+    <label class="check"><input type="checkbox" id="read" ${blank ? "disabled" : ""}> ${esc(t("I have read it and it matches the repository"))}</label>
+    <div class="foot"><button class="btn" data-close>${esc(t("Cancel"))}</button><button class="btn primary" id="go" disabled>${esc(t("Sign as {who}", { who: signerFor(a.repo) }))}</button></div>`, true);
+  const go = $("#go");
+  $("#read").onchange = e => { go.disabled = !e.target.checked; };
+  go.onclick = async () => { if (!(await act(a, go))) go.disabled = !$("#read")?.checked; };
+}
+
+// A person is the signer when the name or one of their team aliases matches.
+function isMe(name, rid) {
+  const me = signerFor(rid), key = x => String(x || "").trim().toLowerCase();
+  if (!name || !me) return false;
+  if (key(name) === key(me)) return true;
+  const m = (P.repos.find(r => r.id === rid)?.team || []).find(x => [x.name, ...(x.aliases || [])].some(n => key(n) === key(me)));
+  return !!m && [m.name, ...(m.aliases || [])].some(n => key(n) === key(name));
+}
+
+// Submit a task for review, or finish it without one (solo) — the only way out when nobody else
+// on the team may review. A refusal stays inside the dialog so it can be answered there: scope
+// drift turns into a recorded reason instead of a dead end.
+async function submitTask(a) {
+  const f = await dialogFeature(a);
+  if (f === false) return;
+  const repo = P.repos.find(r => r.id === a.repo);
+  const task = f?.tasks.find(x => x.id === a.target);
+  const inReview = task?.status === "review";
+  const items = inReview ? [] : task?.done_when || [];
+  const others = (repo?.reviewers || []).filter(n => !isMe(n, a.repo));
+  const forceSolo = a.action === "solo" || inReview || !others.length;
+  openDialog(`<h3>${esc(forceSolo ? t("Finish {task} without review", { task: a.target }) : t("Submit {task} for review", { task: a.target }))}</h3>
+    <div class="muted small">${esc(task?.title || "")}</div>
+    ${items.length ? checklist(items, "dw", t("Done when — tick each one that is genuinely true")) : ""}
+    ${inReview ? "" : `<label for="spent">${esc(t("Hours spent"))}</label><input class="input w-num" type="number" id="spent" min="0" step="0.25" placeholder="${esc(task?.estimate ?? "")}">`}
+    ${forceSolo
+      ? `<div class="callout">${esc(others.length ? t("You submitted it, so you cannot accept it. Finishing it yourself is recorded as a solo bypass.")
+          : t("No one else on this team may review — it is finished solo, and the trail records that it skipped review."))}</div>`
+      : `<label class="check"><input type="checkbox" id="solo"> ${esc(t("Finish without review (recorded as solo)"))}</label>`}
+    <div id="solo-box" ${forceSolo ? "" : "hidden"}><label for="solo-reason">${esc(t("Why no review?"))}</label>
+      <textarea class="input" id="solo-reason">${esc(others.length ? "" : t("Only reviewer on the team"))}</textarea></div>
+    <div id="refusal"></div>
+    <div class="foot"><span class="why">${esc(t("Tests run before it moves"))}</span><button class="btn" data-close>${esc(t("Cancel"))}</button>
+      <button class="btn primary" id="go" ${items.length ? "disabled" : ""}></button></div>`);
+  let boxes = [];
+  let drift = null;  // files the server said are outside the task, once it has said so
+  const solo = () => forceSolo || $("#solo")?.checked;
+  const label = () => { $("#go").textContent = t(solo() ? (drift ? "Finish anyway" : "Finish") : (drift ? "Submit anyway" : "Submit")); };
+  const ready = () => { $("#go").disabled = !boxes.every(x => x.checked); };
+  boxes = wireChecklist("dw", ready);
+  if ($("#solo")) $("#solo").onchange = () => { $("#solo-box").hidden = !solo(); label(); };
+  label();
+  $("#go").onclick = async () => {
+    if (P.readonly) return toast(t("This console is read-only."), true);
+    const body = { repo: a.repo, feature: a.feature, target: a.target, action: solo() ? "solo" : "submit",
+      confirm: true, spent: $("#spent")?.value || "" };
+    if (solo()) { body.note = $("#solo-reason").value.trim(); if (!body.note) return $("#solo-reason").focus(); }
+    if (drift) { body.drift_reason = $("#drift-reason").value.trim(); if (!body.drift_reason) return $("#drift-reason").focus(); }
+    $("#go").disabled = true;
+    try {
+      const { r, j } = await post("api/action", body);
+      if (r.ok) { toast(doneMsg(j)); closeDialog(); await afterChange(); return; }
+      if (j.code === "drift") {
+        drift = j.files;
+        $("#refusal").innerHTML = `<div class="callout"><b>${esc(t("Changed files outside this task's declared scope"))}</b>
+          <ul>${drift.map(x => `<li class="mono">${esc(x)}</li>`).join("")}</ul>
+          <div class="muted small mt-6">${esc(t("Re-plan the task if they are part of it. Otherwise say why they can go along — the reason is recorded."))}</div></div>
+          <label for="drift-reason">${esc(t("Why these files are fine"))}</label><textarea class="input" id="drift-reason"></textarea>`;
+        $("#drift-reason").focus();
+      } else showRefusal(j);
+      label();
+    } catch (e) { toast(netErr(e), true); }
+    ready(); refocus($("#go"));
+  };
+}
+
+// A checklist, named by its legend, with a "Select all" row on top when there is more than one item.
+function checklist(items, attr, legend) {
+  if (!items.length) return "";
+  return `<fieldset class="checks"><legend>${esc(legend)}</legend>`
+    + (items.length > 1 ? `<label class="check all"><input type="checkbox" data-all="${attr}"> ${esc(t("Select all"))}</label>` : "")
+    + items.map(d => `<label class="check"><input type="checkbox" data-${attr}> <span>${inlineMd(d)}</span></label>`).join("") + `</fieldset>`;
+}
+function wireChecklist(attr, onChange) {
+  const boxes = [...document.querySelectorAll(`[data-${attr}]`)], all = document.querySelector(`[data-all="${attr}"]`);
+  const sync = () => {
+    const n = boxes.filter(b => b.checked).length;
+    if (all) { all.checked = n === boxes.length; all.indeterminate = n > 0 && n < boxes.length; }
+    onChange();
+  };
+  boxes.forEach(b => b.onchange = sync);
+  if (all) all.onchange = () => { boxes.forEach(b => b.checked = all.checked); sync(); };
+  return boxes;
+}
+
+// Demo script → steps. A numbered or bulleted line starts a step; the lines under it continue it.
+function demoSteps(text) {
+  const mark = /^(\d+[.)]|[-*])\s+/, lines = (text || "").split("\n").map(x => x.trim()).filter(Boolean);
+  if (!lines.some(l => mark.test(l))) return lines;
+  const out = [];
+  for (const l of lines) { if (mark.test(l) || !out.length) out.push(l.replace(mark, "")); else out[out.length - 1] += " " + l; }
+  return out;
+}
+
+// A demo script as a numbered list of steps, inline markdown kept.
+function demoHtml(text) {
+  const steps = demoSteps(text);
+  return /^\s*(\d+[.)]|[-*])\s+/m.test(text || "") ? `<ol class="steps-md">${steps.map(x => `<li>${inlineMd(x)}</li>`).join("")}</ol>`
+    : steps.map(x => `<p class="steps-md">${inlineMd(x)}</p>`).join("");
+}
+
+function showRefusal(j) {
+  const box = $("#refusal");
+  box.innerHTML = `<div class="callout"><b>${esc(trServer(j.error) || t("Refused"))}</b>${(j.problems || []).length
+    ? `<ul>${j.problems.map(x => `<li>${esc(trServer(x))}</li>`).join("")}</ul>` : ""}</div>`;
+  box.setAttribute("role", "alert"); box.tabIndex = -1; box.focus();   // said aloud, and focus is not lost
+}
+
+// UAT: the client (or the PO for them) walks a slice's demo script on the running app and gives a
+// verdict. The script is a checklist here, so "pass" means every step was seen working.
+async function uatDialog(a) {
+  const f = await dialogFeature(a);
+  if (f === false) return;
+  const s = f?.slices.find(x => x.id === a.target);
+  const steps = demoSteps(s?.demo);
+  openDialog(`<h3>${esc(t("UAT"))} · <span class="mono">${esc(a.target)}</span></h3><div class="muted small">${esc(s?.title || "")}</div>
+    <p class="muted small">${esc(t("Walk the demo script on the running app with the client (or as the PO). Tick each step you saw work."))}</p>
+    ${steps.length ? checklist(steps, "step", t("Demo script"))
+      : `<div class="callout">${esc(t("No demo script — say in the note what was shown."))}</div>`}
+    <label for="uat-note">${esc(t("Note — who walked it, where, and what was seen"))}</label><textarea class="input" id="uat-note"></textarea>
+    <div id="refusal"></div>
+    <div class="foot"><span class="why">${esc(t("Recorded on the trail, signed {who}", { who: signerFor(a.repo) }))}</span>
+      <button class="btn" data-close>${esc(t("Cancel"))}</button><button class="btn danger" id="fail">${esc(t("UAT fail"))}</button>
+      <button class="btn primary" id="pass" disabled>${esc(t("UAT pass"))}</button></div>`);
+  const note = () => $("#uat-note").value.trim();
+  const ready = () => { $("#pass").disabled = steps.length ? !boxes.every(b => b.checked) : !note(); };
+  const boxes = wireChecklist("step", ready); $("#uat-note").oninput = ready; ready();
+  const send = async passed => {
+    if (P.readonly) return toast(t("This console is read-only."), true);
+    if (!passed && !note()) { showRefusal({ error: t("A failed UAT needs a note saying what was wrong") }); return $("#uat-note").focus(); }
+    const pass = $("#pass"), fail = $("#fail");
+    pass.disabled = fail.disabled = true;
+    try {
+      const { r, j } = await post("api/action", { repo: a.repo, feature: a.feature, target: a.target,
+        action: passed ? "uat_pass" : "uat_fail", note: note() });
+      if (r.ok) { toast(doneMsg(j)); closeDialog(); await afterChange(); return; }
+      showRefusal(j);
+    } catch (e) { toast(netErr(e), true); }
+    if (fail.isConnected) { fail.disabled = false; ready(); refocus(passed ? pass : fail); refocus(fail); }
+  };
+  $("#pass").onclick = () => send(true); $("#fail").onclick = () => send(false);
+}
+
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) return closeDialog();
+  const b = e.target.closest("[data-act]");
+  if (b) { e.preventDefault(); if (!b.disabled) startAction(JSON.parse(b.dataset.act), b); return; }
+  const tr = e.target.closest("[data-transcript]");
+  if (tr) return openTranscript(tr.dataset.repo, tr.dataset.slug, tr.dataset.transcript);
+  const shot = e.target.closest("[data-full]");
+  if (shot) return openDialog(`<h3 class="sr">${esc(shot.dataset.name || t("Screenshot"))}</h3><div class="foot mt-0"><button class="btn" data-close>${esc(t("Close"))}</button></div><img class="lightbox" src="${esc(shot.dataset.full)}" alt="${esc(shot.dataset.name || "")}">`, true);
+  const colT = e.target.closest("[data-colt]");
+  if (colT) { const k = colT.dataset.colt, c = store.get("boardCollapsed", ["closed"]);
+    store.set("boardCollapsed", c.includes(k) ? c.filter(x => x !== k) : [...c, k]); return render(); }
+  const more = e.target.closest("[data-more]");
+  if (more) {   // focus goes to the first card it revealed
+    const k = more.dataset.more, was = BOARD_MORE.n[k] || BOARD_PAGE; BOARD_MORE.n[k] = was + BOARD_STEP; render();
+    const c = document.querySelectorAll(`[data-list="col:${k}"] [data-item]`)[was];
+    return void [...(c ? c.querySelectorAll(FOCUSABLE) : [])].find(usable)?.focus();
+  }
+  const retry = e.target.closest("[data-retry]");
+  if (retry) { retryFailed(); return render(); }
+  const tab = e.target.closest("[data-tab]");
+  if (tab) { inboxTab(tab.dataset.tab); return; }
+});
+
+const repoChip = rid => `<span class="chip">${esc(rid)}</span>`;
+let BYID = {};
+const repoById = rid => { if (BYID.p !== P) BYID = { p: P, m: new Map(P.repos.map(r => [r.id, r])) }; return BYID.m.get(rid); };
+const signerFor = rid => repoById(rid)?.signer || P.user || "";
+const repoRO = rid => P.readonly || !!repoById(rid)?.readonly;
+// An action button keeps focus across redraws (data-focus) and says what it acts on: "Accept T-1.1 · checkout".
+const actBtn = (a, ctx, cls = "") => {
+  if (repoRO(ctx.repo)) return "";
+  if (a.action === "accept" && ownSubmission(ctx.repo, ctx.slug, a.target)) a = { ...a, action: "solo", label: "Finish solo" };
+  if (!canDo({ ...a, repo: ctx.repo })) return `<span class="muted small" title="${esc(t("Your name in this repository has no role for this — see team.toml"))}">${esc(actLabel(a))} · ${esc(t("not your role"))}</span>`;
+  const payload = { repo: ctx.repo, feature: ctx.slug, action: a.action, target: a.target, label: a.label, needs: a.needs || [] };
+  const label = actLabel(a), name = label + (a.target && !label.includes(a.target) ? " " + a.target : "") + (ctx.slug ? " · " + ctx.slug : "");
+  return `<button class="btn ${a.primary ? "primary" : ""} ${cls}" data-act="${esc(JSON.stringify(payload))}" data-focus="${esc(["act:" + ctx.repo, ctx.slug, a.action, a.target].join("/"))}"
+    ${name !== label ? `aria-label="${esc(name)}"` : ""} ${P.readonly || ACTING.has(actKey(payload)) ? "disabled" : ""}>${esc(label)}</button>`;
+};
+
+function taskActions(task, repo, slug, small = true) {
+  if (repoRO(repo)) return "";
+  // the submitter cannot accept their own work; offer the recorded way out instead
+  const accept = isMe(task.submitted_by, repo) ? { action: "solo", label: "Finish solo", primary: true } : { action: "accept", label: "Accept", primary: true };
+  const A = {
+    ready: [{ action: "start", label: "Start", primary: true }],
+    doing: [{ action: "submit", label: "Submit", primary: true }, { action: "block", label: "Block", needs: ["reason"] }],
+    review: [accept, { action: "reject", label: "Reject", needs: ["reason"] }],
+    blocked: [{ action: "unblock", label: "Unblock" }],
+  }[task.col] || [];
+  return A.map(a => actBtn({ ...a, target: task.id }, { repo, slug }, small ? "sm" : "")).join(" ");
+}
+
+// ---------------------------------------------------------------- views
+const KIND = {   // inbox group titles, in display order (the server says which section each item is in)
+  review: N_("Waiting for review"), gate: N_("Gates ready to pass"), cr: N_("Change requests awaiting the client"),
+  uat: N_("UAT verdicts due"), assumption: N_("Blocking assumptions"), map: N_("Unsigned repository maps"),
+  blocked: N_("Blocked tasks"), proof: N_("Failing evidence"), defect: N_("Serious defects"),
+  uncommitted: N_("Trail not committed"), lint: N_("Plan problems"), rollback: N_("Rollbacks to write"),
+};
+const SEV = [["decide", N_("Decide"), N_("Only a person can do these")], ["unblock", N_("Unblock"), N_("Work is stuck until these move")],
+  ["hygiene", N_("Hygiene"), N_("Keeps the team's view honest")], ["all", N_("Everything"), ""]];
+
+// The server builds inbox titles in English; rebuild them here from kind + target so they follow
+// the reader's language. Anything unrecognised keeps the server's text.
+function inboxTitle(i) {
+  const tg = i.target, m = re => re.exec(i.title || "");
+  let x;
+  switch (i.kind) {
+    case "review": if (tg) return t("{target} waiting for review", { target: tg }); break;
+    case "gate": if (tg) return t("Ready to pass {gate}", { gate: tg }); break;
+    case "cr": if (tg) return t("{target} awaiting the client", { target: tg }); break;
+    case "uat": if (tg) return t("{target} needs a UAT verdict", { target: tg }); break;
+    case "assumption": if (tg) return t("{target} is blocking and unanswered", { target: tg }); break;
+    case "blocked": if (tg) return t("{target} blocked", { target: tg }); break;
+    case "map": return t("Repository map is unsigned");
+    case "rollback": return t("How is this undone? Rollback not written");
+    case "lint": return t("Plan has problems");
+    case "proof": if ((x = m(/^(\S+) failing$/))) return t("{target} failing", { target: x[1] }); break;
+    case "defect": if ((x = m(/^(\S+) (\S+) defect open$/))) return t("{target} {severity} defect open", { target: x[1], severity: t(x[2]) }); break;
+    case "uncommitted": if ((x = m(/^(\d+) /))) return t("{n} trail/plan change(s) not committed", { n: x[1] }); break;
+  }
+  return i.title;
+}
+// fixed server sentences (not data) that the inbox may show as detail or hint
+const INBOX_FIXED = [N_("A person has to read .egd/map.md and confirm it is true before `frame` opens."),
+  N_("Teammates cannot see these until they are committed and pushed."), N_("Being wrong here forces rework."), N_("The client walks the demo script."),
+  N_("write brief.md (problem, outcome, success signal, out of scope) and get .egd/map.md reviewed"),
+  N_("fill [[assumption]] and [[ac]] in plan.toml; resolve every blocking assumption"), N_("write design.md and settle every [[decision]]"),
+  N_("cut [[slice]] and [[task]] entries; `egd graph` until clean"), N_("work the ready tasks (`egd ready`); run `egd proof run` before passing"),
+  N_("client walks each slice's demo and records `egd uat <slice> --pass`"), N_("review it in ai-dlc (read-only here)"), N_("write release.md (rollback); close assumptions and serious defects"),
+  N_("Write it now, while the change is fresh: revert what, migrations, flags, data."), N_("release needs it — release.md → ## Rollback")];
+const inboxText = s => (s && INBOX_FIXED.includes(s) ? t(s) : s);
+function inboxDetail(i) {
+  const x = i.kind === "review" && /^(.*) — submitted by (.*)$/.exec(i.detail || "");
+  return x ? t("{title} — submitted by {who}", { title: x[1], who: x[2] }) : inboxText(i.detail);
+}
+
+// Items from read-only repositories (planned in another tool) cannot be acted on here: they sit in
+// their own collapsed section, and neither the tab counts nor the sidebar badge count them.
+// Each group is a list (data-list) of items: when an action takes an item away, focus moves to the
+// one now in its place, or to the group's heading.
+function inboxGroups(items, where = "inbox") {
+  const groups = {};
+  items.forEach(i => (groups[i.kind] ||= []).push(i));
+  const order = Object.keys(KIND).filter(k => groups[k]).concat(Object.keys(groups).filter(k => !KIND[k]));
+  return order.map(k => `<section class="panel group" data-list="${esc(where + ":" + k)}"><h2 class="gh" data-head>${esc(KIND[k] ? t(KIND[k]) : k)} <span class="count">${groups[k].length}</span></h2>
+      ${groups[k].map(i => { const d = inboxDetail(i), h = inboxText(i.hint); return `<div class="row item-row" data-item><div class="minw0">
+          <div class="meta">${repoChip(i.repo)}${i.slug ? flink(i.repo, i.slug, i.slug) : ""}</div>
+          <div class="t">${inlineMd(inboxTitle(i))}</div>${d ? `<div class="d" title="${esc(d)}">${inlineMd(d)}</div>` : ""}
+          ${h ? `<div class="h" title="${esc(h)}">→ ${esc(h)}</div>` : ""}</div>
+        <div class="acts">${i.actions.map(a => actBtn(a, i)).join("")}${i.slug ? `<a class="btn" href="${fhref(i.repo, i.slug)}" data-focus="${esc(["open:" + i.kind, i.repo, i.slug, i.target || ""].join("/"))}" aria-label="${esc(t("Open") + " " + i.slug)}">${esc(t("Open"))}</a>` : ""}</div></div>`; }).join("")}
+      </section>`).join("");
+}
+function inbox() {
+  const { actionable: items, elsewhere } = memo();
+  const tab = SEV.some(([k]) => k === store.get("inboxTab", "decide")) ? store.get("inboxTab", "decide") : "decide";
+  const of = list => tab === "all" ? list : list.filter(i => i.severity === tab);
+  const shown = of(items), away = of(elsewhere);
+  const openAway = store.get("inbox:elsewhere", false);
+  return `<div class="page"><p class="lead">${esc(t("Nothing here moves on its own — each item needs a decision or a fix from a person."))}</p>
+    <div class="tabs scroll-x" role="tablist" aria-label="${esc(t("Inbox sections"))}" data-cue>${SEV.map(([k, l, h]) => { const n = k === "all" ? items.length : items.filter(i => i.severity === k).length;
+      return `<button type="button" role="tab" id="itab-${k}" data-tab="${k}" aria-selected="${k === tab}" aria-controls="inbox-panel" tabindex="${k === tab ? 0 : -1}" class="${k === tab ? "on" : ""}"${h ? ` title="${esc(t(h))}"` : ""}>${esc(t(l))} <span class="count ${n && k === "decide" ? "hot" : ""}">${n}</span></button>`; }).join("")}</div>
+    <div role="tabpanel" id="inbox-panel" aria-labelledby="itab-${tab}">
+    ${inboxGroups(shown) || `<div class="panel empty">${esc(tab === "decide" ? t("Nothing is waiting for a decision.") + " 🎉" : t("Nothing here."))}</div>`}
+    ${away.length ? `<details class="raw" data-keep="inbox:elsewhere" ${openAway ? "open" : ""}><summary>${esc(t("Elsewhere (read-only)"))} <span class="count">${away.length}</span>
+        <span class="muted small">— ${esc(t("planned in another tool; act on these there"))}</span></summary><div class="mt-6">${inboxGroups(away, "away")}</div></details>` : ""}
+    </div></div>`;
+}
+
+// Tasks in read-only repositories (planned in another tool) cannot be started here: they are left
+// out — of the list and of the sidebar count alike — and a line says how many.
+function pickable() {
+  const { pickable: rows, pickAway } = memo();
+  return `<div class="page"><p class="lead">${esc(t("Ready tasks across every repository — dependencies done, nobody on them."))}</p>
+    ${UI.table("pickable", { rows, placeholder: t("Find a task…"),
+      search: x => [x.id, x.title, x.slice, x.f.title, x.f.slug, x.f.repo].join(" "),
+      columns: [
+        ...(scopeId() ? [] : [{ key: "repo", label: t("Repository"), sortValue: x => x.f.repo, render: x => repoChip(x.f.repo) }]),  // one repository in scope: no need to say it on every row
+        { key: "feature", label: t("Feature"), sortValue: x => x.f.title, render: x => flink(x.f.repo, x.f.slug, x.f.title) },
+        { key: "id", label: t("Task"), cls: "mono", sortValue: x => x.id, render: x => esc(x.id) },
+        { key: "title", label: t("Title"), sortValue: x => x.title, render: x => inlineMd(x.title) },
+        { key: "slice", label: t("Slice"), cls: "mono muted", sortValue: x => x.slice, render: x => esc(x.slice) },
+        { key: "est", label: t("Est."), num: true, sortValue: x => x.estimate, render: x => esc(x.estimate) + "h" },
+        { key: "acts", label: "", cls: "ta-r", render: x => taskActions(x, x.f.repo, x.f.slug) },
+      ], empty: `${esc(t("Nothing ready to pick up."))} <a class="flink" href="#/board">${esc(t("See what is in progress or blocked on the board"))}</a>` })}
+    ${pickAway ? `<p class="muted small">${esc(t("{n} more ready in read-only repositories — pick them up in the tool that plans them.", { n: pickAway }))}</p>` : ""}</div>`;
+}
+
+// ---------------------------------------------------------------- people
+// One person, however the trail spells them: names merge case-insensitively and through each EGD
+// repository's team (name, aliases, GitHub login); an agent's variants — "Claude (via X)",
+// "Claude · implement (Opus 5)" — are one "Claude". The variants show on hover.
+let PEOPLE = {};
+function personOf(raw) {
+  if (PEOPLE.p !== P) {
+    const canon = new Map();
+    // EGD repositories' teams — a dashboard's own repository is read-only but its team.toml counts
+    for (const r of P.repos) if ((r.source || "egd") === "egd") for (const m of r.team || []) {
+      const names = [m.name, ...(m.aliases || [])].filter(Boolean).map(String);
+      const c = names.map(n => canon.get(n.trim().toLowerCase())).find(Boolean) || m.name;
+      names.forEach(n => { const k = n.trim().toLowerCase(); if (!canon.has(k)) canon.set(k, c); });
+    }
+    PEOPLE = { p: P, canon, seen: new Map(), variants: new Map() };
+  }
+  if (!raw) return "";
+  let x = PEOPLE.seen.get(raw);
+  if (x == null) {
+    const base = String(raw).replace(/\s*\(via [^)]*\)\s*$/i, "").split(" · ")[0].replace(/\s*\([^)]*\)\s*$/, "").trim() || String(raw).trim();
+    const k = base.toLowerCase();
+    x = PEOPLE.canon.get(String(raw).trim().toLowerCase()) || PEOPLE.canon.get(k);
+    if (!x) { x = base; PEOPLE.canon.set(k, base); }  // the first spelling seen names the person
+    PEOPLE.seen.set(raw, x);
+    if (raw !== x) { const v = PEOPLE.variants.get(x) || new Set(); v.add(raw); PEOPLE.variants.set(x, v); }
+  }
+  return x;
+}
+const personVariants = p => [...(PEOPLE.variants.get(p) || [])].sort();
+
+// ---------------------------------------------------------------- board
+// A board can hold thousands of tasks: each column shows its first BOARD_PAGE cards (Done: the
+// newest), and "Show N more" adds BOARD_STEP per column — for this visit, until the scope, the
+// person or the search changes.
+const BOARD_PAGE = 30, BOARD_STEP = 100;
+let BOARD_MORE = { key: null, n: {} };
+const COLS = [["ready", N_("Backlog")], ["doing", N_("Doing")], ["review", N_("Review")], ["blocked", N_("Blocked")], ["done", N_("Done")],
+  ["closed", N_("Closed")]];
+const ACTIVE = ["doing", "review", "blocked"];
+let BOARD = {};
+function boardData() {
+  const all = allTasks();
+  if (BOARD.all === all) return BOARD;
+  const people = new Map(), doneAt = new Map();
+  for (const x of all) {
+    const p = personOf(x.owner);
+    if (p) people.set(p, (people.get(p) || 0) + (ACTIVE.includes(x.col) ? 1 : 0));
+  }
+  for (const f of allFeatures()) for (const e of f.trail || [])
+    if (e.type === "task_accepted" || e.type === "task_done_solo") doneAt.set(f.repo + "/" + f.slug + "/" + e.target, e.at || "");
+  // Done, newest first: when the trail at hand says it was finished, else by the feature's last activity
+  const key = x => doneAt.get(x.f.repo + "/" + x.f.slug + "/" + x.id) || "";
+  const done = all.map((x, i) => [x, key(x), x.f.last_activity || "", i]).filter(r => r[0].col === "done")
+    .sort((a, b) => (a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0) || (a[2] < b[2] ? 1 : a[2] > b[2] ? -1 : 0) || b[3] - a[3]).map(r => r[0]);
+  BOARD = { all, people: [...people].sort((a, b) => a[0].localeCompare(b[0])), done, closed: memo().closedTasks };
+  return BOARD;
+}
+function card(c) {
+  const acts = c.col === "closed" ? "" : taskActions(c, c.f.repo, c.f.slug), owner = personOf(c.owner);
+  const who = c.agent && c.col !== "done" && c.col !== "closed"
+    ? `<span class="muted small" title="${esc(t("Suggested for an agent: {why}", { why: (c.model_why || "").startsWith("risky: ") ? t("risky: {what}", { what: c.model_why.slice(7) }) : t(c.model_why || "") }))}">${esc(c.agent === "person" ? t("person") : c.agent + " · " + c.model)}</span>` : "";
+  return `<div class="card ${c.col}" data-item><div class="meta">${repoChip(c.f.repo)}<span class="mono small">${esc(c.id)}</span>${c.col === "todo" ? `<span class="muted small">${esc(t("waiting on deps"))}</span>` : ""}${who}</div>
+    <div class="ti">${inlineMd(c.title)}</div>
+    <div class="mt">${flink(c.f.repo, c.f.slug, c.f.title)} · ${esc(c.estimate)}h${owner ? ` · <span title="${esc(c.owner)}">@${esc(owner)}</span>` : ""}</div>
+    ${c.reason ? `<div class="mt text-bad">${esc(c.reason)}</div>` : ""}
+    ${acts ? `<div class="acts start">${acts}</div>` : ""}</div>`;
+}
+function board() {
+  const B = boardData();
+  const opts = [{ value: "", label: t("Everyone") }, ...B.people.map(([p, n]) => ({ value: p, label: p, hint: t("{n} active", { n }) }))];
+  let person = store.get("person", "");
+  if (!opts.some(o => o.value === person)) person = "";   // stored for another scope: show everyone
+  const collapsed = store.get("boardCollapsed", ["closed"]);  // Closed starts folded: history, not work
+  const qRaw = store.get("board:q", ""), q = qRaw.trim().toLowerCase();
+  const moreKey = [scopeId(), person, q].join("\u0001");
+  if (BOARD_MORE.key !== moreKey) BOARD_MORE = { key: moreKey, n: {} };
+  const more = BOARD_MORE.n;
+  const keep = x => (!person || personOf(x.owner) === person) && (!q || (x.id + " " + x.title + " " + x.f.title + " " + (x.owner || "")).toLowerCase().includes(q));
+  const narrowed = !!(person || q);
+  const tasks = narrowed ? B.all.filter(keep) : B.all;
+  const done = narrowed ? B.done.filter(keep) : B.done;
+  const closed = narrowed ? B.closed.filter(keep) : B.closed;
+  return `<div class="page"><div class="filters">
+      ${UI.select("person", person, opts, v => { store.set("person", v); render(); }, { prefix: t("Person") })}
+      <input class="input" type="search" id="boardq" data-focus="board:q" placeholder="${esc(t("Find a task…"))}" aria-label="${esc(t("Find a task…"))}" value="${esc(qRaw)}" autocomplete="off">
+      <span class="muted small" aria-live="polite">${esc(t("{n} task(s)", { n: tasks.length }))}</span></div>
+    ${!B.all.length && !B.closed.length ? `<p class="muted">${esc(t("No tasks yet — features get tasks at the slice gate."))}</p>` : ""}
+    <div class="kanban">${COLS.map(([k, l]) => {
+      const cards = k === "done" ? done : k === "closed" ? closed : tasks.filter(x => x.col === k || (k === "ready" && x.col === "todo"));
+      if (collapsed.includes(k)) return `<div class="col collapsed"><button type="button" class="col-strip" data-colt="${k}" data-focus="col:${k}" aria-expanded="false"
+          aria-label="${esc(t("Expand {col} ({n})", { col: t(l), n: cards.length }))}" title="${esc(t("Expand {col}", { col: t(l) }))}"><span class="cnt">${cards.length}</span><span class="vl">${esc(t(l))}</span></button></div>`;
+      const limit = Math.max(BOARD_PAGE, more[k] || 0), rest = cards.length - limit;
+      return `<div class="col" data-scroll="col:${k}" data-list="col:${k}" role="region" aria-label="${esc(t(l))}"><h3 data-head><span class="cl">${esc(t(l))}</span><span>${cards.length}</span>
+        <button type="button" class="col-tg" data-colt="${k}" data-focus="col:${k}" aria-expanded="true" aria-label="${esc(t("Collapse {col}", { col: t(l) }))}" title="${esc(t("Collapse {col}", { col: t(l) }))}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 4L6 8l4 4"/></svg></button></h3>
+        ${cards.slice(0, limit).map(card).join("") || `<div class="col-empty">${esc(t("Nothing here"))}</div>`}
+        ${rest > 0 ? `<button type="button" class="btn sm" style="width:100%" data-more="${k}" data-focus="more:${k}">${esc(t("Show {n} more", { n: Math.min(rest, BOARD_STEP) }))}${rest > BOARD_STEP ? ` <span class="muted">· ${esc(t("{n} hidden", { n: rest }))}</span>` : ""}</button>` : ""}</div>`;
+    }).join("")}</div></div>`;
+}
+
+const HRANK = { red: 0, amber: 1, green: 2 };
+const TIER_ORDER = ["lite", "standard", "full"];
+function features() {
+  const rows = allFeatures().slice().sort((a, b) => HRANK[a.health] - HRANK[b.health]);  // unsorted view: riskiest first
+  const tiers = [...new Set(rows.map(f => f.tier))].sort((a, b) => (TIER_ORDER.indexOf(a) + 1 || 9) - (TIER_ORDER.indexOf(b) + 1 || 9));
+  const gates = [...new Set([...rows.flatMap(f => f.gates.map(g => g.name)), "released", "closed"])].filter(g => rows.some(f => f.gate === g));
+  return `<div class="page">${UI.table("features", { rows, placeholder: t("Find a feature…"),
+    search: f => [f.title, f.slug, f.repo].join(" "),
+    filters: [
+      { key: "health", label: t("Health"), options: ["red", "amber", "green"].filter(h => rows.some(f => f.health === h)).map(h => ({ value: h, label: t(HEALTH[h][1]) })), match: (f, v) => f.health === v },
+      { key: "tier", label: t("Tier"), options: tiers.map(x => ({ value: x, label: x })), match: (f, v) => f.tier === v },
+      { key: "gate", label: t("Gate"), options: gates.map(x => ({ value: x, label: t(x) })), match: (f, v) => f.gate === v },
+    ],
+    columns: [
+      { key: "health", label: t("Health"), sortValue: f => HRANK[f.health], render: f => health(f.health) },
+      ...(scopeId() ? [] : [{ key: "repo", label: t("Repository"), sortValue: f => f.repo, render: f => repoChip(f.repo) }]),  // one repository in scope: no need to say it on every row
+      { key: "title", label: t("Feature"), cls: "wrap", sortValue: f => f.title, render: f => flink(f.repo, f.slug, f.title) },
+      { key: "tier", label: t("Tier"), cls: "muted", sortValue: f => TIER_ORDER.indexOf(f.tier), render: f => esc(f.tier) },
+      { key: "gate", label: t("Gate"), sortValue: f => f.gates.filter(g => g.passed).length,
+        render: f => `<span class="steps">${f.gates.map(g => `<i class="${g.passed ? "done" : g.name === f.gate ? "next" : ""}" title="${esc(g.name)}"></i>`).join("")}</span> <span class="small">${esc(t(f.gate))}</span>` },
+      { key: "progress", label: t("Progress"), sortValue: f => f.progress, render: f => `<span class="bar"><i style="width:${f.progress}%"></i></span> <span class="small">${f.progress}%</span>` },
+      { key: "doing", label: t("Doing"), num: true, sortValue: f => f.counts.doing, render: f => f.counts.doing },
+      { key: "review", label: t("Review"), num: true, sortValue: f => f.counts.review, render: f => f.counts.review },
+      { key: "blocked", label: t("Blocked"), num: true, sortValue: f => f.counts.blocked, render: f => f.counts.blocked },
+      { key: "crs", label: t("CRs"), num: true, sortValue: f => f.crs.filter(c => c.status === "pending").length, render: f => f.crs.filter(c => c.status === "pending").length },
+      { key: "defects", label: t("Defects"), num: true, sortValue: f => f.defects.filter(d => d.status === "open").length, render: f => f.defects.filter(d => d.status === "open").length },
+      { key: "activity", label: t("Last activity"), cls: "muted", sortValue: f => f.last_activity || "", render: f => ago(f.last_activity) },
+    ], empty: esc(DASH ? t("No features.") : t("No features. Add a repository under Setup.")) })}</div>`;
+}
+
+const ACTIVE_CHIPS = 5;   // the Active work cell shows this many tasks, then "+N" (all of them on hover)
+function people() {
+  const by = {}, of = p => (by[p] ||= { tasks: [], done7: 0 });
+  const weekAgo = Date.now() - 7 * 864e5;
+  allFeatures().forEach(f => {
+    let owner = null;   // task id → owner, built only for a feature that finished something this week
+    for (const e of f.trail || []) {
+      if ((e.type !== "task_accepted" && e.type !== "task_done_solo") || !(new Date(e.at).getTime() > weekAgo)) continue;
+      owner ||= new Map(f.tasks.map(x => [x.id, x.owner]));
+      const p = personOf(owner.get(e.target)); if (p) of(p).done7++;
+    }
+  });
+  allTasks().forEach(x => { const p = personOf(x.owner); if (p) of(p).tasks.push(x); });
+  const rows = Object.entries(by).sort((a, b) => a[0].localeCompare(b[0])).map(([p, d]) => {
+    const n = { doing: 0, review: 0, blocked: 0 }, active = [];
+    let spent = 0, est = 0, done = 0;
+    for (const x of d.tasks) {
+      if (x.col in n) { n[x.col]++; active.push(x); }
+      else if (x.col === "done" && x.spent != null && x.estimate) { spent += x.spent; est += x.estimate; done++; }
+    }
+    return { p, done7: d.done7, ...n, ratio: done ? spent / est : null, active };
+  });
+  const chip = x => `<span class="nowrap">${repoChip(x.f.repo)} <span class="mono">${esc(x.id)}</span> ${st(x.col)}</span>`;
+  const activeCell = r => !r.active.length ? `<span class="muted">—</span>`
+    : r.active.slice(0, ACTIVE_CHIPS).map(chip).join(" &nbsp; ") + (r.active.length > ACTIVE_CHIPS
+      ? ` &nbsp; <span class="chip" title="${esc(r.active.slice(ACTIVE_CHIPS).map(x => x.f.repo + " " + x.id + " · " + t(x.col)).join("\n"))}">+${r.active.length - ACTIVE_CHIPS}</span>` : "");
+  return `<div class="page"><p class="lead">${esc(t("Who holds what, across every repository."))}</p>
+    ${UI.table("people", { rows, placeholder: t("Find a person…"),
+      search: r => [r.p, ...personVariants(r.p), ...r.active.map(x => x.id + " " + x.f.repo)].join(" "),
+      columns: [
+        { key: "p", label: t("Person"), sortValue: r => r.p, render: r => { const v = personVariants(r.p);
+          return `<b${v.length ? ` title="${esc(t("Also signed as: {names}", { names: v.join(", ") }))}"` : ""}>${esc(r.p)}</b>${v.length ? ` <span class="muted small">+${v.length}</span>` : ""}`; } },
+        { key: "doing", label: t("Doing"), num: true, sortValue: r => r.doing, render: r => r.doing },
+        { key: "review", label: t("In review"), num: true, sortValue: r => r.review, render: r => r.review },
+        { key: "blocked", label: t("Blocked"), num: true, sortValue: r => r.blocked, render: r => r.blocked ? `<span class="text-bad">${r.blocked}</span>` : 0 },
+        { key: "done7", label: t("Done (7d)"), num: true, sortValue: r => r.done7, render: r => r.done7 },
+        { key: "ratio", label: t("Actual ÷ est."), num: true, sortValue: r => r.ratio, render: r => r.ratio == null ? "—" : r.ratio.toFixed(2) + "×" },
+        { key: "active", label: t("Active work"), cls: "wrap", render: activeCell },
+      ], empty: `${esc(t("Nobody has picked up work yet."))} <a class="flink" href="#/pickable">${esc(t("See what is ready to pick up"))}</a>` })}</div>`;
+}
+
+const EV_LABEL = { gate_passed: N_("passed gate"), task_accepted: N_("accepted"), task_rejected: N_("rejected"), task_done_solo: N_("finished solo"),
+  cr_approved: N_("approved CR"), cr_rejected: N_("rejected CR"), uat: N_("UAT"), task_started: N_("started"), task_submitted: N_("submitted"),
+  task_blocked: N_("blocked"), task_unblocked: N_("unblocked"), cr_opened: N_("opened CR"), defect_opened: N_("reported"), proof_run: N_("ran proof"), feature_created: N_("created feature"),
+  feature_closed: N_("closed feature"), feature_reopened: N_("reopened feature") };
+const evLabel = type => EV_LABEL[type] ? t(EV_LABEL[type]) : type;
+const SIG_EVENTS = ["gate_passed", "task_accepted", "task_rejected", "task_done_solo", "cr_approved", "cr_rejected", "uat",
+  "feature_closed", "feature_reopened"];
+// who signed an event, filterable: the options are the people found on the rows
+const whoFilter = rows => ({ key: "who", label: t("Who"), match: (e, v) => personOf(e.by) === v,
+  options: [...new Set(rows.map(e => personOf(e.by)).filter(Boolean))].sort().map(p => ({ value: p, label: p })) });
+// A snapshot has every feature's trail. A live page fetches the signed events — every event under
+// "Everything" — from api/trail, again whenever the portfolio changes.
+const TRAILS = {};  // "signed" | "all" → { p: the P it was loaded for, events: Map "repo/slug" → events, loading, error }
+function trailEvents(all) {
+  if (!LIVE) return allFeatures().flatMap(f => f.trail.map(e => ({ ...e, f }))).sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  const c = (TRAILS[all ? "all" : "signed"] ||= {});
+  // only a success is kept for its portfolio; a failure is tried again after 5 s, 10 s, 20 s … (at most a minute)
+  if (c.p !== P && !c.loading && !(c.error && Date.now() - c.failed < c.wait)) {
+    const p = P, onTrail = () => routeParts()[0] === "trail";
+    c.loading = fetch("api/trail" + (all ? "?all=1" : ""), { cache: "no-cache" })
+      .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(httpError(r, j));
+        Object.assign(c, { events: new Map(j.repos.flatMap(x => x.features.map(f => [x.id + "/" + f.slug, f.trail]))), error: null, tries: 0, p }); })
+      .catch(e => { c.tries = (c.tries || 0) + 1; Object.assign(c, { error: e.message, failed: Date.now(), wait: Math.min(60000, 5000 * 2 ** (c.tries - 1)) });
+        setTimeout(() => { if (onTrail()) requestRender(); }, c.wait + 100); })
+      .finally(() => { c.loading = null; if (onTrail()) requestRender(); });
+  }
+  if (!c.events) return null;
+  if (c.view?.p !== c.p || c.view.feats !== allFeatures()) {  // events by feature, built once per load and scope
+    c.view = { p: c.p, feats: allFeatures(), rows: allFeatures().flatMap(f => (c.events.get(f.repo + "/" + f.slug) || []).map(e => ({ ...e, f }))).sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0)) };
+  }
+  return c.view.rows;
+}
+// R and the retry buttons: anything that failed to load is asked for again now.
+function retryFailed() {
+  for (const k in TRAILS) if (TRAILS[k].error) TRAILS[k].failed = 0;
+  for (const k in CORE) if (CORE[k].failed) CORE[k].failed = 0;
+  for (const k in FDETAIL) if (FDETAIL[k].error) FDETAIL[k].failed = 0;
+  for (const k in RDETAIL) if (RDETAIL[k].error) delete RDETAIL[k];
+}
+function trail() {
+  const all = UI.tableState("trail").f.mode === "all", got = trailEvents(all), failed = LIVE && TRAILS[all ? "all" : "signed"].error;
+  const ev = got || [];
+  return `<div class="page">${failed && !got ? `<div class="callout">${esc(t("Could not load the trail: {msg}", { msg: failed }))}
+      <button type="button" class="btn sm" data-retry>${esc(t("Try again"))}</button></div>` : ""}
+    ${UI.table("trail", { rows: ev, placeholder: t("Find an event…"),
+    search: e => [e.by, evLabel(e.type), e.target, e.f.repo, e.f.title, e.f.slug, e.note].join(" "),
+    filters: [
+      { key: "mode", label: t("Show"), all: false, default: "signatures", match: (e, v) => v === "all" || SIG_EVENTS.includes(e.type),
+        options: [{ value: "signatures", label: t("Signatures") }, { value: "all", label: t("Everything") }] },
+      whoFilter(ev),
+    ],
+    columns: [
+      { key: "at", label: t("When"), cls: "muted", sortValue: e => e.at, render: e => `<span title="${when(e.at)}">${ago(e.at)}</span>` },
+      { key: "by", label: t("Who"), sortValue: e => e.by, render: e => `<b>${esc(e.by)}</b>` },
+      { key: "what", label: t("What"), sortValue: e => evLabel(e.type),
+        render: e => `${esc(evLabel(e.type))} <span class="mono">${esc(e.type === "feature_closed" ? t(e.target) : e.target)}</span>${e.type === "task_done_solo" ? ` ${st("warn", t("no review"))}` : ""}` },
+      ...(scopeId() ? [] : [{ key: "repo", label: t("Repository"), sortValue: e => e.f.repo, render: e => repoChip(e.f.repo) }]),  // one repository in scope: no need to say it on every row
+      { key: "feature", label: t("Feature"), sortValue: e => e.f.title, render: e => flink(e.f.repo, e.f.slug, e.f.title) },
+      { key: "note", label: t("Note"), cls: "muted wrap note", render: e => inlineMd(e.note) },
+    ], empty: esc(got ? t("No events yet.") : failed ? t("The trail could not be loaded.") : t("Loading…")) })}</div>`;
+}
+
+function repos() {
+  return `<div class="page"><p class="lead">${tHtml("Repositories with {egd} (or ai-dlc {aidlc}, read-only).", { egd: `<span class="mono">.egd/</span>`, aidlc: `<span class="mono">.ai/features/</span>` })}
+      ${esc(t("Registry:"))} <span class="mono">${esc(P.config)}</span>${P.roots.length ? ` · ${esc(t("scanned roots:"))} <span class="mono">${P.roots.map(esc).join(", ")}</span>` : ""}</p>
+    ${UI.table("repos", { rows: P.repos, placeholder: t("Find a repository…"),
+      search: r => [r.id, r.path, r.signer, r.branch, r.source].join(" "),
+      tools: `<button class="btn primary" id="addrepo" ${P.readonly ? "disabled" : ""}>${esc(t("Add repository…"))}</button>`,
+      columns: [
+        { key: "id", label: t("Repository"), sortValue: r => r.id, render: r => `<a class="flink" href="#/r/${encodeURIComponent(r.id)}" data-focus="${esc("repo:" + r.id)}"><b>${esc(r.id)}</b></a>${r.error ? ` ${st("bad", t("error"))}` : ""}` },
+        { key: "source", label: t("Source"), sortValue: r => r.readonly ? r.source || "other" : "egd", render: r => r.readonly ? st("info", t("{source} · read-only", { source: r.source || t("other") })) : st("ok", "egd") },
+        { key: "signer", label: t("Signs as"), sortValue: r => r.readonly ? "" : r.signer || "", render: r => `<span class="namecell" data-signercell="${esc(r.path)}">${r.readonly ? `<span class="muted">—</span>` : `<b>${esc(r.signer || "—")}</b>${r.signer_own ? "" : ` <span class="muted small">${esc(t("default"))}</span>`}
+        ${r.signer_in_team === false ? st("warn", t("not in team.toml")) : ""}
+        ${DASH || P.readonly ? "" : `<button class="btn ghost sm icon-sm" data-signer="${esc(r.path)}" data-focus="${esc("signer:" + r.path)}" title="${esc(t("Change who signs here"))}" aria-label="${esc(t("Change who signs in {repo}", { repo: r.id }))}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg></button>`}`}</span>` },
+        { key: "branch", label: t("Branch"), cls: "mono", sortValue: r => r.branch || "", render: r => `<span class="cut" title="${esc(r.branch || "")}">${esc(r.branch || "—")}</span>` },
+        { key: "features", label: t("Features"), num: true, sortValue: r => r.features.length, render: r => r.features.length },
+        { key: "map", label: t("Map"), sortValue: r => r.map_signed ? 1 : 0, render: r => r.map_signed ? st("ok", t("signed")) : st("warn", t("unsigned")) },
+        { key: "trail", label: t("Trail"), sortValue: r => r.uncommitted || 0, render: r => r.uncommitted ? st("warn", t("{n} uncommitted", { n: r.uncommitted })) : st("ok", t("clean")) },
+        { key: "team", label: t("Team"), num: true, sortValue: r => (r.team || []).length, render: r => (r.team || []).length || "—" },
+        { key: "path", label: t("Path"), cls: "mono muted path-cell", sortValue: r => r.path, render: r => `<span title="${esc(r.path)}">${esc(r.path)}</span>` },
+        { key: "acts", label: "", cls: "ta-r", render: r => r.pinned ? `<button class="btn sm" data-remove="${esc(r.path)}" data-focus="${esc("rm:" + r.path)}" aria-label="${esc(t("Remove") + " " + r.id)}" ${P.readonly ? "disabled" : ""}>${esc(t("Remove"))}</button>` : `<span class="muted small" title="${esc(t("Found by scanning a root folder; remove the root to hide it"))}">${esc(t("via scan"))}</span>` },
+      ], empty: `${esc(t("No repositories yet — add one above, or run"))} <span class="mono">egd console add &lt;path&gt;</span>.` })}</div>`;
+}
+
+// ---------------------------------------------------------------- repository detail
+// What sets one repository apart: its config.toml, team.toml and map.md, how Claude Code is wired
+// in, and its features. The files come from /api/repo when this page opens.
+const RTABS = [["overview", N_("Overview")], ["config", N_("Configuration")], ["team", N_("Team")], ["map", N_("Map")]];
+// rid → { data } | { error, failed } | { loading }. Emptied whenever the portfolio changes or an
+// action ran; an error is asked again after 5 s while the page shows it.
+const RDETAIL = {};
+const clearRepoDetail = () => { for (const k in RDETAIL) if (!RDETAIL[k].loading) delete RDETAIL[k]; };
+async function loadRepoDetail(rid) {
+  if (!LIVE || RDETAIL[rid]?.loading) return;
+  const cur = (RDETAIL[rid] = { ...(RDETAIL[rid] || {}), loading: true });
+  let next;
+  try {
+    const r = await fetch("api/repo?repo=" + encodeURIComponent(rid), { cache: "no-store" });
+    const j = await r.json().catch(() => ({}));
+    next = r.ok ? { data: j } : { error: httpError(r, j), failed: Date.now() };
+  } catch (e) { next = { error: e.message, failed: Date.now() }; }
+  if (RDETAIL[rid] === cur) RDETAIL[rid] = next; else delete RDETAIL[rid];  // cleared meanwhile: ask again on the next render
+  const onIt = () => { const p = routeParts(); return p[0] === "r" && p[1] === rid && !p[3]; };
+  if (onIt()) requestRender();
+  if (next.error) setTimeout(() => { if (onIt()) requestRender(); }, 5100);
+}
+
+const kv = rows => `<dl class="kv">${rows.filter(Boolean).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`;
+const chips = xs => (xs || []).length ? xs.map(x => `<span class="chip">${esc(x)}</span>`).join(" ") : `<span class="muted">—</span>`;
+const ACTIONS = [["work", N_("Work tasks"), N_("Work")], ["review", N_("Accept / reject tasks"), N_("Review")], ["gate", N_("Pass gates"), N_("Gates")],
+  ["uat", N_("UAT & accept gate"), N_("UAT")], ["cr_approve", N_("Approve change requests"), N_("CRs")]];
+
+function repoPage(rid, tab) {
+  const r = P.repos.find(x => x.id === rid);
+  if (!r) return `<div class="page"><p>${esc(t("Repository not found."))} <a class="slug" href="#/repos">${esc(t("All repositories"))}</a></p></div>`;
+  tab = RTABS.some(([k]) => k === tab) ? tab : "overview";
+  const det = RDETAIL[rid];
+  if (LIVE && (!det || (det.error && Date.now() - det.failed >= 5000))) loadRepoDetail(rid);
+  const d = det?.data;
+  const head = `<div class="page"><div class="fhead"><h2>${esc(r.id)}</h2>${r.readonly ? st("info", t("{source} · read-only", { source: r.source || t("other") })) : st("ok", "egd")}
+      <span class="muted mono small">${esc(r.branch || "")}</span></div>
+    <p class="lead mono small">${esc(r.path)}</p>
+    <div class="tabs scroll-x" data-cue>${RTABS.map(([k, l]) => `<a class="${k === tab ? "on" : ""}"${k === tab ? ` aria-current="page"` : ""} href="#/r/${encodeURIComponent(rid)}/${k}">${esc(t(l))}</a>`).join("")}</div>`;
+  const wait = !LIVE ? `<div class="callout">${esc(t("Repository files are shown in the live console."))}</div>`
+    : det?.error ? `<div class="callout">${esc(t("Could not read the repository: {msg}", { msg: det.error }))} <button type="button" class="btn sm" data-retry>${esc(t("Try again"))}</button></div>`
+    : `<p class="muted">${esc(t("Loading…"))}</p>`;
+  const body = { overview: () => repoOverview(r, d), config: () => d ? repoConfig(r, d) : wait, team: () => repoTeam(r, d), map: () => d ? repoMap(r, d) : wait }[tab]();
+  return head + body + `</div>`;
+}
+
+function repoOverview(r, d) {
+  const tasks = r.features.flatMap(f => f.tasks);
+  const decide = r.inbox.filter(i => i.severity === "decide").length;
+  const edit = DASH || P.readonly || r.readonly ? "" : ` <button class="btn ghost sm icon-sm" data-signer="${esc(r.path)}" title="${esc(t("Change who signs here"))}" aria-label="${esc(t("Change who signs in {repo}", { repo: r.id }))}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z"/></svg></button>`;
+  const none = `<span class="muted" title="${esc(t("Repository files are shown in the live console."))}">—</span>`;
+  const gitState = !d ? (LIVE ? "…" : none) : !d.egd ? `<span class="muted">—</span>` : d.git.egd_tracked ? st("ok", t("committed — shared with the team"))
+    : d.git.egd_ignored ? st("info", t("gitignored — kept on this machine")) : st("warn", t("not committed yet"));
+  const metrics = [[t("Features"), r.features.length], [t("In flight"), tasks.filter(x => ["doing", "review"].includes(x.col)).length],
+    [t("Ready to pick"), tasks.filter(x => x.col === "ready").length], [t("Decisions waiting"), decide], [t("Team"), (r.team || []).length || "—"]];
+  return `<div class="panel metrics">${metrics.map(([l, v]) => `<div class="metric"><div class="muted small">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("")}</div>
+    <h2>${esc(t("Characteristics"))}</h2><div class="panel pad">${kv([
+      [t("Source"), r.readonly ? esc(t("planned with {source}, shown read-only", { source: r.source || t("another tool") })) : esc(t("EGD"))],
+      [t("Branch"), `<span class="mono">${esc(r.branch || "—")}</span>`],
+      !r.readonly && [t("Signs as"), `<b>${esc(r.signer || "—")}</b>${r.signer_own ? "" : ` <span class="muted small">${esc(t("default"))}</span>`}${r.signer_in_team === false ? " " + st("warn", t("not in team.toml")) : ""}${edit}`],
+      [t("Repository map"), r.map_signed ? st("ok", t("signed")) : st("warn", t("unsigned"))],
+      [t(".egd/ in git"), gitState],
+      !r.readonly && [t("Trail"), r.uncommitted ? st("warn", t("{n} uncommitted", { n: r.uncommitted })) : st("ok", t("clean"))],
+      [t("Claude Code plugin"), !d ? (LIVE ? "…" : none) : d.claude.plugin ? st("ok", t("enabled")) : `${st("neutral", t("not enabled"))} <span class="mono small muted">egd setup --claude</span>`],
+      d && [t("Project skills"), chips(d.claude.skills)],
+      d && d.egd && [t("Test command"), d.proof.test_command ? `<span class="mono">${esc(d.proof.test_command)}</span>` : `<span class="muted">${esc(t("not set — task tests are not run on submit"))}</span>`],
+      d && d.egd && [t("Environments"), d.env.length ? chips(d.env.map(e => e.name)) : `<span class="muted">${esc(t("none — proofs have nowhere to run"))}</span>`],
+      d && d.egd && [t("Report language"), esc(d.report.lang || "en")],
+    ])}</div>
+    <h2>${esc(t("Features"))}</h2>
+    ${UI.table("rfeat:" + r.id, { rows: r.features, placeholder: t("Find a feature…"), search: f => [f.title, f.slug, f.gate].join(" "),
+      columns: [
+        { key: "health", label: t("Health"), sortValue: f => HRANK[f.health], render: f => health(f.health) },
+        { key: "title", label: t("Feature"), cls: "wrap", sortValue: f => f.title, render: f => flink(r.id, f.slug, f.title) },
+        { key: "gate", label: t("Gate"), sortValue: f => f.gates.filter(g => g.passed).length, render: f => `<span class="steps">${f.gates.map(g => `<i class="${g.passed ? "done" : g.name === f.gate ? "next" : ""}" title="${esc(g.name)}"></i>`).join("")}</span> <span class="small">${esc(t(f.gate))}</span>` },
+        { key: "tasks", label: t("Tasks"), num: true, sortValue: f => f.tasks.length, render: f => `${f.tasks.filter(x => x.status === "done").length}/${f.tasks.length}` },
+        { key: "progress", label: t("Progress"), sortValue: f => f.progress, render: f => `<span class="bar"><i style="width:${f.progress}%"></i></span> <span class="small">${f.progress}%</span>` },
+      ], empty: r.readonly ? esc(t("No features yet.")) : `${esc(t("No features yet — start one with"))} <span class="mono">egd new &lt;name&gt;</span>` })}`;
+}
+
+function repoConfig(r, d) {
+  const raw = (name, text) => text ? `<details class="raw" data-keep="${esc("raw:" + r.id + "/" + name)}" ${store.get("raw:" + r.id + "/" + name, false) ? "open" : ""}><summary>${esc(t("Show {file}", { file: name }))}</summary><pre class="map" tabindex="0">${esc(text)}</pre></details>` : "";
+  if (!d.egd) return `<p class="lead">${esc(t("This repository is planned with ai-dlc; EGD only reads it."))}</p>${raw(".ai/aidlc.yaml", d.files.aidlc_config) || `<p class="muted">—</p>`}`;
+  const tbl = (head, rows, empty) => `<div class="panel tablewrap"><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${head.length}" class="empty">${esc(empty)}</td></tr>`}</tbody></table></div>`;
+  return `<p class="lead">${tHtml("From {file} — committed, so the whole team works by the same rules.", { file: `<span class="mono">.egd/config.toml</span>` })}</p>
+    <h2>${esc(t("Limits & proof"))}</h2><div class="panel pad">${kv([
+      [t("Largest task"), esc(t("{n} hours", { n: d.limits.task_hours }))],
+      [t("Longest chain in a slice"), esc(t("{n} hours", { n: d.limits.slice_hours }))],
+      [t("Test command"), d.proof.test_command ? `<span class="mono">${esc(d.proof.test_command)}</span>` : `<span class="muted">${esc(t("not set"))}</span>`],
+      [t("Test timeout"), esc(t("{n} s", { n: d.proof.timeout }))],
+      [t("Report language"), esc(d.report.lang || "en")],
+      d.github.repo && [t("GitHub issues"), `<span class="mono">${esc(d.github.repo)}</span>`],
+      d.ui.python && [t("Playwright Python"), `<span class="mono">${esc(d.ui.python)}</span>`],
+    ])}</div>
+    <h2>${esc(t("Shipping"))}</h2><div class="panel pad">${kv([
+      [t("PR base branch"), d.pr.base ? `<span class="mono">${esc(d.pr.base)}</span>` : `<span class="muted">${esc(t("the default branch"))}</span>`],
+      [t("PR title"), d.pr.title ? `<span class="mono">${esc(d.pr.title)}</span>` : `<span class="muted">${esc(t("follows recent PRs"))}</span>`],
+      d.pr.ticket && [t("Ticket in branch names"), `<span class="mono">${esc(d.pr.ticket)}</span>`],
+      [t("Review standards"), (d.review.standards || []).length ? (d.review.standards || []).map(x => /^https?:\/\//.test(x)
+        ? `<a class="mono small" href="${esc(x)}" target="_blank" rel="noopener noreferrer">${esc(x)}</a>` : `<span class="mono">${esc(x)}</span>`).join("<br>")
+        : `<span class="muted">${esc(t("not set — reviews use the map's conventions only"))}</span>`],
+    ])}</div>
+    <h2>${esc(t("Environments"))}</h2>${tbl([t("Name"), t("Base URL"), t("Gates build"), t("Access")], d.env.map(e => `<tr><td class="mono">${esc(e.name)}</td><td class="mono wrap">${esc(e.base_url || "—")}</td><td>${e.required ? st("ok", t("required")) : st("neutral", t("optional"))}</td><td>${e.readonly ? st("info", t("read-only")) : st("neutral", t("read-write"))}</td></tr>`), t("No environments — add [env.<name>] to config.toml."))}
+    ${d.secrets.length ? `<h2>${esc(t("Secrets the config expects"))}</h2><p class="muted small">${tHtml("Values live in {file} or the environment and never leave this machine; only whether each is set is shown.", { file: `<span class="mono">.egd/secrets.env</span>` })}</p>
+      ${tbl([t("Name"), t("Status")], d.secrets.map(x => `<tr><td class="mono">${esc(x.name)}</td><td>${x.set ? st("ok", t("set")) : st("bad", t("missing"))}</td></tr>`), "")}` : ""}
+    <h2>${esc(t("Who may sign what"))}</h2>${tbl([t("Action"), t("Roles")], ACTIONS.map(([k, l]) => `<tr><td>${esc(t(l))}</td><td>${k === "work" && !(d.roles.work || []).length ? `<span class="muted">${esc(t("any team member"))}</span>` : chips(d.roles[k])}</td></tr>`), "")}
+    ${raw(".egd/config.toml", d.files.config)}`;
+}
+
+function repoTeam(r, d) {
+  const roles = d?.roles || {};
+  const may = (m, k) => { const allowed = roles[k] || []; return !allowed.length || allowed.some(x => (m.roles || []).includes(x)); };
+  const team = r.team || [];
+  if (!team.length) return `<p class="lead">${tHtml("No {file} — anyone may sign anything; the trail still records who did.", { file: `<span class="mono">.egd/team.toml</span>` })}</p>`;
+  return `<p class="lead">${tHtml("From {file}. Roles decide what each person may sign.", { file: `<span class="mono">.egd/team.toml</span>` })}</p>
+    <div class="panel tablewrap"><table><thead><tr><th>${esc(t("Member"))}</th><th>${esc(t("Also known as"))}</th><th>${esc(t("Roles"))}</th>
+      ${d ? ACTIONS.map(([, l, short]) => `<th class="ta-c" title="${esc(t(l))}">${esc(t(short))}</th>`).join("") : ""}</tr></thead><tbody>
+      ${team.map(m => `<tr><td><b>${esc(m.name)}</b>${m.name === r.signer ? ` ${st("info", t("signs here"))}` : ""}</td><td class="muted small">${(m.aliases || []).map(esc).join(", ") || "—"}</td><td>${chips(m.roles)}</td>
+        ${d ? ACTIONS.map(([k]) => `<td class="ta-c">${may(m, k) ? `<span class="text-ok">✓</span>` : `<span class="muted">·</span>`}</td>`).join("") : ""}</tr>`).join("")}
+    </tbody></table></div>
+    ${d?.files.team ? `<details class="raw" data-keep="${esc("raw:" + r.id + "/team")}" ${store.get("raw:" + r.id + "/team", false) ? "open" : ""}><summary>${esc(t("Show {file}", { file: ".egd/team.toml" }))}</summary><pre class="map">${esc(d.files.team)}</pre></details>` : ""}`;
+}
+
+function repoMap(r, d) {
+  const text = d.egd ? d.files.map : d.files.aidlc_map;
+  if (!text.trim()) return `<p class="muted">${esc(t("No map yet."))}</p>`;
+  // who signed, as the server reads it (the gate's rule); on that one line only, never the next
+  const signer = "signer" in d ? d.signer : (/^(?:reviewed_by|verified_by):[ \t]*(.*)$/mi.exec(text) || [])[1]?.trim();
+  // images in a map point into the repository, which this page does not serve: their alt text stays
+  const body = text.replace(/^(?:reviewed_by|verified_by):.*$/mi, "").replace(/^!\[([^\]]*)\]\([^)]*\)\s*$/gm, (_, alt) => alt ? `*${alt}*` : "");
+  return `<div class="fhead">${signer ? st("ok", t("signed by {who}", { who: signer })) : st("warn", t("unsigned"))}
+      <span class="mono small muted">${esc(d.egd ? ".egd/map.md" : ".ai/architecture.md")}</span><span class="spacer"></span>
+      ${!signer && d.egd ? actBtn({ action: "sign_map", label: "Read & sign", primary: true }, { repo: r.id }, "sm") : ""}</div>
+    <div class="panel md doc">${renderMarkdown(body)}</div>`;
+}
+
+const FTABS = [["plan", N_("Plan")], ["gates", N_("Gates")], ["evidence", N_("Evidence")], ["scope", N_("Scope & quality")], ["trail", N_("Trail")]];
+function feature(rid, slug, tab) {
+  const r = P.repos.find(x => x.id === rid); const s = r?.features.find(x => x.slug === slug);
+  if (!s) return `<div class="page"><p>${esc(t("Feature not found."))} <a class="slug" href="#/features">${esc(t("All features"))}</a></p></div>`;
+  const full = pageFeature(rid, slug), f = full || s;  // the header needs only the summary
+  tab = FTABS.some(([k]) => k === tab) ? tab : "plan";
+  const gateItem = r.inbox.find(i => i.kind === "gate" && i.slug === slug);
+  const head = `<div class="page"><div class="fhead"><a class="chip" href="#/r/${encodeURIComponent(rid)}" title="${esc(t("Repository"))}">${esc(rid)}</a>${r.readonly ? `<span class="chip">${esc(t("{source} · read-only", { source: r.source || t("other") }))}</span>` : ""}<h2>${inlineMd(f.title)}</h2>${health(f.health)}
+      <span class="muted">${esc(f.tier)} · ${esc(t("{n}% of estimate", { n: f.progress }))}${f.client ? " · " + esc(t("client {name}", { name: f.client })) : ""}</span>
+      ${f.gate !== "closed" && f.gate !== "released" && r.source !== "ai-dlc" ? `<span style="margin-left:auto">${actBtn({ action: "close", label: "Close feature", needs: ["outcome", "closing"] }, { repo: rid, slug }, "sm")}</span>` : ""}</div>
+    <div class="gates">${f.gates.map(g => `<span class="gate ${g.passed ? "done" : g.name === f.gate ? "next" : ""}" title="${g.passed ? esc(t("passed by {who}", { who: g.by }) + " · ") + when(g.at) : ""}">${g.passed ? "✓ " : ""}${esc(g.name)}</span>`).join("")}</div>
+    ${f.gate === "closed" && f.closed ? `<div class="callout">${tHtml("Closed as {outcome} by {who}, {when}", { outcome: `<b>${esc(t(f.closed.outcome))}</b>`, who: esc(f.closed.by || ""), when: esc(when(f.closed.at)) })} — ${inlineMd(f.closed.reason || "")}${(f.closed.open_tasks || []).length ? `<div class="muted small">${esc(t("Left undone: {ids}", { ids: f.closed.open_tasks.join(", ") }))}</div>` : ""} ${actBtn({ action: "reopen_feature", label: "Reopen", needs: ["note"] }, { repo: rid, slug }, "sm")}</div>`
+      : f.gate === "released" ? "" : r.source === "ai-dlc" ? `<div class="callout">${tHtml("Next: {gate}", { gate: `<b>${esc(f.gate)}</b>` })} · ${esc(trServer(f.next_problems[0] || ""))}</div>` : gateItem ? `<div class="callout ready">${tHtml("{gate} is open.", { gate: `<b>${esc(f.gate)}</b>` })} ${repoRO(rid) ? `<span class="muted">${esc(t("Pass it with"))} <span class="mono">egd pass ${esc(f.gate)}</span>.</span>` : actBtn(gateItem.actions[0], { repo: rid, slug })}</div>`
+      : `<div class="callout">${tHtml("{gate} is closed:", { gate: `<b>${esc(f.gate)}</b>` })}<ul>${f.next_problems.map(p => `<li>${esc(trServer(p))}${p.startsWith("release.md: '## Rollback'") && !repoRO(rid) ? " " + actBtn({ action: "rollback", label: "Write rollback", needs: ["rollback"], primary: true }, { repo: rid, slug }, "sm") : ""}</li>`).join("")}</ul></div>`}
+    <div class="tabs scroll-x" data-cue>${FTABS.map(([k, l]) => `<a class="${k === tab ? "on" : ""}"${k === tab ? ` aria-current="page"` : ""} href="#/r/${encodeURIComponent(rid)}/f/${encodeURIComponent(slug)}/${k}">${esc(t(l))}</a>`).join("")}</div>`;
+  const body = { plan: fPlan, gates: fGates, evidence: fEvidence, scope: fScope, trail: fTrail }[tab];
+  if (full) return head + body(full, rid) + "</div>";
+  const err = FDETAIL[rid + "/" + slug]?.error;
+  return head + (err ? `<div class="callout">${esc(t("Could not load this feature: {msg}", { msg: err }))}</div>`
+    : `<p class="muted">${esc(t("Loading…"))}</p>`) + "</div>";
+}
+
+function fPlan(f, rid) {
+  const sliceOf = id => f.slices.find(s => s.id === id);
+  const cols = [...new Set(f.tasks.map(x => x.col))];
+  const owners = [...new Set(f.tasks.map(x => x.owner).filter(Boolean))].sort();
+  const tasks = UI.table(`ftasks:${rid}/${f.slug}`, { rows: f.tasks, placeholder: t("Find a task…"),
+    search: x => [x.id, x.title, x.slice, sliceOf(x.slice)?.title, x.owner, x.col].join(" "),
+    filters: [
+      { key: "slice", label: t("Slice"), options: f.slices.map(s => ({ value: s.id, label: s.id + " · " + s.title })), match: (x, v) => x.slice === v },
+      { key: "status", label: t("Status"), options: COLS.map(c => c[0]).concat("todo").filter(c => cols.includes(c)).map(c => ({ value: c, label: c === "todo" ? t("waiting") : t(c) })), match: (x, v) => x.col === v },
+      { key: "owner", label: t("Owner"), options: owners.map(o => ({ value: o, label: "@" + o })), match: (x, v) => x.owner === v },
+    ],
+    columns: [
+      { key: "id", label: t("Task"), cls: "mono", sortValue: x => x.id, render: x => esc(x.id) },
+      { key: "title", label: t("Title"), cls: "wrap", sortValue: x => x.title,
+        render: x => `${inlineMd(x.title)}${x.solo ? " " + st("warn", t("solo")) : ""}${x.rejects ? ` <span class="muted small">${esc(t("{n}× sent back", { n: x.rejects }))}</span>` : ""}` },
+      { key: "slice", label: t("Slice"), cls: "mono muted", sortValue: x => x.slice, render: x => `<span title="${esc(sliceOf(x.slice)?.title || "")}">${esc(x.slice)}</span>` },
+      { key: "status", label: t("Status"), sortValue: x => ["todo", "ready", "doing", "review", "blocked", "done"].indexOf(x.col),
+        render: x => st(x.col, x.col === "todo" ? t("waiting") : undefined) },
+      { key: "owner", label: t("Owner"), cls: "muted", sortValue: x => x.owner || "", render: x => x.owner ? "@" + esc(x.owner) : "" },
+      { key: "est", label: t("Est."), num: true, cls: "small", sortValue: x => x.estimate, render: x => `${esc(x.estimate)}h${x.spent != null ? " / " + esc(x.spent) + "h" : ""}` },
+      { key: "acts", label: "", cls: "ta-r", render: x => taskActions(x, rid, f.slug) },
+    ], empty: esc(t("Not sliced yet.")) });
+  const buildPassed = f.gates.every(g => g.name !== "build" || g.passed);  // UAT follows `build` when the tier has it
+  const slices = f.slices.map(s => { const ts = f.tasks.filter(t => t.slice === s.id); const done = ts.filter(t => t.status === "done").length;
+    const uatDue = buildPassed && done === ts.length && !s.uat?.passed;
+    const key = `acc:${rid}/${f.slug}/${s.id}`;
+    return `<details class="acc" ${store.get(key, false) ? "open" : ""} data-keep="${esc(key)}"><summary><span class="mono">${esc(s.id)}</span><span><b>${inlineMd(s.title)}</b> <span class="muted small">${esc(t("covers {list}", { list: s.covers.join(", ") }))}</span></span>
+      <span class="small muted">${esc(t("{a}/{b} done", { a: done, b: ts.length }))}</span>${s.uat ? st(s.uat.passed ? "ok" : "bad", s.uat.passed ? t("UAT passed") : t("UAT failed")) : st("neutral", t("No UAT"))}
+      ${uatDue ? actBtn({ action: "uat", target: s.id }, { repo: rid, slug: f.slug }, "sm") : ""}</summary>
+      ${s.demo ? `<div class="demo"><div class="muted small">${esc(t("Demo script"))}</div>${demoHtml(s.demo)}</div>` : `<div class="demo muted small">${esc(t("No demo script."))}</div>`}</details>`; }).join("");
+  return tasks + (slices ? `<h2>${esc(t("Slices"))}</h2><div class="panel">${slices}</div>` : "");
+}
+
+// The rules EGD enforces, per language (the guide and each feature's Gates tab). A snapshot carries
+// them as P.core / P.core_vi; a live page fetches them once per language and draws again when they
+// arrive. undefined while loading, null when they cannot be had.
+const CORE = {};  // lang → { data, loading, failed }
+function coreFor(lang) {
+  if (P.core) return (lang === "vi" && P.core_vi) || P.core;
+  if (!LIVE) return null;
+  const c = (CORE[lang] ||= {});
+  if (c.data) return c.data;
+  if (!c.loading && !(c.failed && Date.now() - c.failed < 5000))
+    c.loading = fetch("api/core?" + new URLSearchParams({ lang }), { cache: "no-cache" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)))
+      .then(j => { c.data = j; c.failed = 0; }, () => { c.failed = Date.now(); })
+      .finally(() => { c.loading = null; if (getLang() === lang) requestRender(); });
+  return c.loading ? undefined : null;
+}
+
+// One card per gate, in EGD order: what it proves, its rules for this tier, and its check run now.
+function fGates(f, rid) {
+  const r = P.repos.find(x => x.id === rid);
+  const C0 = coreFor(getLang()), C = C0 || null;
+  // the rules in words arrive from api/core: say so while they load, and offer a retry if they could not
+  const rulesNote = C0 === undefined ? `<p class="muted small" aria-busy="true">${esc(t("Loading the rules…"))}</p>`
+    : !C0 && LIVE ? `<div class="callout">${esc(t("Could not load the rules."))} <button type="button" class="btn sm" data-retry>${esc(t("Try again"))}</button></div>` : "";
+  const checks = f.gate_checks;
+  const passedLine = g => g.passed ? `${st("ok", t("passed"))}${g.by || g.at ? ` <span class="muted small">${esc(t("by {who}", { who: g.by || "—" }))}${g.at ? ` · <span title="${when(g.at)}">${esc(ago(g.at))}</span>` : ""}</span>` : ""}` : "";
+  const pill = (g, inTier) => !inTier ? `<span class="chip">${esc(t("not in {tier}", { tier: f.tier }))}</span>`
+    : g.passed ? passedLine(g) : g.name === f.gate ? st("info", t("next")) : st("neutral", t("later"));
+  if (!checks) {  // read-only import from another tool: it has its own gates and runs its own checks
+    return `<p class="muted small">${esc(t("These gates belong to the other tool — its checks run there, not in EGD."))}</p>
+      <div class="fgates">${f.gates.map((g, i) => `<section class="panel fgate ${g.passed ? "done" : g.name === f.gate ? "next" : ""}">
+        <div class="fgh"><span class="gi">${i + 1}</span><b>${esc(g.name)}</b>${pill(g, true)}</div>
+        ${g.passed ? "" : `<div class="muted small">${esc(t("Checks run in the other tool."))}</div>`}</section>`).join("")}</div>`;
+  }
+  const mine = Object.fromEntries(f.gates.map(g => [g.name, g]));
+  const order = C ? C.gates.map(g => g.name) : f.gates.map(g => g.name);
+  const info = Object.fromEntries((C ? C.gates : []).map(g => [g.name, g]));
+  const gateItem = r && r.inbox.find(i => i.kind === "gate" && i.slug === f.slug);
+  return `<p class="lead">${esc(t("Every gate of this feature, checked now — independently of order. A passed gate stays passed in the trail; the check shows whether its rules still hold."))}</p>
+    ${rulesNote}<div class="fgates">${order.map((name, i) => {
+      const g = mine[name], inTier = !!g, gi = info[name] || {};
+      const problems = inTier ? (checks[name] || []) : [];
+      const isNext = inTier && name === f.gate;
+      const rules = (gi.rules || []).filter(x => x.tiers.includes(f.tier));
+      let check = "";
+      if (inTier) {
+        if (!problems.length) {
+          check = `<div class="gcheck ok">✓ ${esc(t("All rules hold now"))}</div>`;
+          if (isNext) check += repoRO(rid) ? `<div class="muted small">${esc(t("Pass it with"))} <span class="mono">egd pass ${esc(name)}</span></div>`
+            : gateItem ? `<div class="acts start">${actBtn(gateItem.actions[0], { repo: rid, slug: f.slug })}</div>` : "";
+        } else {
+          check = `${g.passed ? `<div class="gwarn">⚠ ${esc(t("Passed, but no longer holds now — something changed after it passed (for example the scope)."))}</div>` : ""}
+            <div class="gcheck ${g.passed || isNext ? "bad" : "wait"}">${esc(isNext ? t("Closed because:") : g.passed ? t("Fails now:") : t("Not yet:"))}
+              <ul>${problems.map(p => `<li>${esc(trServer(p))}</li>`).join("")}</ul></div>`;
+        }
+      }
+      return `<section class="panel fgate ${!inTier ? "skipped" : g.passed ? (problems.length ? "drift" : "done") : isNext ? "next" : ""}">
+        <div class="fgh"><span class="gi">${i + 1}</span><b>${esc(name)}</b>${pill(g || { name }, inTier)}
+          ${gi.signs && inTier ? `<span class="fgs muted small">${esc(t("Signed by"))} ${gi.signs.map(x => `<span class="chip">${esc(x)}</span>`).join(" ")}</span>` : ""}</div>
+        ${gi.proves ? `<div class="gp">${esc(gi.proves)}</div>` : ""}
+        ${inTier ? `<div class="fgb"><div><div class="fgk">${esc(t("Rules"))}</div>
+            ${rules.length ? `<ul class="rules">${rules.map(x => `<li>• ${inlineMd(x.text)}</li>`).join("")}</ul>` : `<div class="muted small">—</div>`}
+            ${gi.records ? `<div class="grec">${esc(gi.records)}</div>` : ""}</div>
+          <div><div class="fgk">${esc(t("Current check"))}</div>${check}</div></div>`
+        : `<div class="muted small">${esc(t("Skipped in the {tier} tier.", { tier: f.tier }))}</div>`}
+      </section>`;
+    }).join("")}</div>`;
+}
+
+const fileUrl = (rid, slug, rel) => `files/${encodeURIComponent(rid)}/${encodeURIComponent(slug)}/${rel.split("/").map(encodeURIComponent).join("/")}`;
+function fEvidence(f, rid) {
+  const evs = [...new Set(f.acs.map(a => a.evidence))].sort();
+  return `${UI.table(`facs:${rid}/${f.slug}`, { rows: f.acs, placeholder: t("Find a criterion…"),
+    search: a => [a.id, a.title, a.given, a.when, a.then, ...(a.levels || [])].join(" "),
+    filters: [{ key: "evidence", label: t("Evidence"), options: evs.map(v => ({ value: v, label: v })), match: (a, v) => a.evidence === v }],
+    columns: [
+      { key: "id", label: t("AC"), cls: "mono", sortValue: a => a.id, render: a => esc(a.id) },
+      { key: "then", label: t("Then"), cls: "wrap", sortValue: a => a.then, render: a => `${a.title ? `<div class="ac-title">${inlineMd(a.title)}</div>` : ""}${inlineMd(a.then)}<div class="muted small">${esc(t("given {given} · when {when}", { given: "\u0001", when: "\u0002" })).replace("\u0001", () => inlineMd(a.given)).replace("\u0002", () => inlineMd(a.when))}</div>` },
+      { key: "levels", label: t("Levels"), cls: "muted", sortValue: a => (a.levels || []).join(", "), render: a => (a.levels || []).map(esc).join(", ") },
+      { key: "evidence", label: t("Evidence"), sortValue: a => a.evidence, render: a => st(a.evidence) },
+    ], empty: esc(t("No acceptance criteria.")) })}<h2>${esc(t("Proofs"))}</h2>
+    <div class="panel tablewrap"><table><thead><tr>${[t("Proof"), t("Kind"), t("Env"), t("Status"), t("When"), t("Commit")].map(h => `<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>
+    ${f.proofs.flatMap(p => p.runs.map(run => `<tr><td><span class="mono">${esc(p.id)}</span> ${esc(p.title)}</td><td class="muted">${esc(p.kind)}</td>
+      <td>${esc(run.env)}${run.required ? "" : ` <span class="muted small">${esc(t("optional"))}</span>`}</td><td>${st(run.stale ? "stale" : run.status)} <span class="muted small">${esc(run.reason || "")}</span></td>
+      <td class="muted">${ago(run.at)}</td><td class="mono muted">${esc(run.sha || "")}</td>
+      <td>${run.transcript && P.evidence !== false ? `<button class="btn ghost sm" data-transcript="${esc(run.transcript)}" data-repo="${esc(rid)}" data-slug="${esc(f.slug)}" data-focus="${esc("tr:" + run.transcript)}" aria-label="${esc(t("transcript") + " " + p.id + " · " + run.env)}">${esc(t("transcript"))}</button>` : ""}</td></tr>
+      ${(run.shots || []).length && P.evidence !== false ? `<tr><td colspan="7" class="p-0"><div class="shots">${run.shots.map(s => { const u = esc(fileUrl(rid, f.slug, s)), name = s.split("/").pop();
+        return `<button type="button" data-full="${u}" data-focus="${esc("shot:" + s)}" data-name="${esc(name)}" title="${esc(name)}" aria-label="${esc(t("Screenshot") + " " + name)}" style="padding:0;border:0;background:none;display:block;width:100%;cursor:zoom-in"><img loading="lazy" src="${u}" alt="${esc(name)}"></button>`; }).join("")}</div></td></tr>` : ""}`)).join("")
+      || `<tr><td colspan="7" class="empty">${esc(t("No proofs declared."))}</td></tr>`}</tbody></table></div>`;
+}
+
+function fScope(f, rid) {
+  const ctx = { repo: rid, slug: f.slug };
+  const tbl = (head, rows, empty) => `<div class="panel tablewrap"><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${head.length}" class="empty">${esc(empty)}</td></tr>`}</tbody></table></div>`;
+  return `<h2>${esc(t("Change requests"))}</h2>${tbl([t("CR"), t("Change"), t("Hours"), t("Status"), ""], f.crs.map(c => `<tr><td class="mono">${esc(c.id)}</td><td class="wrap">${inlineMd(c.title)}<div class="muted small">${inlineMd(c.reason)}</div></td><td class="num">${esc(c.hours)}</td><td>${st(c.status)}</td>
+      <td class="ta-r">${c.status === "pending" ? actBtn({ action: "cr_approve", label: "Approve", target: c.id, primary: true }, ctx, "sm") + " " + actBtn({ action: "cr_reject", label: "Reject", target: c.id, needs: ["note"] }, ctx, "sm") : ""}</td></tr>`), t("No change requests."))}
+    <h2>${esc(t("Assumptions"))}</h2>${tbl([t("Id"), t("Assumption"), t("Blocking"), t("Status"), t("Resolution"), ""], f.assumptions.map(a => `<tr><td class="mono">${esc(a.id)}</td><td class="wrap">${inlineMd(a.text)}</td><td>${a.blocking ? st("warn", t("blocking")) : ""}</td><td>${st(a.status || "open")}</td><td class="wrap muted small">${inlineMd(a.resolution || "")}</td>
+      <td class="ta-r">${(a.status || "open") === "open" ? actBtn({ action: "resolve", label: "Confirm", target: a.id, needs: ["resolution"], primary: true }, ctx, "sm") + " " + actBtn({ action: "reject_assumption", label: "Reject", target: a.id, needs: ["resolution"] }, ctx, "sm") : ""}</td></tr>`), t("No assumptions."))}
+    <h2>${esc(t("Defects"))}</h2>${tbl([t("Id"), t("Defect"), t("Severity"), t("Found in"), t("Status")], f.defects.map(d => `<tr><td class="mono">${esc(d.id)}</td><td class="wrap">${inlineMd(d.title)}</td><td>${st(d.severity)}</td><td class="muted">${esc(d.found_in)}</td><td>${st(d.status)}</td></tr>`), t("No defects."))}
+    <h2>${esc(t("Decisions"))}</h2>${tbl([t("Id"), t("Decision"), t("Status"), t("Choice")], f.decisions.map(d => `<tr><td class="mono">${esc(d.id)}</td><td class="wrap">${inlineMd(d.title)}</td><td>${st(d.status || "proposed")}</td><td class="wrap muted">${inlineMd(d.choice || "")}</td></tr>`), t("No decisions."))}
+    <h2>${esc(t("Metrics"))}</h2><div class="panel metrics">
+      ${[[t("Actual ÷ estimate"), f.metrics.estimate_ratio != null ? f.metrics.estimate_ratio + "×" : "—"], [t("Review wait"), f.metrics.review_wait_avg_h != null ? f.metrics.review_wait_avg_h + "h" : "—"],
+        [t("Rework"), f.metrics.rejections], [t("Solo"), f.metrics.solo_bypasses], [t("Scope growth"), f.metrics.scope_growth_pct + "%"], [t("Defect leakage"), f.metrics.leakage_pct + "%"]]
+        .map(([l, v]) => `<div class="metric"><div class="muted small">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("")}</div>`;
+}
+
+function fTrail(f, rid) {
+  const ev = f.trail.slice().reverse();
+  const types = [...new Set(ev.map(e => e.type))].sort();
+  return UI.table(`ftrail:${rid}/${f.slug}`, { rows: ev, placeholder: t("Find an event…"),
+    search: e => [e.by, evLabel(e.type), e.type, e.target, e.note].join(" "),
+    filters: [whoFilter(ev), { key: "type", label: t("Event"), options: types.map(x => ({ value: x, label: evLabel(x) })).sort((a, b) => a.label.localeCompare(b.label)), match: (e, v) => e.type === v }],
+    columns: [
+      { key: "at", label: t("When"), cls: "muted", sortValue: e => e.at, render: e => `<span title="${when(e.at)}">${ago(e.at)}</span>` },
+      { key: "by", label: t("Who"), sortValue: e => e.by, render: e => `<b>${esc(e.by)}</b>` },
+      { key: "type", label: t("Event"), sortValue: e => evLabel(e.type), render: e => `<span title="${esc(e.type)}">${esc(evLabel(e.type))}</span>` },
+      { key: "target", label: t("Target"), cls: "mono", sortValue: e => e.target, render: e => esc(e.target) },
+      { key: "note", label: t("Note"), cls: "muted wrap note", render: e => inlineMd(e.note) },
+    ], empty: esc(t("No events yet.")) });
+}
+
+// ---------------------------------------------------------------- transcripts
+async function openTranscript(rid, slug, rel) {
+  const url = fileUrl(rid, slug, rel), base = url.split("/").slice(0, -1).join("/");
+  const still = loadingDialog(true);
+  let html;
+  try { const r = await fetch(url); if (!r.ok) throw new Error(httpError(r));
+    html = `<h3 class="sr">${esc(t("Transcript"))}</h3><div class="foot mt-0"><button class="btn" data-close>${esc(t("Close"))}</button></div><div class="md">${renderMarkdown(await r.text(), base)}</div>`;
+  } catch (e) { html = `<p>${esc(t("Transcript not available ({msg}).", { msg: e.message }))}</p><div class="foot"><button class="btn" data-close>${esc(t("Close"))}</button></div>`; }
+  if (still()) openDialog(html, true);  // not over a dialog opened while it loaded
+}
+
+// ---------------------------------------------------------------- palette
+function palette() {
+  const items = [
+    ...P.repos.map(r => ({ kind: t("repo"), label: r.id, sub: r.path, href: "#/r/" + encodeURIComponent(r.id) })),
+    ...allFeatures().map(f => ({ kind: t("feature"), label: f.title, sub: f.repo + " · " + f.slug, href: `#/r/${encodeURIComponent(f.repo)}/f/${encodeURIComponent(f.slug)}` })),
+    ...allTasks().map(x => ({ kind: x.id, label: x.title, sub: x.f.repo + " · " + x.f.title + " · " + t(x.col),
+      href: `#/r/${encodeURIComponent(x.f.repo)}/f/${encodeURIComponent(x.f.slug)}/plan`,
+      pre: () => UI.tableSet(`ftasks:${x.f.repo}/${x.f.slug}`, { q: x.id }, true) })),
+  ];
+  // a combobox: focus stays in the field, aria-activedescendant names the highlighted result, and a
+  // polite status line says how many there are
+  const name = t("Search repositories, features, tasks…");
+  openDialog(`<div class="palette"><input class="input" id="pq" role="combobox" aria-expanded="true" aria-controls="pres" aria-autocomplete="list"
+      placeholder="${esc(name)}" aria-label="${esc(name)}" autocomplete="off">
+    <div class="res" id="pres" role="listbox" aria-label="${esc(t("Results"))}"></div><div class="sr" id="pcount" role="status" aria-live="polite"></div></div>`);
+  let sel = 0, hits = [], said = null, sayTimer = null;
+  const pick = () => {
+    $("#pres").querySelectorAll('[role="option"]').forEach((o, i) => { o.classList.toggle("sel", i === sel); o.setAttribute("aria-selected", String(i === sel)); });
+    const o = document.getElementById("popt-" + sel);
+    if (o) { $("#pq").setAttribute("aria-activedescendant", o.id); o.scrollIntoView({ block: "nearest" }); } else $("#pq").removeAttribute("aria-activedescendant");
+  };
+  const draw = () => {
+    const q = $("#pq").value.toLowerCase().trim();
+    const all = items.filter(it => !q || (it.kind + " " + it.label + " " + it.sub).toLowerCase().includes(q));
+    hits = all.slice(0, 40);
+    sel = Math.min(sel, Math.max(hits.length - 1, 0));
+    $("#pres").innerHTML = hits.map((h, i) => `<a href="${esc(h.href)}" role="option" id="popt-${i}" tabindex="-1" aria-selected="false"><span class="mono small muted pk">${esc(h.kind)}</span><span class="pt"><span class="pl">${esc(h.label)}</span><span class="ps muted small" title="${esc(h.sub)}">${esc(h.sub)}</span></span></a>`).join("")
+      || `<div class="empty" role="presentation">${esc(t("No matches"))}</div>`;
+    pick();
+    // announced once typing pauses, so each keystroke does not interrupt the last
+    const say = !all.length ? t("No matches") : all.length > hits.length ? t("{n} results, first {shown} shown", { n: all.length, shown: hits.length }) : t("{n} results", { n: all.length });
+    clearTimeout(sayTimer);
+    if (say !== said) sayTimer = setTimeout(() => { const c = $("#pcount"); if (c) c.textContent = said = say; }, 350);
+  };
+  $("#pq").oninput = () => { sel = 0; draw(); };
+  $("#pq").onkeydown = e => {
+    if (e.key === "ArrowDown") { sel = Math.min(sel + 1, hits.length - 1); pick(); e.preventDefault(); }
+    if (e.key === "ArrowUp") { sel = Math.max(sel - 1, 0); pick(); e.preventDefault(); }
+    if (e.key === "Enter" && hits[sel]) { hits[sel].pre?.(); location.hash = hits[sel].href; closeDialog(); }
+  };
+  $("#pres").onclick = e => { const o = e.target.closest?.('[role="option"]'); if (o) hits[+o.id.slice(5)]?.pre?.(); closeDialog(); };
+  draw();
+}
+$("#search").onclick = palette;
+$("#search-sm").onclick = palette;
+document.addEventListener("keydown", e => {
+  if (e.isComposing || e.keyCode === 229) return;   // an IME (Vietnamese Telex…) is composing: its keys are not ours
+  const el = document.activeElement, dialog = $("#dialog").classList.contains("on");
+  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(el?.tagName) || el?.isContentEditable;
+  const mod = e.metaKey || e.ctrlKey || e.altKey;
+  if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    if (!dialog) palette(); else $("#pq")?.focus();   // never over a dialog that may hold typed text
+  }
+  else if (typing || dialog || menuState || mod) return;
+  else if (e.key === "/") { e.preventDefault(); palette(); }
+  else if (e.key === "r") refresh();
+});
+// The inbox sections are tabs: a click, Enter or Space shows one; arrow keys, Home and End move
+// along them and show the one they land on, as in the guide. Focus follows to the new tab.
+function inboxTab(k) {
+  store.set("inboxTab", k); render();
+  document.getElementById("itab-" + k)?.focus();
+}
+document.addEventListener("keydown", e => {
+  const tab = e.target.closest?.('[role="tablist"] > [role="tab"][data-tab]'); if (!tab) return;
+  const all = [...tab.parentElement.querySelectorAll('[role="tab"][data-tab]')], i = all.indexOf(tab);
+  const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: all.length - 1 }[e.key];
+  if (to == null) return;
+  e.preventDefault(); inboxTab(all[(to + all.length) % all.length].dataset.tab);
+});
+
+// ---------------------------------------------------------------- shell
+const TITLES = { inbox: N_("Inbox"), pickable: N_("Pickable"), board: N_("Board"), features: N_("Features"), people: N_("People"), trail: N_("Approval trail"), repos: N_("Repositories"), core: N_("How EGD works") };
+const VIEWS = { inbox, pickable, board, features, people, trail, repos, core: guide };
+// a malformed escape (a hand-typed "%") keeps its raw text instead of throwing
+const routeParts = () => (location.hash.replace(/^#\/?/, "") || "inbox").split("/").map(x => { try { return decodeURIComponent(x); } catch (e) { return x; } });
+const notFound = () => `<div class="page"><div class="panel empty"><p>${tHtml("There is no page at {path}.", { path: `<code>${esc(location.hash || "#/")}</code>` })}</p>
+  <a class="btn primary" href="#/inbox">${esc(t("Go to inbox"))}</a></div></div>`;
+// Only rewrite a header control when its markup changed: rebuilding it would drop keyboard focus.
+const setHtml = (el, html) => { if (el && el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; } };
+// A page whose content is one table (or the board) fits the screen: the title, filters, tabs, the
+// table's header and its pager stay put, and only the rows scroll. A page with more than that —
+// two tables, text after the table — scrolls as a whole, and so does a phone's.
+function fitScreen() {
+  const main = $("#main"); if (!main) return;
+  const tables = main.querySelectorAll(".tbl-scroll"), board = main.querySelector(".kanban");
+  // the board fits on any screen; a table only on a wide one, with rows to show, starting high on the page
+  const one = tables.length === 1 ? tables[0] : null;
+  const top = el => el.getBoundingClientRect().top - main.getBoundingClientRect().top;
+  const target = board || (one && !small(860) && !one.querySelector("td.empty")
+                           && top(one) < main.clientHeight * 0.45 ? one : null);
+  main.querySelectorAll(".tbl-fill").forEach(r => r.remove());
+  main.querySelectorAll(".tbl-scroll, .kanban").forEach(el => { el.style.maxHeight = ""; el.style.height = ""; });
+  main.classList.toggle("fit", !!target);
+  if (!target) return;
+  main.scrollTop = 0;
+  const gap = 16, room = Math.max(220, Math.floor(main.getBoundingClientRect().bottom - target.getBoundingClientRect().top - gap));
+  target.style.height = room + "px"; target.style.maxHeight = "none";  // the stylesheet's guess no longer applies
+  // a short table still fills the screen: an empty row takes up the rest, so the pager sits at the bottom
+  const table = !board && target.querySelector("table"), body = table && table.tBodies[0];
+  const spare = table ? target.clientHeight - table.offsetHeight : 0;
+  if (body && spare > 0) {
+    const row = body.insertRow(); row.className = "tbl-fill"; row.setAttribute("aria-hidden", "true");
+    const cell = row.insertCell(); cell.colSpan = table.rows[0]?.cells.length || 1; cell.style.height = spare + "px";
+  }
+  if (main.scrollHeight > main.clientHeight + 1) {  // something below the table: let the page scroll instead
+    main.querySelectorAll(".tbl-fill").forEach(r => r.remove());
+    target.style.height = ""; target.style.maxHeight = "";
+    main.classList.remove("fit");
+  }
+}
+window.addEventListener("resize", () => fitScreen());
+let NAV_FOCUS = false;
+document.addEventListener("click", e => { if (e.target.closest?.("#nav a")) NAV_FOCUS = true; });
+document.addEventListener("click", e => {
+  if (e.target.id !== "skip") return;
+  const m = $("#main"), first = m.querySelector("input, button, a[href], select, textarea, [tabindex]:not([tabindex='-1'])");
+  (first || $("#title")).focus();
+});
+function render() {
+  if (!P) { $("#main").innerHTML = `<div class="page"><p class="muted">${esc(t("Waiting for egd console… retrying."))}</p></div>`; return; }
+  UI.tables = {}; UI.specs = {};   // what this render draws registers itself again; the rest is let go
+  const parts = routeParts();
+  let html, route = parts[0], ctx = null, title;
+  if (route === "r" && parts[1] && parts[2] === "f" && parts[3]) { html = feature(parts[1], parts[3], parts[4]); route = "features"; title = t("Feature"); ctx = parts[1]; }
+  else if (route === "r" && parts[1] && parts[2] !== "f") { html = repoPage(parts[1], parts[2]); route = "repos"; title = t("Repository"); ctx = parts[1]; }
+  else if (VIEWS[route] && !parts.slice(1).some(Boolean)) { html = VIEWS[route](); title = t(TITLES[route]); }
+  else { html = notFound(); route = null; title = t("Page not found"); }
+  $("#title").textContent = title;
+  if (!DASH) document.title = `${title} · EGD Console`;
+  if (NAV_FOCUS) { NAV_FOCUS = false; $("#title").focus({ preventScroll: true }); }   // a new page is announced by its title
+  const exact = !ctx;
+  document.querySelectorAll("#nav a").forEach(a => { const on = a.dataset.r === route; a.classList.toggle("on", on);
+    if (on) a.setAttribute("aria-current", exact ? "page" : "true"); else a.removeAttribute("aria-current"); });
+  // the server could not read its own settings file: say so above every page
+  if (P.error) html = `<div class="page"><div class="callout" role="alert"><b>${esc(t("The console cannot read its settings"))}</b>
+    <div class="small">${esc(P.error)}</div></div></div>` + html;
+  UI.swap($("#main"), html);  // keeps focus, caret and table/column scroll across re-renders
+  fitScreen();
+  // shell counts and scope
+  // the badge counts what you can do: an item whose every action needs another role is not yours
+  const decide = memo().actionable.filter(i => i.severity === "decide" && (!(i.actions || []).length
+    || i.actions.some(a => canDo({ ...a, repo: i.repo })))).length;
+  $("#c-inbox").textContent = decide || ""; $("#c-inbox").classList.toggle("hot", decide > 0);
+  $("#c-pick").textContent = memo().pickable.length || "";
+  $("#c-feat").textContent = allFeatures().length || ""; if (!DASH) $("#c-repo").textContent = P.repos.length || "";
+  if (DASH && P.repos[0]) document.title = t("{repo} · EGD dashboard", { repo: P.repos[0].id });
+  const scope = scopeId(), phone = small(860);
+  if (!DASH) setHtml($("#scope"), UI.select("scope", scope, [
+    { value: "", label: phone ? t("All") : t("All repositories"), hint: t("{n} features", { n: P.repos.reduce((a, r) => a + r.features.length, 0) }) },
+    ...P.repos.map((r, i) => ({ value: r.id, label: r.id, sep: i === 0,
+      hint: `${r.features.length === 1 ? t("1 feature") : t("{n} features", { n: r.features.length })}${r.readonly ? " · " + (r.source || t("read-only")) : ""}` }))],
+    v => { store.set("scope", v); render(); }, { prefix: phone ? "" : t("Repository"), label: t("Repository") }));
+  if (!DASH) {
+    // on a repository's own pages, or with one repository in scope, its signer is the one that counts
+    const here = (ctx && repoById(ctx)) || (scope && repoById(scope)) || null;
+    const others = P.repos.filter(r => r.signer_own).length;
+    const who = here ? (here.readonly ? "" : here.signer) : P.user;
+    setHtml($("#me"), here && here.readonly
+      ? `<span class="muted">${esc(t("{repo} is read-only here", { repo: here.id }))}</span>`
+      : who
+      ? `${tHtml("Signing as {who}", { who: `<b>${esc(who)}</b>` })}${here ? ` <span class="muted">${esc(t("in {repo}", { repo: here.id }))}</span>` : others ? `<br><span class="muted">${esc(t("{n} repo(s) sign under their own name", { n: others }))}</span>` : ""}${P.readonly ? " · " + esc(t("read-only")) : ""}`
+      : `<span class="text-warn">${esc(t("No name set"))}</span><br><span class="mono">egd console --user &lt;name&gt;</span>`);
+  }
+  setHtml($("#langsel"), UI.select("lang", getLang(), Object.entries(LANGS).map(([v, l]) => ({ value: v, label: l })),
+    v => { store.set("lang", v); return needLang(v).then(render); }, { prefix: "🌐", label: t("Language") }));
+  $("#searchkbd").textContent = KEY_K;
+  $("#search").title = t("Search ({key})", { key: KEY_K });
+  $("#nav").classList.toggle("scroll-x", phone);   // a phone shows the nav as one sideways row
+  if (phone) $("#nav a.on")?.scrollIntoView({ inline: "nearest", block: "nearest" });  // and keeps the current page in view
+  applyStaticI18n();
+  statusbar();
+  wire();
+}
+function statusbar() {
+  if (!P) return;
+  const fresh = Date.now() - lastOk < 30000;
+  const repos = memo().repos, dirty = repos.filter(r => r.uncommitted).length;   // the scope, like everything else here
+  const flight = allTasks().filter(t => ["doing", "review"].includes(t.col)).length;
+  const state = LIVE ? `<span class="${fresh ? "live" : "stale"}">${esc(fresh ? t("Live") : t("Reconnecting"))}</span>` : `<span>${esc(t("Snapshot"))}</span>`;
+  const html = small(640)   // a phone: the state, what is in flight, and a warning sign when a trail is uncommitted
+    ? `${state}<span>${esc(t("{n} in flight", { n: flight }))}</span>${dirty ? `<span class="warnline" title="${esc(t("{n} repo(s) with uncommitted trail", { n: dirty }))}">⚠ ${dirty}</span>` : ""}`
+    : `${state}
+    <span>${DASH ? esc(P.repos[0]?.id || "") : esc(repos.length === 1 ? t("1 repo") : t("{n} repos", { n: repos.length }))} · ${esc(t("{n} features", { n: allFeatures().length }))} · ${esc(t("{n} in flight", { n: flight }))}</span>
+    <span>${LIVE ? esc(t("refreshed {time}", { time: new Date(lastOk).toLocaleTimeString(getLang()) })) : tHtml("generated {time}", { time: when(P.generated) })}</span>
+    ${dirty ? `<span class="warnline">⚠ ${esc(t("{n} repo(s) with uncommitted trail", { n: dirty }))}</span>` : ""}
+    <span class="spacer"></span><span class="keys">${esc(t("{key} search", { key: KEY_K }))}${LIVE ? " · " + esc(t("R refresh")) : ""} · ${esc(t("Esc close"))}</span>`;
+  setHtml($("#status"), html);
+}
+// A box that scrolls sideways fades at the edge where more is hidden. ui.css does it for .scroll-x
+// where the browser has scroll-driven animations; elsewhere this does it.
+const CSS_CUE = CSS.supports?.("animation-timeline: scroll()");
+function scrollCue(el) {
+  const draw = () => {
+    if (CSS_CUE && el.classList.contains("scroll-x")) { el.style.maskImage = el.style.webkitMaskImage = ""; return; }
+    const more = el.scrollWidth - el.clientWidth > 1, l = more && el.scrollLeft > 1, r = more && el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+    const m = l || r ? `linear-gradient(to right, ${l ? "transparent, #000 28px" : "#000"}, ${r ? "#000 calc(100% - 28px), transparent" : "#000"})` : "";
+    el.style.maskImage = el.style.webkitMaskImage = m;
+  };
+  if (!el.dataset.cueOn) { el.dataset.cueOn = "1"; el.addEventListener("scroll", draw, { passive: true }); }
+  draw();
+}
+function wire() {
+  // open/closed sections are remembered while open (as the time they were opened, for pruning); a closed one leaves nothing behind
+  document.querySelectorAll("details[data-keep]").forEach(d => d.ontoggle = () => d.open ? store.set(d.dataset.keep, Date.now()) : storeDel(d.dataset.keep));
+  const add = $("#addrepo"); if (add) add.onclick = () => folderPicker(store.get("browseAt", ""));
+  document.querySelectorAll("[data-signer]").forEach(b => b.onclick = () => signerDialog(b.dataset.signer));
+  document.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => removeDialog(b.dataset.remove));
+  [$("#nav"), ...document.querySelectorAll("#main [data-cue]")].forEach(el => el && scrollCue(el));
+}
+// the board's search: debounced like the tables' own, and kept across visits
+let boardTimer = null;
+document.addEventListener("input", e => {
+  if (e.target.id !== "boardq") return;
+  clearTimeout(boardTimer);
+  boardTimer = setTimeout(() => { store.set("board:q", e.target.value); render(); }, 140);
+});
+// ---------------------------------------------------------------- repository dialogs
+function signerDialog(path) {
+  const repo = P.repos.find(r => r.path === path); if (!repo) return;
+  const seen = new Set();  // people only: an agent never signs through the console
+  const names = (repo.team || []).filter(m => (m.roles || []).some(r => r !== "agent"))
+    .flatMap(m => [m.name, ...(m.aliases || [])]).filter(n => n && !seen.has(n.toLowerCase()) && seen.add(n.toLowerCase()));
+  openDialog(`<form id="signerform">
+      <h3>${esc(t("Who signs in {repo}", { repo: repo.id }))}</h3>
+      <p class="muted small lead-sm">${esc(t("Every action you take in this repository is recorded on its trail under this name."))}</p>
+      <label for="signername">${esc(t("Sign as"))}</label>
+      <input class="input" id="signername" maxlength="60" value="${esc(repo.signer_own ? repo.signer : "")}"
+        placeholder="${esc(t("{name} (default)", { name: P.user || t("your name") }))}" autocomplete="off">
+      ${names.length ? `<div class="suggest">${names.map(n => `<button type="button" class="btn ghost sm" data-pick="${esc(n)}">${esc(n)}</button>`).join("")}</div>` : ""}
+      <p class="muted small">${P.user ? tHtml("Leave it empty to use the default ({name}).", { name: `<b>${esc(P.user)}</b>` }) : esc(t("Leave it empty to use the default."))}
+        ${esc(names.length ? t("Names from this repository's team.toml are suggested above.") : t("This repository has no team.toml yet — any name may sign."))}</p>
+      <div class="foot"><button type="button" class="btn" data-close>${esc(t("Cancel"))}</button><button type="submit" class="btn primary">${esc(t("Save"))}</button></div>
+    </form>`);
+  const input = $("#signername"); input.select();
+  $("#dialog").querySelectorAll("[data-pick]").forEach(p => p.onclick = () => { input.value = p.dataset.pick; input.focus(); });
+  $("#signerform").onsubmit = async e => {
+    e.preventDefault();
+    const btn = e.submitter || $("#signerform button[type=submit]");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    let res;
+    try { res = await post("api/repos", { op: "signer", path, name: input.value }); }
+    catch (err) { toast(netErr(err), true); return; }
+    finally { btn.disabled = false; }
+    const { r, j } = res;
+    if (!r.ok) return toast(trServer(j.error) || t("Could not save"), true);
+    closeDialog();
+    toast(j.name ? t("{repo}: signing as {name}", { repo: repo.id, name: j.name }) : t("{repo}: back to the default name", { repo: repo.id })); await afterChange();
+    const now = P.repos.find(r => r.path === path);
+    if (now && now.signer_in_team === false) toast(t("{name} is not in {repo}'s team.toml — actions will be refused until it is added", { name: now.signer, repo: repo.id }), true);
+  };
+}
+
+function removeDialog(path) {
+  const repo = P.repos.find(r => r.path === path); if (!repo) return;
+  openDialog(`<h3>${esc(t("Remove {repo} from the console?", { repo: repo.id }))}</h3>
+    <p class="muted">${esc(t("It stops appearing in the inbox, board and features. Nothing in the repository changes — its plans, trail and files stay as they are, and you can add it again any time."))}</p>
+    <p class="mono small muted">${esc(repo.path)}</p>
+    <div class="foot"><button class="btn" data-close>${esc(t("Cancel"))}</button><button class="btn danger" id="removego">${esc(t("Remove"))}</button></div>`);
+  const go = $("#removego");
+  go.onclick = async () => { go.disabled = true; if (await repoOp("remove", path)) closeDialog(); else go.disabled = false; };
+}
+
+// ---------------------------------------------------------------- folder picker
+const KIND_LABEL = { egd: ["ok", N_("EGD repo")], "ai-dlc": ["info", N_("ai-dlc · read-only")], git: ["neutral", "git"] };
+const kindPill = k => k && KIND_LABEL[k] ? `<span class="st ${KIND_LABEL[k][0]}">${esc(t(KIND_LABEL[k][1]))}</span>` : "";
+async function getJSON(url) {
+  let r = await fetch(url, { headers: { "X-EGD-CSRF": BOOT.csrf }, cache: "no-store" });
+  if (r.status === 403) { try { Object.assign(BOOT, await (await fetch("api/boot")).json()); } catch (e) {}
+    r = await fetch(url, { headers: { "X-EGD-CSRF": BOOT.csrf }, cache: "no-store" }); }
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(httpError(r, j)); return j;
+}
+// Opens on the path field; moving between folders keeps focus in the folder list (never on an Add).
+async function folderPicker(path, nav = false) {
+  let d;
+  try { d = await getJSON("api/browse?path=" + encodeURIComponent(path || "")); }
+  catch (e) { if (path) return folderPicker("", nav); return toast(e.message, true); }
+  store.set("browseAt", d.path);
+  const crumbs = [];
+  if (d.path) { const root = d.roots.find(r => d.path === r || d.path.startsWith(r + "/")) || "";
+    let acc = root; crumbs.push([root, root]);
+    d.path.slice(root.length).split("/").filter(Boolean).forEach(part => { acc += "/" + part; crumbs.push([part, acc]); }); }
+  const canAdd = d.kind === "egd" || d.kind === "ai-dlc";
+  openDialog(`<h3>${esc(t("Add a repository"))}</h3>
+    <div class="muted small lead-sm">${tHtml("Pick a folder that holds {egd} or {aidlc}.", { egd: `<span class="mono">.egd/</span>`, aidlc: `<span class="mono">.ai/features/</span>` })}</div>
+    <div class="crumbs"><button class="btn ghost sm" data-browse="">${esc(t("Roots"))}</button>
+      ${crumbs.map(([n, p]) => ` <span class="muted">/</span> <button class="btn ghost sm" data-browse="${esc(p)}">${esc(n)}</button>`).join("")}</div>
+    ${d.path ? `<div class="callout picker-here ${canAdd ? "ready" : ""}">
+        <span class="mono small ellipsis minw0">${esc(d.path)}</span>${kindPill(d.kind)}
+        ${d.registered ? st("ok", t("added")) : canAdd ? `<button class="btn primary sm" data-addpath="${esc(d.path)}">${esc(t("Add this folder"))}</button>`
+          : d.kind === "git" ? `<button class="btn primary sm" data-setup="${esc(d.path)}">${esc(t("Set up EGD here"))}</button>` : ""}
+        <button class="btn sm" id="scanhere">${esc(t("Find repositories here"))}</button></div>` : ""}
+    <div id="setuppanel"></div>
+    <div class="panel picker-list" id="folderlist">
+      ${d.parent ? `<div class="row" data-row><div><button type="button" class="btn ghost sm" data-browse="${esc(d.parent)}" aria-label="${esc(t("Up one folder"))}">↰ ..</button></div><div></div></div>` : ""}
+      ${d.entries.map(e => `<div class="row" data-row>
+          <div class="minw0"><button type="button" class="btn ghost sm" data-browse="${esc(e.path)}" style="max-width:100%"><span aria-hidden="true">📁</span> <span class="ellipsis">${esc(e.name)}</span></button> ${kindPill(e.kind)}</div>
+          <div class="acts">${e.registered ? st("ok", t("added")) : (e.kind === "egd" || e.kind === "ai-dlc") ? `<button class="btn sm primary" data-addpath="${esc(e.path)}" aria-label="${esc(t("Add") + " " + e.name)}">${esc(t("Add"))}</button>`
+            : e.kind === "git" ? `<button class="btn sm" data-setup="${esc(e.path)}" aria-label="${esc(t("Set up EGD") + " · " + e.name)}">${esc(t("Set up EGD"))}</button>` : ""}</div></div>`).join("")
+        || `<div class="empty">${esc(t("No sub-folders."))}</div>`}
+      ${d.truncated ? `<div class="empty">${esc(t("Showing the first 500 folders."))}</div>` : ""}
+    </div>
+    <div id="scanres"></div>
+    <label for="manualpath">${esc(t("Or paste a path"))}</label>
+    <div class="field"><input class="input" type="text" id="manualpath" placeholder="${esc(t("/path/to/repository"))}" value="${esc(d.path)}"><button class="btn" id="manualadd">${esc(t("Add"))}</button></div>
+    <div class="foot"><span class="why">${esc(t("Browsing is limited to: {roots}", { roots: d.roots.join(", ") }))}</span><button class="btn" data-close>${esc(t("Done"))}</button></div>`, true,
+    nav ? "#folderlist [data-browse]" : null);
+  // each folder name is a button (keyboard); a click anywhere else on its row opens it too
+  $("#dialog").querySelectorAll("[data-browse]").forEach(el => el.onclick = ev => { ev.stopPropagation(); folderPicker(el.dataset.browse, true); });
+  $("#dialog").querySelectorAll("[data-row]").forEach(row => row.onclick = ev => { if (!ev.target.closest("button")) row.querySelector("[data-browse]")?.click(); });
+  $("#dialog").querySelectorAll("[data-addpath]").forEach(b => b.onclick = async ev => {
+    ev.stopPropagation(); b.disabled = true;
+    if (await repoOp("add", b.dataset.addpath)) folderPicker(d.path, true); else b.disabled = false; });
+  $("#dialog").querySelectorAll("[data-setup]").forEach(b => b.onclick = ev => { ev.stopPropagation(); setupPanel(b.dataset.setup, d.path); });
+  const manual = $("#manualadd");
+  manual.onclick = async () => {
+    const path = $("#manualpath").value;
+    manual.disabled = true;
+    const res = await repoOp("add", path);
+    manual.disabled = false; refocus(manual);
+    if (res === "setup") return setupPanel(path, d.path);
+    if (res) folderPicker(d.path);
+  };
+  const scanBtn = $("#scanhere");
+  if (scanBtn) scanBtn.onclick = async () => {
+    scanBtn.disabled = true; scanBtn.textContent = t("Searching…");
+    try {
+      const s = await getJSON("api/browse/scan?path=" + encodeURIComponent(d.path));
+      $("#scanres").innerHTML = `<h2>${esc(t("Found under this folder · {n}", { n: s.repos.length }))}</h2><div class="panel found">${s.repos.map(r => `
+        <div class="row"><div class="minw0"><b>${esc(r.name)}</b> ${kindPill(r.kind)}<div class="h">${esc(r.path)}</div></div>
+        <div class="acts">${r.registered ? st("ok", t("added")) : `<button class="btn sm primary" data-addfound="${esc(r.path)}" aria-label="${esc(t("Add") + " " + r.name)}">${esc(t("Add"))}</button>`}</div></div>`).join("")
+        || `<div class="empty">${esc(t("No EGD or ai-dlc repositories within 3 levels."))}</div>`}</div>`;
+      $("#scanres").querySelectorAll("[data-addfound]").forEach(b => b.onclick = async () => {
+        b.disabled = true;
+        if (await repoOp("add", b.dataset.addfound)) b.outerHTML = st("ok", t("added")); else b.disabled = false; });
+    } catch (e) { toast(e.message, true); }
+    scanBtn.disabled = false; scanBtn.textContent = t("Find repositories here"); refocus(scanBtn);
+  };
+}
+
+const SETUP_FILES = [
+  [".egd/config.toml", N_("limits, test command, roles, environments")],
+  [".egd/team.toml", N_("who is on the team and what each may sign")],
+  [".egd/map.md", N_("repository map — a person reads it and signs it")],
+  [".egd/.gitignore", N_("keeps secrets, sessions and generated output out of git")],
+  [".egd/secrets.env", N_("local values for proofs — gitignored, never committed")],
+  [".egd/features/", N_("where plans and their trails will live")],
+];
+function setupPanel(path, back) {
+  const name = path.split("/").filter(Boolean).pop();
+  const box = $("#setuppanel");
+  box.innerHTML = `<div class="confirm" role="group" tabindex="-1" aria-label="${esc(t("Set up EGD in {name}", { name }))}">
+      <div class="ch"><b>${esc(t("Set up EGD in {name}", { name }))}</b><span class="mono small muted">${esc(path)}</span></div>
+      <ul class="files">${SETUP_FILES.map(([f, why]) => `<li><span class="mono">${esc(f)}</span><span class="muted">${esc(t(why))}</span></li>`).join("")}</ul>
+      <div class="note">${tHtml("Files that already exist are left as they are. Nothing is committed — review {dir} and commit it yourself.", { dir: `<span class="mono">.egd/</span>` })}</div>
+      <div class="cf"><button class="btn" id="setupcancel">${esc(t("Cancel"))}</button><button class="btn primary" id="setupgo">${esc(t("Set up EGD"))}</button></div>
+    </div>`;
+  box.scrollIntoView({ block: "nearest" });
+  box.firstElementChild.focus();   // the group, which states what will happen — not its committing button
+  $("#setupcancel").onclick = () => { box.innerHTML = ""; };
+  $("#setupgo").onclick = async () => {
+    const go = $("#setupgo"); go.disabled = true; go.textContent = t("Setting up…"); $("#setupcancel").disabled = true;
+    let res;
+    try { res = await post("api/repos", { op: "setup", path }); }
+    catch (e) {
+      toast(netErr(e), true);
+      if (go.isConnected) { go.disabled = false; go.textContent = t("Set up EGD"); $("#setupcancel").disabled = false; }
+      return;
+    }
+    const { r, j } = res;
+    if (!r.ok) {
+      box.innerHTML = `<div class="confirm fail"><div class="ch"><b>${esc(t("Could not set up EGD in {name}", { name }))}</b></div>
+        <div class="note mt-6">${esc(j.error || t("Unknown error"))}</div>
+        <div class="cf"><button class="btn" id="setupcancel">${esc(t("Close"))}</button></div></div>`;
+      $("#setupcancel").onclick = () => { box.innerHTML = ""; };
+      return;
+    }
+    await afterChange();
+    await folderPicker(back);
+    $("#setuppanel").innerHTML = `<div class="confirm done"><div class="ch"><b>${esc(t("EGD is set up in {name}", { name }))}</b>${st("ok", t("added to the console"))}</div>
+      <ol><li>${tHtml("Describe the repository in {map} — the {scout} agent can draft it — then sign it on the repository's Map tab.", { map: `<span class="mono">.egd/map.md</span>`, scout: `<span class="mono">egd-scout</span>` })}</li>
+        <li>${tHtml("List the team and their roles in {team}.", { team: `<span class="mono">.egd/team.toml</span>` })}</li>
+        <li>${esc(t("Start a feature:"))} <span class="mono">egd new &lt;name&gt; --by ${esc(P.user || "<you>")}</span></li></ol>
+      <div class="cf"><button class="btn" id="setupcancel">${esc(t("Dismiss"))}</button><a class="btn primary" href="#/inbox" data-close>${esc(t("Go to inbox"))}</a></div></div>`;
+    $("#setupcancel").onclick = () => { $("#setuppanel").innerHTML = ""; };
+    const done = $("#setuppanel .confirm"); if (done) { done.setAttribute("role", "status"); done.tabIndex = -1; done.focus(); }
+  };
+}
+
+async function repoOp(op, path) {
+  if (!path || !path.trim()) { toast(t("Enter a path"), true); return false; }
+  let res;
+  try { res = await post("api/repos", { op, path }); } catch (e) { toast(netErr(e), true); return false; }
+  const { r, j } = res;
+  if (!r.ok && op === "add" && j.setup_possible) return "setup";
+  if (!r.ok) { toast(trServer(j.error), true); return false; }
+  toast(op === "add" ? t("Repository added") : t("Repository removed")); await afterChange(); return true;
+}
+
+initTheme($("#theme"));
+UI.rerender = render;
+async function refresh() { retryFailed(); if (await load()) render(); else if (P) statusbar(); else render(); }
+$("#refresh")?.addEventListener("click", refresh);
+window.addEventListener("hashchange", () => { $("#main").scrollTop = 0; render(); });
+// crossing the phone widths swaps the search button and the status line
+matchMedia("(max-width: 860px)").addEventListener?.("change", () => P && requestRender());
+matchMedia("(max-width: 640px)").addEventListener?.("change", () => P && statusbar());
+window.addEventListener("resize", () => document.querySelectorAll("[data-cue-on]").forEach(scrollCue));
+// Polls every 10 s while the page is visible, and at once when it becomes visible again. The page
+// keeps focus and caret across a redraw (UI.swap), so typing does not pause it; an open dialog or
+// menu does — the redraw waits for it (requestRender), while the status line stays current.
+let pollTimer = null, polling = false;
+async function tick() {
+  clearTimeout(pollTimer);
+  if (polling) return;
+  polling = true;
+  try {
+    if (!document.hidden) {
+      const prev = P, ok = await load();
+      if (ok && P !== prev) requestRender();
+      else if (P) statusbar();
+    }
+  } finally { polling = false; pollTimer = setTimeout(tick, P ? 10000 : 3000); }
+}
+(async () => {
+  await Promise.all([load(), needLang(getLang())]); render();
+  if (!LIVE) return;
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
+  pollTimer = setTimeout(tick, P ? 10000 : 3000);
+})();
+</script>
+</body>
+</html>
