@@ -34,6 +34,15 @@ asking you anything. Add `levels` — where each criterion will be tested — be
 that is the test strategy, decided before code exists. Non-functional requirements
 (latency, permissions, accessibility) are ACs too, with `kind = "nfr"`.
 
+`clarify` filters vague words. A `then` that leans on "fast", "user-friendly", "properly",
+"etc." — or "nhanh", "thân thiện", "hợp lý", "v.v." — with no number in the sentence is
+flagged, with the word and what to write instead ("within 300 ms at p95", "in at most 3
+clicks"). Any digit counts as a measure. An `nfr` AC must name a number even without a vague
+word. Features created under rules v2 (egd 0.1.1 on) cannot pass `clarify` with one; older
+features and plans imported from ai-dlc get a warning in `egd check`, `egd verify` and
+`egd graph`. Tune the list in `.egd/config.toml` → `[ac]`: `vague_words_extra`,
+`vague_words_allow`.
+
 ## design — how will it work?
 
 Short is fine; empty is not. *Approach*: components, data, contracts touched.

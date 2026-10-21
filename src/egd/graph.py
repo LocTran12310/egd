@@ -6,6 +6,7 @@ import math
 import re
 from collections import defaultdict
 
+from . import vague
 from .model import Feature
 from .events import State
 
@@ -138,6 +139,9 @@ def validate(feature: Feature, config: dict) -> tuple[list[str], list[str]]:
                 errors.append(f"{a.get('id')}: missing '{part}'")
         if tier != "lite" and not a.get("levels"):
             policy.append(f"{a.get('id')}: no test strategy — set levels = [\"unit\"|\"integration\"|\"e2e\"|\"manual\"]")
+    # Always a warning here: whether it also closes `clarify` depends on the rules the feature
+    # was planned under, which the trail holds (gates.check_clarify)
+    warnings += vague.findings(feature, config)
 
     covered: set[str] = set()
     for s in feature.slices:

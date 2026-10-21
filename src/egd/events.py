@@ -241,6 +241,14 @@ class State:
     def task(self, task_id: str) -> TaskState:
         return self.tasks.setdefault(task_id, TaskState())
 
+    @property
+    def rules(self) -> int:
+        """The gate rules the feature was planned under, from its `feature_created` event; 1 when
+        the trail does not say, so rules added later never close a gate on an older plan."""
+        created = next((e for e in self.events if e.get("type") == "feature_created"), {})
+        rules = created.get("rules")
+        return rules if isinstance(rules, int) and not isinstance(rules, bool) else 1
+
     def approved_scopes(self) -> set[str]:
         scopes = {g["scope"] for g in self.gates.values() if g.get("scope")}
         scopes |= {cr["scope"] for cr in self.crs.values()

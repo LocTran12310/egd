@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.1 — 2026-10-21
+
+**Rules v2.** Features created from this version on record `rules = 2`; every feature created
+before keeps rules v1 and nothing about its gates changes.
+
+- **Vague acceptance criteria:** a `then` that leans on a vague word — `fast`, `quick(ly)`,
+  `user-friendly`, `easy`, `properly`, `as expected`, `etc.` … or `nhanh`, `thân thiện`, `dễ dùng`,
+  `hợp lý`, `phù hợp`, `ổn định`, `v.v.` … — with no number in the sentence is reported with the
+  word and a measurable rewrite. An AC with `kind = "nfr"` must name a number even without one.
+  Under rules v2 this closes `clarify`; under rules v1, and for plans imported from ai-dlc, it is a
+  warning in `egd check clarify`, `egd verify` and `egd graph`. `[ac]` in config.toml:
+  `vague_words_extra` adds words, `vague_words_allow` drops defaults.
+
 ## 0.1.0 — 2026-10-04
 
 First release.

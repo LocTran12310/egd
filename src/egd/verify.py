@@ -9,6 +9,7 @@ a person could, and what stands in the way.
 
 from __future__ import annotations
 
+from . import vague
 from .events import replay
 from .gates import CHECKS
 from .graph import validate
@@ -66,11 +67,18 @@ def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, u
     ahead = [g for g in f.gates if g not in st.gates]
     if upto:
         ahead = ahead[:ahead.index(upto) + 1] if upto in ahead else []
+    # Vague ACs belong to `clarify` while it is ahead — a problem there under rules v2, a warning
+    # before that — and stay a plan warning once it has passed: said once, not in both places.
+    vague_words = vague.findings(f, cfg) if "clarify" in ahead else []
+    if vague_words:
+        plan_notes = sections[0][2]
+        plan_notes[:] = [n for n in plan_notes if n not in vague_words]
     gate_results = []
     for g in ahead:
         problems = CHECKS[g](f, st, cfg)
         gate_results.append((g, problems))
-        sections.append((f"gate {g}", problems, []))
+        notes = [f"⚠ {w}" for w in vague_words if w not in problems] if g == "clarify" else []
+        sections.append((f"gate {g}", problems, notes))
 
     target = (upto if upto in [g for g, _ in gate_results] else (ahead[0] if ahead else None))
     blocking = [p for name, problems, _ in sections

@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 
 # github, templates and tasks serve a few commands each and are imported inside them.
-from . import RULES, __version__, gates, planfile, report, tracking
+from . import RULES, __version__, gates, planfile, report, tracking, vague
 from .i18n import LANGS
 from .events import read, record, replay
 from .graph import assignment, longest_path, ready, validate, waves
@@ -335,6 +335,8 @@ def cmd_check(args):
         out("every gate has passed")
         return 0
     problems = gates.check(f, st, cfg, gate)
+    # under rules v1, or for an imported plan, vague ACs are said but do not close `clarify`
+    warnings = [w for w in vague.findings(f, cfg) if w not in problems] if gate == "clarify" else []
     if problems:
         out(f"{gate}: closed")
         hints = [fix_hint(p, f) for p in problems] + [None]
@@ -342,9 +344,14 @@ def cmd_check(args):
             out(f"  - {p}")
             if hints[i] and hints[i] != hints[i + 1]:  # once after a run of problems with one fix
                 out(f"    Fix: {hints[i]}")
-        return 1
-    out(f"{gate}: open")
-    return 0
+    else:
+        out(f"{gate}: open")
+    for w in warnings:
+        out(f"warning: {w}")
+    if warnings:
+        why = "" if f.meta.get("imported_from") else f"   (features planned under rules v{RULES} close clarify on it)"
+        out(f"    Fix: {fix_hint(warnings[0], f)}{why}")
+    return 1 if problems else 0
 
 
 # A problem a gate reports → the command (or the file) that fixes it. Gate messages name the
@@ -357,6 +364,8 @@ FIXES = (
     (r"^no assumptions recorded", 'egd add assumption --text "<what you are assuming>"'),
     (r"^no acceptance criteria", 'egd add ac --given "…" --when "…" --then "…" --levels unit'),
     (r"^(AC-[\w.]+): missing '(\w+)'", 'egd set {0} "{1}=…"'),
+    (r"^([\w.-]+): (?:vague .* in then|nfr without a number)",
+     'egd set {0} "then=… <a number and its unit: 300 ms, 3 clicks, 0 errors>"'),
     (r"^(AC-[\w.]+): no test strategy", "egd set {0} levels=unit   (or integration, e2e, manual)"),
     (r"^(AC-[\w.]+): not covered by any slice", 'egd add slice --title "…" --covers {0} --demo "…"'),
     (r"^(AC-[\w.]+): no proof declared",

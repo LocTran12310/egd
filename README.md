@@ -93,7 +93,7 @@ options with an example, and a wrong entry comes out with `egd rm <id>`. The `st
 
 | Step | You run | EGD checks |
 |---|---|---|
-| **Plan** | `egd add ac/task/proof …`, `egd rm …` (or edit `plan.toml`), `egd pass frame/clarify/design/slice` | brief written, map signed, assumptions resolved, tasks ≤ 4 h with a footprint |
+| **Plan** | `egd add ac/task/proof …`, `egd rm …` (or edit `plan.toml`), `egd pass frame/clarify/design/slice` | brief written, map signed, assumptions resolved, ACs measurable (no "fast" without a number), tasks ≤ 4 h with a footprint |
 | **Build** | `egd start` → code, commit with the task id → `egd submit --confirm` → a teammate's `egd accept` | tests pass, only declared files changed, someone else reviews |
 | **Prove** | `egd proof run`, `egd verify --run` | every required proof passes on the current code |
 | **Ship** | `egd pass build`, the client's `egd uat S-1 --pass`, `egd pass accept`, `egd pass release` | UAT per slice, no serious defect open, a rollback written |

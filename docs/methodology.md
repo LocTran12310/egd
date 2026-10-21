@@ -35,7 +35,10 @@ inventing paths and conventions.
 
 **clarify — do we know what?** Acceptance criteria in Given/When/Then are the unit of
 agreement with the client and the unit of evidence later. Declaring test levels per
-criterion here is the test strategy, decided before code makes it expensive.
+criterion here is the test strategy, decided before code makes it expensive. A criterion
+nobody can test is not agreement: a `then` resting on a vague word ("fast", "user-friendly",
+"hợp lý") with no number in it, or a non-functional (`nfr`) criterion with no number at all,
+keeps `clarify` closed (rules v2; features planned under v1 are only warned).
 
 **design — do we know how?** One approach, the alternatives that lost, and the failure
 modes a user can hit. Decisions are recorded so review does not re-open them.

@@ -16,7 +16,7 @@ name: egd
 services:
   console:
     build: .
-    image: egd:0.1.0
+    image: egd:0.1.1
     user: "${EGD_UID:-1000}:${EGD_GID:-1000}"
     # no token: the port below is published on 127.0.0.1 only, so only this machine reaches it.
     # Publishing it wider? Drop this line — the image's default asks for a token (see docker logs).

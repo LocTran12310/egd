@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from . import vague
 from .events import State, record
 from .graph import validate
 from .model import Feature
@@ -85,6 +86,8 @@ def check_clarify(f: Feature, st: State, cfg: dict) -> list[str]:
         for part in ("given", "when", "then"):
             if not str(a.get(part, "")).strip():
                 problems.append(f"{a.get('id')}: missing '{part}'")
+    if vague.blocking(f, st):  # rules v2; older and imported plans only hear of it as a warning
+        problems += vague.findings(f, cfg)
     return problems
 
 

@@ -93,6 +93,9 @@ CONFIG = """\
 task_hours = 4        # a task bigger than this must be split
 slice_hours = 16      # longest dependency chain inside one slice
 
+[ac]
+# vague_words_extra = ["snappy"]   # more words a `then` may not lean on without a number; vague_words_allow drops defaults
+
 [proof]
 # Runs a task's `tests` on `egd submit` and backs `kind = "test"` proofs.
 # {tests} is replaced by the task's test paths.
@@ -289,6 +292,7 @@ client = ""              # who accepts this work
 # when = "the buyer checks out"
 # then = "the order total is 300,000 and the order is pending"
 # levels = ["integration", "e2e"]   # test strategy: unit | integration | e2e | manual
+# kind = "nfr"                       # non-functional: its then must name a number (300 ms, 99.9%)
 
 # ---- design ------------------------------------------------------------
 # [[decision]]
