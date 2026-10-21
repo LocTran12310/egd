@@ -9,6 +9,7 @@ a person could, and what stands in the way.
 
 from __future__ import annotations
 
+from . import mapdrift
 from .events import replay
 from .gates import warnings as gate_warnings
 from .gates import CHECKS
@@ -67,10 +68,13 @@ def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, u
     ahead = [g for g in f.gates if g not in st.gates]
     if upto:
         ahead = ahead[:ahead.index(upto) + 1] if upto in ahead else []
-    gate_results, said = [], set()
+    drift = mapdrift.notes(f)  # the map was signed at frame; this only says it has drifted since
+    if drift:
+        sections.append(("map", [], [f"⚠ {n}" for n in drift]))
+    gate_results, said = [], set(drift)
     for g in ahead:
         problems = CHECKS[g](f, st, cfg)
-        notes = gate_warnings(f, st, cfg, g, problems)
+        notes = [w for w in gate_warnings(f, st, cfg, g, problems) if w not in said]
         said |= set(problems) | set(notes)
         gate_results.append((g, problems))
         sections.append((f"gate {g}", problems, [f"⚠ {w}" for w in notes]))

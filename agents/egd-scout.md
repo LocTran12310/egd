@@ -27,6 +27,11 @@ Write `.egd/map.md` with these sections, each grounded in files you actually rea
 - **Environments** — URLs without secrets, how auth works
 - **Unknowns** — what the code could not tell you; these become questions or assumptions
 
+Refreshing a map: when `egd verify` lists drift under **map** (a path gone, a glob matching
+nothing, a script removed, a folder the tasks touch that the map never names), fix exactly those
+lines from what is in the repository now — leave the rest, and say in the handoff which lines
+changed so the person who signed can re-read them.
+
 Rules:
 - Leave `reviewed_by:` empty. Only a person who has read the map may sign it; the
   frame gate trusts that signature.

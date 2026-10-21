@@ -369,6 +369,8 @@ FIXES = (
      'egd set {0} "then=… <a number and its unit: 300 ms, 3 clicks, 0 errors>"'),
     (r"^no acceptance criterion says its case|^only happy paths",
      "egd set <AC id> case=error   (happy | error | edge) — or egd add ac --case error …"),
+    (r"^map\.md",
+     "refresh .egd/map.md where it drifted (the egd-scout agent fixes just those lines); a person re-reads it"),
     (r"^design\.md: failure mode", "edit .egd/features/{slug}/design.md: end the bullet with the AC or decision "
                                    "that handles it (→ AC-4), or say out of scope / accepted risk"),
     (r"^([\w.-]+): case '", 'egd set {0} case=error   (happy | error | edge)'),

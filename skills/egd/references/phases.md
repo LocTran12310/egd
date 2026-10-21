@@ -6,7 +6,11 @@
    layout, how to run/test/deploy, conventions a newcomer would break, environments,
    and what could not be determined. Spawn `egd-scout` for this. Leave
    `reviewed_by:` empty — the person who reads the map and confirms it is true
-   writes their own name there.
+   writes their own name there. The map is kept true as the repository changes shape:
+   `egd verify` (and `egd check frame`) warn when a path it names is gone, a glob matches
+   nothing, a `pnpm`/`npm run` script it quotes no longer exists, or the feature's tasks touch
+   a top-level folder it never mentions. Re-run `egd-scout` on just those lines; a person
+   re-reads them. It is a reminder only — `frame` is neither closed nor reopened.
 2. Draft `brief.md` with the user. A good *Success signal* is observable
    ("checkout errors in Sentry drop below 5/day"), not a restatement of the outcome.
    *Out of scope* is the cheapest place to prevent a future change request.

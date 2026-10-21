@@ -19,6 +19,8 @@ The backlog for EGD itself. Open an issue before starting anything here.
   `egd-verify`; four subagents. Docker image for the console
 
 ## Next
+- [ ] Map drift for non-JavaScript runners: check `make`/`just` targets and `pyproject.toml`
+      scripts quoted in `.egd/map.md` the way `pnpm`/`npm run` scripts are checked (0.1.6)
 - [ ] Pilot on a real client project; fix what hurts; publish the numbers as a case study
 - [ ] Publish to PyPI as `egd-cli` (the `egd` name is taken)
 - [ ] Automated tests for the web UI (markdown rendering, tables, dialogs; a headless page load)

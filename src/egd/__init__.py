@@ -5,7 +5,7 @@ is a function of both. Nothing here depends on anything outside the standard
 library.
 """
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 # Bumped whenever a gate rule changes meaning, so a plan authored under older
 # rules is flagged instead of failing mysteriously.

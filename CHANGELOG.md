@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.6 — 2026-10-21
+
+A reminder only: `frame` is neither closed nor reopened, and `RULES` stays 2.
+
+- **Map drift:** `egd verify` has a **map** section, and `egd check frame` the same warnings, when
+  `.egd/map.md` no longer matches the repository: a path it names in backticks is gone, a glob
+  matches nothing, a `pnpm`/`yarn`/`npm run`/`bun run` script it quotes is in no package.json, or
+  the feature's tasks touch a top-level folder it never mentions. Up to ten lines per kind.
+  The heuristics prefer missing a drift to a false alarm: matching is loose (any folder of the
+  repository, folders in between, the extension left off), and URLs, placeholders, commands,
+  npm scopes, package subpaths, gitignored and generated files, worktrees and submodules are
+  left out. `make`/`just`/Python targets are not checked yet (ROADMAP).
+- The `egd-scout` agent refreshes just the lines reported; phases and the Vietnamese guide say
+  the map is kept true as the repository changes shape.
+
 ## 0.1.5 — 2026-10-21
 
 Checklists in the built-in stack profiles; no CLI check, no gate and no rules change.
