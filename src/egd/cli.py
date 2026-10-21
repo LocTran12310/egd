@@ -335,7 +335,7 @@ def cmd_check(args):
         out("every gate has passed")
         return 0
     problems = gates.check(f, st, cfg, gate)
-    # under rules v1, or for an imported plan, vague ACs are said but do not close `clarify`
+    # vague ACs that do not close `clarify` — rules v1, an imported plan, an nfr with no number — are said
     warnings = [w for w in vague.findings(f, cfg) if w not in problems] if gate == "clarify" else []
     if problems:
         out(f"{gate}: closed")
@@ -349,8 +349,9 @@ def cmd_check(args):
     for w in warnings:
         out(f"warning: {w}")
     if warnings:
-        why = "" if f.meta.get("imported_from") else f"   (features planned under rules v{RULES} close clarify on it)"
-        out(f"    Fix: {fix_hint(warnings[0], f)}{why}")
+        later = not f.meta.get("imported_from") and set(warnings) & set(vague.findings(f, cfg, nfr=False))
+        out(f"    Fix: {fix_hint(warnings[0], f)}"
+            + (f"   (features planned under rules v{RULES} close clarify on a vague word)" if later else ""))
     return 1 if problems else 0
 
 

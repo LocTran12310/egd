@@ -5,9 +5,9 @@ is a function of both. Nothing here depends on anything outside the standard
 library.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 # Bumped whenever a gate rule changes meaning, so a plan authored under older
 # rules is flagged instead of failing mysteriously.
-# v2: vague acceptance criteria close `clarify` (vague.py); v1 plans are only warned.
+# v2: vague words in acceptance criteria close `clarify` (vague.py); v1 plans are only warned.
 RULES = 2

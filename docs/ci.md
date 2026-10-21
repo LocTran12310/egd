@@ -26,7 +26,7 @@ jobs:
           cat .egd/BOARD.md >> "$GITHUB_STEP_SUMMARY"
 ```
 
-To pin a version, append `@v0.1.0` to the install URL. Or vendor
+To pin a version, append `@v0.1.2` to the install URL. Or vendor
 `bin/` + `src/` into the project.
 
 ## Keep GitHub Issues in sync

@@ -8,13 +8,15 @@ list, not language understanding:
   sentence holds a digit. Any digit counts as a measure: "within 300 ms", "≤ 2%", "3 lần",
   "HTTP 200". A sentence that names a number has already said how much; whether it is the
   right number is the reviewer's call, not a word list's.
-- an AC with `kind = "nfr"` must hold a digit even with no vague word in it: a
-  non-functional requirement without a number is a wish.
+- an AC with `kind = "nfr"` and no digit is named even with no vague word in it, so someone
+  asks whether it needs a number. It is a warning only, under every rules version: many
+  precise non-functional criteria have none — "no log line contains the payload", "every
+  request is a GET" — and a word list cannot tell those from a wish.
 
 `[ac]` in config.toml tunes the list: `vague_words_extra` adds words, `vague_words_allow`
 drops defaults this team uses precisely.
 
-How much it weighs is the feature's rules version (see `blocking`): from rules v2 a finding
+How much a vague word weighs is the feature's rules version (see `blocking`): from rules v2 it
 closes `clarify`; a feature planned under v1, or imported from another tool, is only warned.
 """
 
@@ -48,7 +50,8 @@ DEFAULT_WORDS = {
     "v.v.": _LIST, "vân vân": _LIST,
 }
 OTHER = "a number with its unit"
-NFR = 'state the measure, e.g. "p95 under 300 ms" or "99.9% of requests succeed"'
+NFR = ('if it is a measure, state it, e.g. "p95 under 300 ms" or "99.9% of requests succeed"; '
+       '"every …" / "no …" needs none')
 
 _DIGIT = re.compile(r"\d")
 
@@ -86,8 +89,9 @@ def words(cfg: dict) -> dict[str, str]:
     return out
 
 
-def findings(f: Feature, cfg: dict) -> list[str]:
-    """One message per AC whose `then` is vague, naming the words and what to write instead."""
+def findings(f: Feature, cfg: dict, *, nfr: bool = True) -> list[str]:
+    """One message per AC whose `then` is vague, naming the words and what to write instead.
+    `nfr=False` leaves out the number-less nfr ones: those only ever warn."""
     listed = [(w, hint, _pattern(w)) for w, hint in words(cfg).items()]
     out = []
     for a in f.acs:
@@ -99,12 +103,12 @@ def findings(f: Feature, cfg: dict) -> list[str]:
             hints = list(dict.fromkeys(hint for _, hint in hits))
             out.append(f"{a.get('id')}: vague {', '.join(repr(w) for w, _ in hits)} in then — "
                        f"say how much: {'; '.join(hints)}")
-        elif _norm(a.get("kind", "")).strip() == "nfr":
+        elif nfr and _norm(a.get("kind", "")).strip() == "nfr":
             out.append(f"{a.get('id')}: nfr without a number in then — {NFR}")
     return out
 
 
 def blocking(f: Feature, st: State) -> bool:
-    """Whether vague ACs close `clarify`: only for a feature planned under rules v2 or later, and
+    """Whether vague words close `clarify`: only for a feature planned under rules v2 or later, and
     never for one imported from another tool, whose criteria were agreed there."""
     return st.rules >= 2 and not f.meta.get("imported_from")

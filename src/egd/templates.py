@@ -292,7 +292,7 @@ client = ""              # who accepts this work
 # when = "the buyer checks out"
 # then = "the order total is 300,000 and the order is pending"
 # levels = ["integration", "e2e"]   # test strategy: unit | integration | e2e | manual
-# kind = "nfr"                       # non-functional: its then must name a number (300 ms, 99.9%)
+# kind = "nfr"                       # non-functional: name a number where it is a measure (300 ms, 99.9%)
 
 # ---- design ------------------------------------------------------------
 # [[decision]]

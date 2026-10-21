@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 — 2026-10-21
+
+- **An `nfr` AC with no number only warns**, under every rules version: it no longer closes
+  `clarify` under rules v2. On real plans every number-less nfr was precise as written
+  ("no log line contains the payload", "every request is a GET"). Vague words still close
+  `clarify` for features created under rules v2. `RULES` stays 2: the change only loosens it.
+
 ## 0.1.1 — 2026-10-21
 
 **Rules v2.** Features created from this version on record `rules = 2`; every feature created

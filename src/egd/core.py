@@ -36,8 +36,8 @@ GATE_INFO = {
             _r("No blocking assumption is still open"),
             _r("Every confirmed or rejected assumption says who settled it, and how"),
             _r("At least one acceptance criterion, each with given, when and then"),
-            _r("No then leans on a vague word (fast, user-friendly, hợp lý…) without a number, and every "
-               "nfr names one — features planned under rules v1 or imported are only warned"),
+            _r("No then leans on a vague word (fast, user-friendly, hợp lý…) without a number — features "
+               "planned under rules v1 or imported are only warned, and so is an nfr with no number"),
         ],
         "records": "Fingerprints the acceptance criteria — changing them later needs an approved change request.",
     },
@@ -148,8 +148,8 @@ GATE_INFO_VI = {
             "Không còn giả định chặn (blocking) nào đang mở",
             "Mỗi giả định đã xác nhận hoặc bác bỏ đều ghi rõ ai quyết và quyết thế nào",
             "Có ít nhất một tiêu chí chấp nhận, mỗi tiêu chí có đủ given, when và then",
-            "Không câu then nào dựa vào từ mơ hồ (nhanh, thân thiện, hợp lý…) mà thiếu con số, và mọi AC nfr đều có "
-            "số đo — feature lập theo rules v1 hoặc import từ nơi khác chỉ bị cảnh báo",
+            "Không câu then nào dựa vào từ mơ hồ (nhanh, thân thiện, hợp lý…) mà thiếu con số — feature lập theo "
+            "rules v1 hoặc import từ nơi khác chỉ bị cảnh báo, AC nfr không có số đo cũng chỉ bị cảnh báo",
         ],
         "records": "Lấy dấu vân tay các tiêu chí chấp nhận — sửa chúng về sau cần một yêu cầu thay đổi được duyệt.",
     },

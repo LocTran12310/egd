@@ -47,6 +47,7 @@ class Words(unittest.TestCase):
                                        {"then": "p95 under 300 ms", "kind": "nfr"},
                                        {"then": "only admins can export"}), {})
         self.assertEqual(found, [f"AC-1: nfr without a number in then — {vague.NFR}"])
+        self.assertEqual(vague.findings(feature({"then": "only admins can export", "kind": "nfr"}), {}, nfr=False), [])
         # a vague nfr is reported once, for its word
         found = vague.findings(feature({"then": "the API is fast", "kind": "NFR"}), {})
         self.assertEqual(len(found), 1)
@@ -103,7 +104,7 @@ class Gate(unittest.TestCase):
         text = self.p.ok("check", "clarify")
         self.assertIn("clarify: open", text)
         self.assertEqual(text.count("warning: AC-1.1: vague 'fast' in then"), 1)
-        self.assertIn("features planned under rules v2 close clarify on it", text)
+        self.assertIn("features planned under rules v2 close clarify on a vague word", text)
         verify = self.p.ok("verify")
         self.assertEqual(verify.count("vague 'fast'"), 1)
         self.assertIn("ready: a person may now run `egd pass clarify`", verify)
@@ -111,6 +112,16 @@ class Gate(unittest.TestCase):
         self.p.pass_through("clarify")
         verify = self.p.egd("verify")[1]  # past clarify it stays a plan warning, said once
         self.assertEqual(verify.count("vague 'fast'"), 1)
+
+    def test_an_nfr_without_a_number_only_warns_even_under_rules_v2(self):
+        self.plan.write_text(self.plan.read_text().replace(
+            'then = "the order page loads fast"', 'then = "no log line contains the payload"\nkind = "nfr"'))
+        text = self.p.ok("check", "clarify")
+        self.assertIn("clarify: open", text)
+        self.assertEqual(text.count("warning: AC-1.1: nfr without a number in then"), 1)
+        self.assertNotIn("close clarify", text)
+        self.assertEqual(self.p.ok("verify").count("nfr without a number"), 1)
+        self.p.pass_through("clarify")
 
     def test_an_imported_plan_only_warns(self):
         self.plan.write_text(self.plan.read_text().replace('[feature]\n', '[feature]\nimported_from = "ai-dlc:checkout"\n'))

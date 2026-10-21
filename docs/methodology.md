@@ -37,8 +37,9 @@ inventing paths and conventions.
 agreement with the client and the unit of evidence later. Declaring test levels per
 criterion here is the test strategy, decided before code makes it expensive. A criterion
 nobody can test is not agreement: a `then` resting on a vague word ("fast", "user-friendly",
-"hợp lý") with no number in it, or a non-functional (`nfr`) criterion with no number at all,
-keeps `clarify` closed (rules v2; features planned under v1 are only warned).
+"hợp lý") with no number in it keeps `clarify` closed (rules v2; features planned under v1
+are only warned). A non-functional (`nfr`) criterion with no number at all is flagged as a
+warning, so someone asks whether it needs one.
 
 **design — do we know how?** One approach, the alternatives that lost, and the failure
 modes a user can hit. Decisions are recorded so review does not re-open them.
