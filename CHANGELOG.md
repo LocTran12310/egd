@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.4 — 2026-10-21
+
+Warnings only, under every rules version: no gate closes on them and `RULES` stays 2.
+
+- **AC cases:** `[[ac]]` takes `case = "happy" | "error" | "edge"` (`egd add ac --case`,
+  `egd set AC-… case=error`). A standard or full feature whose functional ACs (every kind but
+  `nfr`) name no `error` case gets one line — "only happy paths", or, when no AC says its case
+  at all, a single hint to mark the error ones. Shown by `egd check clarify`, `egd verify` and
+  `egd graph`. Any other value is a plan error (a warning for plans imported from ai-dlc).
+- **Failure modes have an owner:** each first-level bullet under design.md's
+  `## Failure modes` names the AC or decision that handles it (`- OTP expired → AC-4`) or says
+  `out of scope` / `accepted risk` (`ngoài phạm vi` / `chấp nhận rủi ro`; more in
+  `[design] failure_mode_marks_extra`). A bullet with neither, or with an id the plan does not
+  have, is a warning in `egd check design` and in `egd verify` while `design` is ahead.
+- Templates show both conventions; the reviewer agent checks failure modes against their AC ids;
+  the tester agent and the `egd-proof` skill prove an error-case AC by driving the failure.
+
 ## 0.1.3 — 2026-10-21
 
 - **Change requests work out their impact.** From the ACs a CR `--affects`, through the plan's

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from . import vague
+from . import cases, vague
 from .events import State, record
 from .graph import validate
 from .model import Feature
@@ -192,6 +192,16 @@ CHECKS = {
 }
 
 GATE_ROLE = {"accept": "uat"}
+
+
+def warnings(f: Feature, st: State, cfg: dict, gate: str, problems: list[str]) -> list[str]:
+    """What a person should hear at `gate` that does not close it: vague ACs that only warn (rules v1,
+    an imported plan, an nfr with no number), ACs with no error case, unhandled failure modes."""
+    if gate == "clarify":
+        return [w for w in vague.findings(f, cfg) if w not in problems] + cases.case_warnings(f)
+    if gate == "design":
+        return cases.failure_modes(f, cfg)
+    return []
 
 
 def next_gate(f: Feature, st: State) -> str | None:

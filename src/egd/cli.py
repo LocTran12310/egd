@@ -335,8 +335,7 @@ def cmd_check(args):
         out("every gate has passed")
         return 0
     problems = gates.check(f, st, cfg, gate)
-    # vague ACs that do not close `clarify` — rules v1, an imported plan, an nfr with no number — are said
-    warnings = [w for w in vague.findings(f, cfg) if w not in problems] if gate == "clarify" else []
+    warnings = gates.warnings(f, st, cfg, gate, problems)  # said, never closing the gate
     if problems:
         out(f"{gate}: closed")
         hints = [fix_hint(p, f) for p in problems] + [None]
@@ -346,12 +345,13 @@ def cmd_check(args):
                 out(f"    Fix: {hints[i]}")
     else:
         out(f"{gate}: open")
-    for w in warnings:
+    later = set() if f.meta.get("imported_from") else set(vague.findings(f, cfg, nfr=False))
+    hints = [fix_hint(w, f) for w in warnings] + [None]
+    for i, w in enumerate(warnings):
         out(f"warning: {w}")
-    if warnings:
-        later = not f.meta.get("imported_from") and set(warnings) & set(vague.findings(f, cfg, nfr=False))
-        out(f"    Fix: {fix_hint(warnings[0], f)}"
-            + (f"   (features planned under rules v{RULES} close clarify on a vague word)" if later else ""))
+        if hints[i] and hints[i] != hints[i + 1]:
+            out(f"    Fix: {hints[i]}"
+                + (f"   (features planned under rules v{RULES} close clarify on a vague word)" if w in later else ""))
     return 1 if problems else 0
 
 
@@ -367,6 +367,11 @@ FIXES = (
     (r"^(AC-[\w.]+): missing '(\w+)'", 'egd set {0} "{1}=…"'),
     (r"^([\w.-]+): (?:vague .* in then|nfr without a number)",
      'egd set {0} "then=… <a number and its unit: 300 ms, 3 clicks, 0 errors>"'),
+    (r"^no acceptance criterion says its case|^only happy paths",
+     "egd set <AC id> case=error   (happy | error | edge) — or egd add ac --case error …"),
+    (r"^design\.md: failure mode", "edit .egd/features/{slug}/design.md: end the bullet with the AC or decision "
+                                   "that handles it (→ AC-4), or say out of scope / accepted risk"),
+    (r"^([\w.-]+): case '", 'egd set {0} case=error   (happy | error | edge)'),
     (r"^(AC-[\w.]+): no test strategy", "egd set {0} levels=unit   (or integration, e2e, manual)"),
     (r"^(AC-[\w.]+): not covered by any slice", 'egd add slice --title "…" --covers {0} --demo "…"'),
     (r"^(AC-[\w.]+): no proof declared",
@@ -883,6 +888,8 @@ ADD_OPTIONS = (
     ("--when", "when", {"metavar": "TEXT"}, {"ac": "the action"}),
     ("--then", "then", {"metavar": "TEXT"}, {"ac": "the observable result"}),
     ("--levels", "levels", {"metavar": "LIST"}, {"ac": "comma-separated test levels — unit, integration, e2e, manual"}),
+    ("--case", "case", {"choices": planfile.CHOICES["ac", "case"]},
+     {"ac": "happy | error | edge — mark the ACs where something goes wrong \"error\""}),
     ("--kind", "kind", {"metavar": "KIND"}, {"ac": "free-form category, e.g. functional or nfr",
                                              "proof": "test | cli | http | ui"}),
     ("--title", "title", {"metavar": "TEXT"}, {"decision": "short title", "slice": "short title",

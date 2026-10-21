@@ -428,7 +428,7 @@ class OldPython(unittest.TestCase):
             os.symlink(sys.executable, Path(bin_dir) / "python3.13")
             r = self.run_bin(f"{bin_dir}{os.pathsep}/usr/bin{os.pathsep}/bin")
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn("egd 0.1.3", r.stdout)
+        self.assertIn("egd 0.1.4", r.stdout)
 
 
 if __name__ == "__main__":

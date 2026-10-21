@@ -34,6 +34,9 @@ Rules:
   they will see. A visual change gets a `ui` proof — next to its `test` proof, not instead of it.
 - **Backend needs no screenshot.** An HTTP transcript showing the right total *is* the evidence.
 - **One AC can need two kinds** — the endpoint (`http`) and the page that shows its result (`ui`).
+- **An error case is proven by failing.** An AC with `case = "error"` needs a proof that runs the
+  failure path — send the invalid input, expire the token, stop the stub — and asserts the status
+  and the message the AC names. A proof of the happy path never covers it.
 - Every AC gets at least one proof (`full` requires it). A proof shows what it claims:
 `npx tsc --noEmit` proves the types, not that an error toast appears. Say which kind you chose and why in one
   line per AC, then add them — the user can still say otherwise.

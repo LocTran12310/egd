@@ -92,15 +92,16 @@ egd status                      # luôn chạy lệnh này trước: cổng ti�
 ```
 
 - **frame**: viết `brief.md` gồm Vấn đề, Kết quả, Tín hiệu thành công và Ngoài phạm vi.
-- **clarify**: điền `[[assumption]]` và `[[ac]]` trong `plan.toml`. Gom câu hỏi cho khách thành **một lượt, tối đa 7 câu**. Câu nào chưa có câu trả lời thì thành giả định. Câu `then` của AC phải đo được: dùng từ mơ hồ như "nhanh", "thân thiện", "hợp lý", "v.v." (hay "fast", "user-friendly") mà không có con số nào thì bị bắt, kèm gợi ý viết lại ("trong 2 giây", "tối đa 3 lần bấm"). Feature tạo từ rules v2 (egd 0.1.1) sẽ không qua được `clarify`; feature cũ (rules v1) và feature import từ ai-dlc chỉ bị cảnh báo. AC `kind = "nfr"` không có con số nào luôn chỉ bị cảnh báo: độ trễ hay uptime thì nên có số, còn "không dòng log nào chứa payload" thì vốn đã kiểm được. Thêm hoặc bỏ từ trong `.egd/config.toml`, mục `[ac]`: `vague_words_extra`, `vague_words_allow`.
-- **design**: viết `design.md`, rồi chốt các `[[decision]]`.
+- **clarify**: điền `[[assumption]]` và `[[ac]]` trong `plan.toml`. Gom câu hỏi cho khách thành **một lượt, tối đa 7 câu**. Câu nào chưa có câu trả lời thì thành giả định. Ghi `case` cho từng AC (`happy`, `error`, `edge`) và viết cả AC cho luồng lỗi; feature standard/full mà không AC chức năng nào có `case = "error"` sẽ nhận một dòng cảnh báo. Câu `then` của AC phải đo được: dùng từ mơ hồ như "nhanh", "thân thiện", "hợp lý", "v.v." (hay "fast", "user-friendly") mà không có con số nào thì bị bắt, kèm gợi ý viết lại ("trong 2 giây", "tối đa 3 lần bấm"). Feature tạo từ rules v2 (egd 0.1.1) sẽ không qua được `clarify`; feature cũ (rules v1) và feature import từ ai-dlc chỉ bị cảnh báo. AC `kind = "nfr"` không có con số nào luôn chỉ bị cảnh báo: độ trễ hay uptime thì nên có số, còn "không dòng log nào chứa payload" thì vốn đã kiểm được. Thêm hoặc bỏ từ trong `.egd/config.toml`, mục `[ac]`: `vague_words_extra`, `vague_words_allow`.
+- **design**: viết `design.md`, rồi chốt các `[[decision]]`. Mỗi gạch đầu dòng trong `## Failure modes` ghi rõ cái gì xử lý nó: id AC hoặc decision (`- OTP hết hạn → AC-4`), hoặc `ngoài phạm vi` / `chấp nhận rủi ro`. Dòng nào không có thì `egd check design` và `egd verify` cảnh báo (chỉ cảnh báo).
 - **slice**: chia `[[slice]]` (có kịch bản demo) và `[[task]]` (≤ 4h, có `touches`, `tests`, `done_when`). Chạy `egd graph` đến khi sạch.
 
 Không quen TOML? Soạn plan bằng lệnh (mã được tự sinh, file luôn được kiểm tra hợp lệ trước khi ghi):
 
 ```bash
 egd add assumption --by Linh --text "Giá chỉ tính VND" --blocking
-egd add ac --by Linh --group 1 --given "giỏ có 2 × A1" --when "thanh toán" --then "đơn chờ xử lý, tổng 300.000" --levels unit,e2e
+egd add ac --by Linh --group 1 --given "giỏ có 2 × A1" --when "thanh toán" --then "đơn chờ xử lý, tổng 300.000" --levels unit,e2e --case happy
+egd add ac --by Linh --group 1 --given "giỏ trống" --when "thanh toán" --then "API trả 422, trang báo giỏ trống" --levels integration --case error
 egd add slice --by Linh --title "Thanh toán tạo đơn" --covers AC-1.1 --demo "1. … 2. …"
 egd add task --by Linh --slice S-1 --title "POST /orders" --estimate 3 --touches "src/orders/**" --done "trả 201 kèm tổng"
 egd add proof --by Linh --kind test --verifies AC-1.1 --title "Tổng đơn hàng" --tests tests/orders.test.ts

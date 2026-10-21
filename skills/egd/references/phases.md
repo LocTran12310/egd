@@ -30,7 +30,10 @@ round at most. Whatever is still unknown becomes an `[[assumption]]`:
 - `blocking = true` when being wrong forces rework, not just a tweak
 
 Write acceptance criteria as Given/When/Then that a tester could execute without
-asking you anything. Add `levels` — where each criterion will be tested — because
+asking you anything. Say each one's `case` — `happy`, `error` or `edge` — and write the error
+ones: what the user sees when the input is wrong, the record is gone, the upstream is down.
+A standard or full feature whose functional ACs have no `case = "error"` gets a warning (one
+line, never a closed gate). Add `levels` — where each criterion will be tested — because
 that is the test strategy, decided before code exists. Non-functional requirements
 (latency, permissions, accessibility) are ACs too, with `kind = "nfr"`.
 
@@ -49,7 +52,10 @@ testable as written. Tune the list in `.egd/config.toml` → `[ac]`: `vague_word
 Short is fine; empty is not. *Approach*: components, data, contracts touched.
 *Alternatives considered*: what lost and why, so nobody re-litigates it in review.
 *Failure modes*: what a user sees for validation errors, missing records, conflicts,
-permission denied, an upstream being down, timeouts. Every real choice becomes a
+permission denied, an upstream being down, timeouts — one bullet each, ending with what handles
+it: an AC or decision id (`- OTP expired → AC-4`), or `out of scope` / `accepted risk`.
+`egd check design` and `egd verify` warn about a bullet with neither (more marks:
+`[design] failure_mode_marks_extra` in config.toml). Every real choice becomes a
 `[[decision]]` and must leave `proposed` before the gate opens.
 
 ## slice — in what order, in what pieces?

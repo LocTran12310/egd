@@ -18,7 +18,7 @@ from .util import UsageError, write_atomic
 KINDS = {"assumption": "A", "ac": "AC", "decision": "D", "slice": "S", "task": "T"}
 FIELDS = {  # what each kind of entry holds, besides its id
     "assumption": ("text", "confidence", "blocking", "status", "resolution"),
-    "ac": ("story", "given", "when", "then", "levels", "kind"),
+    "ac": ("story", "given", "when", "then", "levels", "kind", "case"),
     "decision": ("title", "status", "context", "choice", "rejected", "consequences"),
     "slice": ("title", "covers", "demo"),
     "task": ("slice", "title", "estimate_h", "depends_on", "touches", "tests", "done_when", "agent", "model"),
@@ -28,6 +28,7 @@ CHOICES = {  # (kind, field) → allowed values; for a list field, of each item
     ("assumption", "confidence"): ("low", "medium", "high"),
     ("decision", "status"): ("proposed", "accepted", "superseded"),
     ("ac", "levels"): ("unit", "integration", "e2e", "manual"),
+    ("ac", "case"): ("happy", "error", "edge"),
     ("task", "agent"): ("builder", "tester", "person"),
     ("task", "model"): ("haiku", "sonnet", "opus", "fable"),
 }

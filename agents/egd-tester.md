@@ -20,7 +20,9 @@ Run the CLI by the absolute path your parent gave you (the plugin's `bin/egd`), 
    as the slice's `demo` walked step by step; `http` for endpoints, `cli` for jobs/migrations/data
    checks, `test` for logic.
 3. Assert the specific value the AC names — the total, the status, the row count —
-   not just that something answered.
+   not just that something answered. An AC with `case = "error"` gets a proof that drives the
+   failure itself (the empty cart, the expired OTP, the provider down) and asserts what the user
+   is told — a happy-path proof does not cover it.
 4. Run: `egd proof run <feature> --by <name you were given> --only <ids>`.
 
 Rules:

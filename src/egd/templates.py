@@ -96,6 +96,9 @@ slice_hours = 16      # longest dependency chain inside one slice
 [ac]
 # vague_words_extra = ["snappy"]   # more words a `then` may not lean on without a number; vague_words_allow drops defaults
 
+[design]
+# failure_mode_marks_extra = ["won't fix"]   # besides out of scope / accepted risk: a failure mode deliberately left unhandled
+
 [proof]
 # Runs a task's `tests` on `egd submit` and backs `kind = "test"` proofs.
 # {tests} is replaced by the task's test paths.
@@ -239,7 +242,11 @@ DESIGN = """\
 
 ## Failure modes
 <!-- What goes wrong and what the user sees: validation, not found, conflict,
-     upstream down, permission denied, timeout. -->
+     upstream down, permission denied, timeout. One bullet each, ending with what
+     handles it — an AC or a decision id, or "out of scope" / "accepted risk":
+     - OTP expired → the form asks for a new one → AC-4
+     - SMS provider down → D-2 (fall back to email)
+     - Two tabs submit at once → accepted risk -->
 """
 
 RELEASE = """\
@@ -292,6 +299,15 @@ client = ""              # who accepts this work
 # when = "the buyer checks out"
 # then = "the order total is 300,000 and the order is pending"
 # levels = ["integration", "e2e"]   # test strategy: unit | integration | e2e | manual
+# case = "happy"                     # happy | error | edge — plan the failures too:
+#
+# [[ac]]
+# id = "AC-1.2"
+# given = "an empty cart"
+# when = "the buyer checks out"
+# then = "the API answers 422 and the page says the cart is empty"
+# levels = ["integration"]
+# case = "error"
 # kind = "nfr"                       # non-functional: name a number where it is a measure (300 ms, 99.9%)
 
 # ---- design ------------------------------------------------------------

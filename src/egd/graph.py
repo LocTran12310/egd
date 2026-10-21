@@ -6,7 +6,7 @@ import math
 import re
 from collections import defaultdict
 
-from . import vague
+from . import cases, vague
 from .model import Feature
 from .events import State
 
@@ -142,6 +142,8 @@ def validate(feature: Feature, config: dict) -> tuple[list[str], list[str]]:
     # Always a warning here: whether it also closes `clarify` depends on the rules the feature
     # was planned under, which the trail holds (gates.check_clarify)
     warnings += vague.findings(feature, config)
+    policy += cases.bad_cases(feature)  # a value the CLI would refuse; an imported plan only hears of it
+    warnings += cases.case_warnings(feature)
 
     covered: set[str] = set()
     for s in feature.slices:
