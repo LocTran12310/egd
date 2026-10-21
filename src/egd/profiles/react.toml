@@ -14,6 +14,7 @@ review = [
   "loading, empty or error state missing",
   "unlabelled inputs, clickable divs, missing alt text",
   "console errors or warnings left in the browser",
+  "API error shown as raw text instead of the catalog's user message",
 ]
 
 [[test]]

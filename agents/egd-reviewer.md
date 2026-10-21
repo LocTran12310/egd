@@ -22,7 +22,9 @@ Check, in order:
 4. **Tests** — do they assert behaviour, or only that code runs?
 5. **Security** — input validation, authorization on every new endpoint, secrets in code
    or logs, injection (SQL, shell, HTML), unsafe deserialization, dependency additions.
-6. **Conventions** — against `.egd/map.md`.
+6. **Conventions** — against `.egd/map.md` and `egd profile`'s review list. Error catalog and
+   permission matrix items check against the map's `Error catalog:` / `Permission matrix:`;
+   where it says `none`, they are a nit (a reminder), not a reason to reject.
 
 Output a short list: each finding with file:line, severity (blocker / should-fix / nit)
 and why. End with a recommendation: accept, or reject with the one-sentence reason a

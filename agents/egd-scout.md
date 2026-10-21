@@ -19,7 +19,11 @@ Write `.egd/map.md` with these sections, each grounded in files you actually rea
 - **Run, test, deploy** — exact commands from package scripts, Makefiles, CI config
 - **Conventions** — naming, error handling, API style, state management, test style —
   the things a newcomer would get wrong; cite one example file for each. Start from `egd profile`
-  (the stack's general conventions) and write down only where this repository differs or adds
+  (the stack's general conventions) and write down only where this repository differs or adds.
+  Always end it with two lines the profiles' done_when items point at:
+  `Error catalog: <path>` (every error code with its HTTP status, cause and user message key) and
+  `Permission matrix: <path>` (which role may call each route) — `none` when the repository has no
+  such place; say so plainly rather than guessing
 - **Environments** — URLs without secrets, how auth works
 - **Unknowns** — what the code could not tell you; these become questions or assumptions
 

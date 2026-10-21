@@ -32,7 +32,9 @@ or the default branch.
    or web connector). If one cannot be read, say so in the report — never review against a
    remembered version.
 2. **Repository conventions** — `.egd/map.md` (naming, structure, the conventions table), and
-   the stack profile: `egd profile` lists its conventions and a "review for" checklist.
+   the stack profile: `egd profile` lists its conventions and a "review for" checklist. Its error
+   catalog and permission matrix items point at the `Error catalog:` / `Permission matrix:` lines
+   of the map; where the map says `none`, raise them as a reminder (nit), never as a blocker.
 3. **The feature** — find it from task ids in the commits or the branch:
    `egd status <feature>`, `plan.toml` (the tasks' `touches`, `done_when`; the ACs the slice
    covers), `design.md` (*Failure modes*), and `egd proof list <feature>`.

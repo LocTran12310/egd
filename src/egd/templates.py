@@ -189,7 +189,10 @@ reviewed_by:
 <!-- the exact commands -->
 
 ## Conventions
-<!-- naming, error handling, state, API style — things a newcomer would get wrong -->
+<!-- naming, error handling, state, API style — things a newcomer would get wrong.
+     The stack profile's done_when points at these two; write where they live, or none:
+     Error catalog: <file listing every error code: HTTP status, cause, user message key>
+     Permission matrix: <file or code declaring which role may call each route> -->
 
 ## Environments
 <!-- local / staging / prod URLs (no secrets), how auth works -->

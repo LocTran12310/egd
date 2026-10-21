@@ -1,5 +1,5 @@
 title = "Node.js / TypeScript back end"
-detect = ["package.json:express", "package.json:@nestjs", "package.json:fastify", "package.json:koa", "package.json:typeorm", "package.json:prisma"]
+detect = ["package.json:express", "package.json:@nestjs", "package.json:fastify", "package.json:koa", "package.json:\"hono\"", "package.json:typeorm", "package.json:prisma"]
 
 conventions = """
 - TypeScript strict; no `any` without a comment saying why.
@@ -14,6 +14,8 @@ review = [
   "missing validation on new request fields",
   "raw SQL with string concatenation",
   "stack traces or internal errors returned to clients",
+  "error code returned but missing from the error catalog",
+  "new endpoint without a declared permission or a denied-path test",
 ]
 
 [[test]]
@@ -31,5 +33,10 @@ touches = ["**/migrations/**", "**/migration/**"]
 items = ["the migration runs and reverts cleanly"]
 
 [[done_when]]
-touches = ["**/routes/**", "**/controllers/**", "**/resolvers/**", "**/*.controller.ts", "**/*.resolver.ts"]
-items = ["new inputs are validated and errors return the documented shape"]
+touches = ["**/routes/**", "**/controllers/**", "**/controller/**", "**/handlers/**", "**/resolvers/**",
+           "**/*.controller.ts", "**/*.resolver.ts"]
+items = [
+  "new inputs are validated and errors return the documented shape",
+  "every new error code is in the error catalog (map.md → Error catalog): code, HTTP status, cause, user message key",
+  "every new route declares its permission in the permission matrix (map.md → Permission matrix) and has a test for the denied case (401/403)",
+]

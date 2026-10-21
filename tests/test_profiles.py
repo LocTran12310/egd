@@ -32,6 +32,44 @@ class BuiltIn(unittest.TestCase):
         self.assertTrue(profiles.covers("src/App.tsx", "**/*.tsx"))
 
 
+CATALOG = "every new error code is in the error catalog"
+PERMISSION = "every new route declares its permission in the permission matrix"
+
+
+class ErrorsAndPermissions(unittest.TestCase):
+    """Back-end profiles ask route work to fill the error catalog and the permission matrix."""
+
+    def items(self, name, *touches):
+        return " | ".join(profiles.done_when_for([profiles.load(Path("/nonexistent"), name)], list(touches)))
+
+    def test_every_built_in_profile_file_parses(self):
+        for f in sorted(profiles.BUILT_IN.glob("*.toml")):
+            self.assertIsInstance(tomllib.loads(f.read_text(encoding="utf-8")), dict, f.name)
+
+    def test_route_work_is_asked_for_both_and_other_work_is_not(self):
+        for name, touches in (("node", "src/controller/**"), ("node", "apps/api/src/routes/**"),
+                              ("node", "src/handlers/**"), ("python", "shop/views.py"),
+                              ("python", "app/routers/**"), ("go", "internal/handlers/**"),
+                              ("go", "internal/user_handler.go")):
+            text = self.items(name, touches)
+            self.assertIn(CATALOG, text, (name, touches))
+            self.assertIn(PERMISSION, text, (name, touches))
+            self.assertIn("401/403", text)
+        # a folder glob may hold a *.controller.ts, so the negative cases name files
+        for name, touches in (("node", "src/utils/format.ts"), ("python", "app/models.py"), ("go", "internal/store/**"),
+                              ("react", "src/**"), ("react", "src/api/**")):
+            self.assertNotIn(CATALOG, self.items(name, touches), (name, touches))
+            self.assertNotIn(PERMISSION, self.items(name, touches), (name, touches))
+
+    def test_reviews_look_for_them(self):
+        for name in ("node", "python", "go"):
+            review = profiles.load(Path("/nonexistent"), name)["review"]
+            self.assertIn("error code returned but missing from the error catalog", review, name)
+            self.assertIn("new endpoint without a declared permission or a denied-path test", review, name)
+        self.assertIn("API error shown as raw text instead of the catalog's user message",
+                      profiles.load(Path("/nonexistent"), "react")["review"])
+
+
 class InARepository(unittest.TestCase):
     def setUp(self):
         self.p = Project()
@@ -45,6 +83,17 @@ class InARepository(unittest.TestCase):
         write(self.p.root / "apps" / "web" / "package.json", '{"dependencies": {"react": "18"}, "devDependencies": {"vitest": "1"}}')
         self.assertIn("react", profiles.detect(self.p.root))
         self.assertEqual(profiles.test_command(self.p.root, profiles.load(self.p.root, "react")), "npx vitest run {tests}")
+
+    def test_a_hono_api_is_node_and_a_lookalike_name_is_not(self):
+        write(self.p.root / "apps" / "web" / "package.json", '{"dependencies": {"phonon": "1"}}')
+        self.assertNotIn("node", profiles.detect(self.p.root))
+        write(self.p.root / "apps" / "api" / "package.json", '{"dependencies": {"hono": "4"}}')
+        self.assertIn("node", profiles.detect(self.p.root))
+
+    def test_the_map_template_asks_where_the_catalog_and_matrix_live(self):
+        text = (self.p.root / ".egd" / "map.md").read_text()
+        self.assertIn("Error catalog:", text)
+        self.assertIn("Permission matrix:", text)
 
     def test_the_repositorys_own_profile_wins_and_can_be_new(self):
         write(self.p.root / ".egd" / "profiles" / "react.toml", 'title = "Our React"\ndetect = []\n')

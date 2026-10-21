@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.5 — 2026-10-21
+
+Checklists in the built-in stack profiles; no CLI check, no gate and no rules change.
+
+- **Error catalog and permission matrix:** the `node`, `python` and `go` profiles ask route work
+  (done_when) for every new error code in the repository's error catalog — code, HTTP status,
+  cause, user message key — and every new route declared in the permission matrix with a test for
+  the denied case (401/403); their review lists look for both. `react` reviews for API errors
+  shown as raw text instead of the catalog's user message.
+- **Route files:** node also matches `**/controller/**` and `**/handlers/**`; python `**/views.py`
+  and `**/routers/**`; go gets a route rule (`**/handlers/**`, `**/handler/**`, `**/routes/**`,
+  `**/*_handler.go`).
+- **Hono** is detected as `node`. Detection only runs when a repository has no `[stack] profiles`
+  yet (`egd setup`, `egd profile`): a stack already chosen does not change.
+- **map.md** asks for `Error catalog:` and `Permission matrix:` under Conventions; the scout
+  writes a path or `none`, and reviewers treat the profile items as reminders where it says `none`.
+- Profiles of your own in `~/.egd/profiles` or a repository's `.egd/profiles` are not changed:
+  copy the new items in if you want them.
+
 ## 0.1.4 — 2026-10-21
 
 Warnings only, under every rules version: no gate closes on them and `RULES` stays 2.

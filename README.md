@@ -111,7 +111,9 @@ the repository's files stay untouched); bare `egd` warns if git still tracks fil
 **Stack profiles.** `egd setup` detects the stack (python, node, react, go) and sets the test
 command; `egd profile` shows its conventions, review checklist and the done_when items it asks of
 tasks touching certain files. Tune one for a repository (`egd profile --new shop --from react`,
-committed in `.egd/profiles/`) or for all yours (`--mine`, in `~/.egd/profiles/`).
+committed in `.egd/profiles/`) or for all yours (`--mine`, in `~/.egd/profiles/`). The back-end
+profiles ask route work to add each new error code to the repository's error catalog and each new
+route to its permission matrix, with a denied-path test; `.egd/map.md` says where those live.
 
 **Who signs.** Commands that record something sign as you — `$EGD_USER`, else your
 `git config user.name`, matched to your entry in `.egd/team.toml` (name, GitHub handle or

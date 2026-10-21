@@ -13,6 +13,8 @@ review = [
   "goroutines that can leak (no cancel, no done channel)",
   "shared state without a lock",
   "context not passed through I/O calls",
+  "error code returned but missing from the error catalog",
+  "new endpoint without a declared permission or a denied-path test",
 ]
 
 [[test]]
@@ -21,3 +23,11 @@ command = "go test {tests}"
 [[done_when]]
 touches = ["**/migrations/**"]
 items = ["the migration applies and rolls back on a copy of real data"]
+
+[[done_when]]
+touches = ["**/handlers/**", "**/handler/**", "**/routes/**", "**/*_handler.go"]
+items = [
+  "invalid input returns a clear 4xx, never a 500",
+  "every new error code is in the error catalog (map.md → Error catalog): code, HTTP status, cause, user message key",
+  "every new route declares its permission in the permission matrix (map.md → Permission matrix) and has a test for the denied case (401/403)",
+]
