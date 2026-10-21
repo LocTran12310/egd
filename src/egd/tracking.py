@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .events import State, record
+from .impact import impact
 from .model import Feature
 from .team import Team
 from .util import Refused
@@ -43,7 +44,7 @@ def uat(f: Feature, st: State, team: Team, slice_id: str, by: str, passed: bool,
 
 
 def cr_open(f: Feature, st: State, team: Team, by: str, title: str, reason: str,
-            hours: float, affects: list[str]) -> dict:
+            hours: float, affects: list[str], cfg: dict | None = None) -> dict:
     team.require(by, "work")
     if not title or not reason:
         raise Refused("a change request needs --title and --reason")
@@ -51,9 +52,15 @@ def cr_open(f: Feature, st: State, team: Team, by: str, title: str, reason: str,
     # The CR covers the acceptance criteria and the planned work exactly as they stand now; the
     # work it drops is listed on it, so the client approves a drop it can see.
     dropped = dropped_since_agreed(f, st)
+    # What it reaches, as it stands when opened: reports show the client what they decided on.
+    reach = {"impact": impact(f, st, cfg or {}, affects)} if affects else {}
     event = record(f, "cr_opened", by, cr=cr, title=title, reason=reason, hours=hours,
-                   affects=affects, scope=f.scope_hash(), dropped=dropped, **planned(f))
+                   affects=affects, scope=f.scope_hash(), dropped=dropped, **planned(f), **reach)
     event["notes"] = ([f"{cr} drops planned work: {', '.join(dropped)}"] if dropped else [])
+    suggested = reach.get("impact", {}).get("hours", 0)
+    if suggested and hours < suggested / 2:  # said, never refused: the estimate is a rough upper bound
+        event["notes"].append(f"--hours {hours:g} is well under the {suggested:g}h the reached tasks are "
+                              "estimated at — check it covers redoing them")
     return event
 
 

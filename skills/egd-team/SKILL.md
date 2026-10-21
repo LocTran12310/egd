@@ -81,6 +81,7 @@ never drives the console for a person — it is the human's signing surface.
 the name of the person who decided, in this conversation; otherwise ask.
 
 ```bash
+egd cr impact --affects AC-1.1             # read-only preview: slices to UAT again, tasks to reopen, proofs, hours
 egd cr open --by <pm> --title "Add VAT line" --reason "new regulation" --hours 3 --affects AC-1.1
 egd cr approve CR-001 --by <client>        # or: egd cr reject CR-001 --by <client> --note …
 egd cr list
@@ -91,6 +92,12 @@ egd bug fix BUG-001 --by <dev> --task T-1.3  ·  egd bug close BUG-001 --by <qa>
 egd uat S-1 --by <client> --pass
 egd uat S-1 --by <client> --fail --note "total shows before tax"
 ```
+
+Give every CR `--affects`: `egd cr open` then prints what the change reaches — slices whose UAT
+passed and must be walked again, tasks already done, in progress or not started, the proofs that
+must run again, and their estimates added up as a rough upper bound for `--hours` — and keeps that
+snapshot on the CR, so the client report shows the client what they decided on. A `--hours` well
+under it only prints a note. Run `egd cr impact` first when the PM is still sizing the change.
 
 Changing ACs after `clarify` needs an approved CR (rule in the `egd` skill): edit the ACs (the CLI
 warns and prints the `egd cr open` to run), then open the CR — approval is refused if they change

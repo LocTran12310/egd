@@ -75,7 +75,8 @@ options with an example, and a wrong entry comes out with `egd rm <id>`. The `st
   per AC, and ui proofs sign in by themselves. `egd proof setup` installs the browser once per
   machine. A backend ticket gets real evidence, not a skipped screenshot.
 - **Scope is locked after `clarify`.** Changing an acceptance criterion needs a change request
-  the client approves — on fixed-price work, that is your margin.
+  the client approves — on fixed-price work, that is your margin. `egd cr impact --affects AC-1.1`
+  works out what the change reaches: slices to UAT again, tasks to reopen, proofs to rerun, hours.
 - **Four eyes by default.** Nobody accepts their own work. Working alone is allowed, and
   recorded as such.
 - **Agents by task.** Each ready task names its agent and model — Opus for risky work, Haiku for
@@ -98,7 +99,7 @@ options with an example, and a wrong entry comes out with `egd rm <id>`. The `st
 | **Prove** | `egd proof run`, `egd verify --run` | every required proof passes on the current code |
 | **Ship** | `egd pass build`, the client's `egd uat S-1 --pass`, `egd pass accept`, `egd pass release` | UAT per slice, no serious defect open, a rollback written |
 
-Also: `egd close` (a feature that stops: dropped, a research spike, superseded) · `egd standup` · `egd board` · `egd report <feature> --lang vi` · `egd cr open` ·
+Also: `egd close` (a feature that stops: dropped, a research spike, superseded) · `egd standup` · `egd board` · `egd report <feature> --lang vi` · `egd cr impact` · `egd cr open` ·
 `egd bug open` · `egd metrics` · `egd pr` · `egd sync github`. Any command that works on a
 feature takes `-f <feature>` (or just its name — `egd <feature>` alone is its status); `egd -h`
 lists every command by stage, and a typo gets a *did you mean …?*.

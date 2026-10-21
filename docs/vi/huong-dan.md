@@ -156,7 +156,10 @@ Mật khẩu và token đặt trong `.egd/secrets.env` (không commit), tham chi
 
 ```bash
 # Khách muốn đổi yêu cầu sau clarify → mở CR, khách duyệt mới qua được cổng tiếp theo
-egd cr open --by Linh --title "Thêm dòng VAT" --reason "quy định mới" --hours 3
+egd cr impact --affects AC-1.1  # xem trước, không ghi gì: slice phải UAT lại, task phải mở lại, proof phải chạy lại, số giờ
+egd cr open --by Linh --title "Thêm dòng VAT" --reason "quy định mới" --hours 3 --affects AC-1.1
+# cr open in bảng tác động đó và lưu nó vào CR; báo cáo cho khách hiện lại phần tóm tắt.
+# Số giờ gợi ý là tổng estimate các task bị chạm, chỉ là cận trên thô; --hours thấp hơn nhiều thì chỉ có một dòng nhắc.
 egd cr approve CR-001 --by "Acme PO"
 
 # Bug

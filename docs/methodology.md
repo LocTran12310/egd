@@ -21,7 +21,9 @@ works*. Each gate answers one question that would otherwise be answered by vibes
 6. **Evidence over assertion.** "It works" is a claim. A proof is a reproducible run
    against a known commit with an artifact someone else can read.
 7. **Scope is a contract.** After `clarify`, the acceptance criteria are fingerprinted;
-   changes require a client-approved change request. Until `slice` the plan is a draft
+   changes require a client-approved change request, which states what the change reaches
+   (slices to accept again, tasks to reopen, proofs to rerun) from the plan's own graph rather
+   than from memory. Until `slice` the plan is a draft
    (`egd rm` takes entries out freely); after it, dropping planned work needs one too.
 8. **Waiting is a state.** Blocked work is recorded with a reason, so the board shows
    it instead of hiding it.

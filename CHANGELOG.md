@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.3 — 2026-10-21
+
+- **Change requests work out their impact.** From the ACs a CR `--affects`, through the plan's
+  graph (slice `covers` → its tasks; proof `verifies`) and the trail: slices whose UAT passed and
+  must be walked again, tasks done / in progress / not started, every proof that must run again
+  with its last state, and the reached tasks' estimates added up — a rough upper bound.
+  `egd cr impact --affects …` previews it without recording anything; `egd cr open` prints it
+  before "waiting for the client" and keeps the snapshot on the `cr_opened` event. A `--hours`
+  well under the estimate prints a note, never a refusal. The client report (English and
+  Vietnamese), the console's change-request table and its inbox show a one-line summary; CRs
+  opened before keep showing as they did. Information only: no gate and no rules change.
+
 ## 0.1.2 — 2026-10-21
 
 - **An `nfr` AC with no number only warns**, under every rules version: it no longer closes

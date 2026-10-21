@@ -1237,10 +1237,21 @@ function fEvidence(f, rid) {
       || `<tr><td colspan="7" class="empty">${esc(t("No proofs declared."))}</td></tr>`}</tbody></table></div>`;
 }
 
+// A CR's impact as it stood when opened (CRs opened before 0.1.3 carry none: nothing shown)
+function crImpact(i) {
+  if (!i) return "";
+  const parts = [];
+  if (i.uat && i.uat.length) parts.push(t("UAT again for {ids}", { ids: i.uat.join(", ") }));
+  if (i.done) parts.push(t("{n} finished task(s) to reopen", { n: i.done }));
+  if (i.proofs) parts.push(t("{n} proof(s) to run again", { n: i.proofs }));
+  if (i.hours) parts.push(t("up to {h}h", { h: i.hours }));
+  return parts.length ? `<div class="muted small">${esc(t("Impact: {what}", { what: parts.join("; ") }))}</div>` : "";
+}
+
 function fScope(f, rid) {
   const ctx = { repo: rid, slug: f.slug };
   const tbl = (head, rows, empty) => `<div class="panel tablewrap"><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${head.length}" class="empty">${esc(empty)}</td></tr>`}</tbody></table></div>`;
-  return `<h2>${esc(t("Change requests"))}</h2>${tbl([t("CR"), t("Change"), t("Hours"), t("Status"), ""], f.crs.map(c => `<tr><td class="mono">${esc(c.id)}</td><td class="wrap">${inlineMd(c.title)}<div class="muted small">${inlineMd(c.reason)}</div></td><td class="num">${esc(c.hours)}</td><td>${st(c.status)}</td>
+  return `<h2>${esc(t("Change requests"))}</h2>${tbl([t("CR"), t("Change"), t("Hours"), t("Status"), ""], f.crs.map(c => `<tr><td class="mono">${esc(c.id)}</td><td class="wrap">${inlineMd(c.title)}<div class="muted small">${inlineMd(c.reason)}</div>${crImpact(c.impact)}</td><td class="num">${esc(c.hours)}</td><td>${st(c.status)}</td>
       <td class="ta-r">${c.status === "pending" ? actBtn({ action: "cr_approve", label: "Approve", target: c.id, primary: true }, ctx, "sm") + " " + actBtn({ action: "cr_reject", label: "Reject", target: c.id, needs: ["note"] }, ctx, "sm") : ""}</td></tr>`), t("No change requests."))}
     <h2>${esc(t("Assumptions"))}</h2>${tbl([t("Id"), t("Assumption"), t("Blocking"), t("Status"), t("Resolution"), ""], f.assumptions.map(a => `<tr><td class="mono">${esc(a.id)}</td><td class="wrap">${inlineMd(a.text)}</td><td>${a.blocking ? st("warn", t("blocking")) : ""}</td><td>${st(a.status || "open")}</td><td class="wrap muted small">${inlineMd(a.resolution || "")}</td>
       <td class="ta-r">${(a.status || "open") === "open" ? actBtn({ action: "resolve", label: "Confirm", target: a.id, needs: ["resolution"], primary: true }, ctx, "sm") + " " + actBtn({ action: "reject_assumption", label: "Reject", target: a.id, needs: ["resolution"] }, ctx, "sm") : ""}</td></tr>`), t("No assumptions."))}

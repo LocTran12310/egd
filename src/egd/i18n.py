@@ -48,6 +48,11 @@ STRINGS = {
         "released": "released",
         "closed": "closed (will not ship)",
         "cr_drops": "drops {ids}",
+        "impact": "impact: {what}",
+        "impact_uat": "UAT again for {ids}",
+        "impact_done": "{n} finished task(s) to reopen",
+        "impact_proofs": "{n} proof(s) to run again",
+        "impact_hours": "up to {h}h",
     },
     "vi": {
         "status_report": "báo cáo tiến độ",
@@ -94,6 +99,11 @@ STRINGS = {
         "released": "đã phát hành",
         "closed": "đã đóng (không phát hành)",
         "cr_drops": "bỏ {ids}",
+        "impact": "tác động: {what}",
+        "impact_uat": "UAT lại {ids}",
+        "impact_done": "{n} task đã xong phải mở lại",
+        "impact_proofs": "chạy lại {n} proof",
+        "impact_hours": "tối đa {h}h",
     },
 }
 

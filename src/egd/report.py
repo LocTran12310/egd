@@ -12,6 +12,7 @@ from pathlib import Path
 from .events import State, replay
 from .gates import SERIOUS, check, next_gate, NEXT, stage
 from .graph import ready
+from .impact import summary as impact_summary
 from .i18n import strings
 from .model import Feature, all_features
 from .proof import proof_matrix
@@ -226,6 +227,11 @@ def board_markdown(root: Path, cfg: dict) -> str:
 
 # ------------------------------------------------------------------ client report
 
+def _has_impact(cr: dict) -> bool:
+    """A CR opened since 0.1.3 with --affects carries what it reached; older ones show as before."""
+    return bool(impact_summary(cr.get("impact"), strings("en")))
+
+
 def client_report(f: Feature, cfg: dict, since_days: int = 7, lang: str = "en") -> str:
     T = strings(lang)
     st = replay(f)
@@ -266,6 +272,7 @@ def client_report(f: Feature, cfg: dict, since_days: int = 7, lang: str = "en") 
         lines += [T["cr_head"], "|---|---|---|---|"]
         lines += [f"| {k} | {md_cell(v.get('title', ''))}"
                   + (f" ({T['cr_drops'].format(ids=', '.join(v['dropped']))})" if v.get("dropped") else "")
+                  + (f" — {md_cell(impact_summary(v['impact'], T))}" if _has_impact(v) else "")
                   + f" | {v.get('hours', 0):g} | "
                   f"{T['status'].get(v.get('status'), v.get('status'))} |" for k, v in st.crs.items()]
     else:

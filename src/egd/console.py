@@ -33,6 +33,8 @@ from .sources import aidlc
 from .dashboard import LOCAL_HOSTS, SERVABLE, SIGNATURES, feature_data, feature_summary, namer, safe_runs
 from .events import replay
 from .graph import validate
+from .i18n import strings
+from .impact import summary as impact_summary
 from .model import all_features
 from .planfile import set_fields, toml_value
 from .team import Team
@@ -395,7 +397,9 @@ def feature_inbox(rid, f, st, cfg, nxt, problems, who=lambda name: name) -> list
     for cid, cr in st.crs.items():
         if cr.get("status") == "pending":
             out.append(_item("decide", "cr", rid, f, f"{cid} awaiting the client",
-                             f"{cr.get('title', '')} (+{cr.get('hours', 0):g}h) — {cr.get('reason', '')}",
+                             f"{cr.get('title', '')} (+{cr.get('hours', 0):g}h) — {cr.get('reason', '')}"
+                             + (f" · {impact_summary(cr.get('impact'), strings('en'))}"
+                                if impact_summary(cr.get("impact"), strings("en")) else ""),
                              actions=[_act("cr_approve", "Approve", cid, primary=True),
                                       _act("cr_reject", "Reject", cid, needs=["note"])], target=cid))
     for a in f.assumptions:

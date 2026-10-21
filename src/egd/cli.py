@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 
 # github, templates and tasks serve a few commands each and are imported inside them.
-from . import RULES, __version__, gates, planfile, report, tracking, vague
+from . import RULES, __version__, gates, impact, planfile, report, tracking, vague
 from .i18n import LANGS
 from .events import read, record, replay
 from .graph import assignment, longest_path, ready, validate, waves
@@ -595,12 +595,21 @@ def cmd_cr(args):
     root, cfg, team = ctx(args)
     f = resolve_feature(root, args.feature)
     st = replay(f)
-    if args.action != "list":
+    if args.action not in ("list", "impact"):  # both only read
         signer(args, root, team)
-    if args.action == "open":
+    if args.action == "impact":
+        if not args.affects:
+            raise UsageError("egd cr impact --affects AC-1.1,AC-1.2 — the acceptance criteria the change touches")
+        for line in impact.lines(impact.impact(f, st, cfg, _ac_ids(f, args.affects))):
+            out(line)
+        out("nothing recorded — `egd cr open … --affects` opens the change request")
+    elif args.action == "open":
         affects = _ac_ids(f, args.affects)
-        e = tracking.cr_open(f, st, team, args.by, args.title, args.reason, args.hours, affects)
-        out(f"{e['cr']} opened: {args.title} (+{args.hours}h) — waiting for the client")
+        e = tracking.cr_open(f, st, team, args.by, args.title, args.reason, args.hours, affects, cfg)
+        if e.get("impact"):
+            for line in impact.lines(e["impact"]):
+                out(line)
+        out(f"{e['cr']} opened: {args.title} (+{args.hours:g}h) — waiting for the client")
         out("it covers the acceptance criteria as they stand now (edit plan.toml first); "
             f"the client approves with: egd cr approve {e['cr']} --by <client>")
         _notes(e)
@@ -1672,15 +1681,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--fail", dest="failed", action="store_true", help="the client returns it (needs --note)")
     sp.add_argument("--note", help="what the client said; required with --fail")
 
-    sp = add("cr", cmd_cr, "change requests: open | approve | reject | list")
-    sp.add_argument("action", choices=("open", "approve", "reject", "list"))
+    sp = add("cr", cmd_cr, "change requests: open | approve | reject | list | impact")
+    sp.add_argument("action", choices=("open", "approve", "reject", "list", "impact"))
     sp.add_argument("id", nargs="?", help="CR id, e.g. CR-001 (approve, reject)")
     _feature(sp)
     by(sp)
     sp.add_argument("--title", help="open: what changes, in the client's words")
     sp.add_argument("--reason", help="open: why the change is needed")
     sp.add_argument("--hours", type=float, default=0, help="open: extra hours it costs (default: 0)")
-    sp.add_argument("--affects", help="open: comma-separated AC ids it changes")
+    sp.add_argument("--affects", help="open, impact: comma-separated AC ids it changes — "
+                                      "`impact` previews the slices, tasks, proofs and hours they reach")
     sp.add_argument("--note", help="approve/reject: the client's note")
 
     sp = add("bug", cmd_bug, "defects: open | fix | close | reopen | list")
@@ -1837,7 +1847,7 @@ LOCKED = {"new", "pass", "close", "start", "accept", "reject", "block", "unblock
 
 def _writer(args):
     from contextlib import nullcontext
-    if args.cmd not in LOCKED:
+    if args.cmd not in LOCKED or (args.cmd == "cr" and args.action in ("list", "impact")):  # only read
         return nullcontext()
     try:
         root = find_root(Path(args.root) if args.root else None)

@@ -19,6 +19,7 @@ from pathlib import Path
 from .events import replay
 from .gates import stage
 from .graph import assignment, ready
+from .impact import brief as impact_brief
 from .model import Feature, all_features
 from .proof import proof_matrix
 from .report import ac_proof_status, counts, health, metrics, progress
@@ -149,7 +150,8 @@ def feature_data(f: Feature, cfg: dict, team=None, st=None) -> dict:
         "tasks": tasks, "proofs": proofs,
         "assumptions": f.assumptions, "decisions": f.decisions,
         "crs": [{"id": k, **{x: v.get(x) for x in ("title", "status", "hours", "reason", "at")},
-                 "by": who(v.get("by")), "decided_by": who(v.get("decided_by"))} for k, v in st.crs.items()],
+                 "by": who(v.get("by")), "decided_by": who(v.get("decided_by")),
+                 "impact": impact_brief(v.get("impact"))} for k, v in st.crs.items()],
         "defects": [{"id": k, **{x: v.get(x) for x in ("title", "status", "severity", "found_in", "at", "acs")},
                      "by": who(v.get("by"))} for k, v in st.defects.items()],
         "metrics": m, "trail": trail, "gate_checks": gate_checks,
