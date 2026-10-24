@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -292,12 +293,23 @@ def clear_git_cache() -> None:
         slot[1].clear()
 
 
-def source_changed_since(root: Path, sha: str | None, footprint: list[str] | None = None) -> bool | None:
-    """True when code under the EGD root (outside .egd/) differs from `sha`: any commit since, or
-    an uncommitted change inside the feature's `footprint` (every uncommitted change, without one).
-    In a monorepo, changes outside the folder holding .egd/ are not watched.
+def source_changed_since(root: Path, sha: str | None, footprint: list[str] | None = None,
+                         watch: list[str] | None = None, fp: str | None = None) -> bool | None:
+    """True when code under the EGD root (outside .egd/) differs from `sha` where the feature can
+    feel it: a commit since that changed a file inside its `footprint` or the shared files `watch`
+    names (lockfiles, config), or an uncommitted change inside the `footprint`. Without a footprint,
+    any commit and any uncommitted change. In a monorepo, changes outside the folder holding .egd/
+    are not watched.
 
-    None when it cannot be told (no git, unknown sha). Plan and trail edits do not count:
+    So a teammate's merged work in files the feature never touches leaves its evidence standing:
+    parallel features do not re-prove each other on every merge. `watch = ["**"]` brings back
+    the strict rule — any commit at all.
+
+    A run's commit can be gone from this clone — squash-merged, rebased, its branch deleted. Then
+    `fp`, the content of what it covered when it ran (`scope_fingerprint`), decides: the same
+    files with the same content is the same evidence, whatever the history.
+
+    None when it cannot be told (no git). Plan and trail edits do not count:
     recording a proof must not make that same proof stale. Nor does a local edit far from the
     feature — a tweaked .gitignore, an editor config — that nobody will commit with it.
     """
@@ -306,15 +318,63 @@ def source_changed_since(root: Path, sha: str | None, footprint: list[str] | Non
         return None
     if not sha or not _memo(("commit?", str(root), sha),
                             lambda: git(root, "cat-file", "-e", f"{sha}^{{commit}}") is not None):
-        return True  # a commit this clone does not have proves nothing about this code
-    if sha != head:
-        committed = _memo(("committed", str(root), sha), lambda: git(
-            root, "diff", "--name-only", sha, "HEAD", "--", ".", f":(exclude){EGD_DIR}"))
+        # a commit this clone does not have proves nothing about this code — unless what it covered
+        # is here, byte for byte
+        if not fp or fp != scope_fingerprint(root, head, footprint, watch):
+            return True
+    elif sha != head:
+        committed = _memo(("committed", str(root), sha), lambda: committed_since(root, sha))
         if committed is None:
             return None
-        if committed.strip():
+        if footprint is None and committed:
+            return True
+        if any(matches_any(p, [*(footprint or []), *(watch or [])]) for p in committed):
             return True
     return bool(split_local(dirty_paths(root), footprint)[0])
+
+
+def tree_files(root: Path, rev: str) -> dict[str, str] | None:
+    """path → blob id of every file under the EGD root (outside .egd/) at `rev`, relative to it."""
+    def ask():
+        out = git(root, "-c", "core.quotePath=false", "ls-tree", "-r", "-z", rev)
+        if out is None:
+            return None
+        files = {}
+        for entry in out.split("\0"):
+            meta, _, path = entry.partition("\t")
+            parts = meta.split()
+            if path and len(parts) == 3 and parts[1] == "blob" and not path.startswith(EGD_DIR + "/"):
+                files[path] = parts[2]
+        return files
+    return _memo(("tree", str(root), rev), ask)
+
+
+def scope_fingerprint(root: Path, rev: str | None, footprint: list[str] | None,
+                      watch: list[str] | None = None) -> str | None:
+    """Content hash of the files a run's evidence covers at `rev`: those inside `footprint` or
+    `watch` (every file, without a footprint). Survives squash and rebase, which keep content and
+    lose commits."""
+    if not rev:
+        return None
+    globs = None if footprint is None else [*footprint, *(watch or [])]
+
+    def ask():
+        files = tree_files(root, rev)
+        if files is None:
+            return None
+        chosen = sorted(f"{p} {b}" for p, b in files.items() if globs is None or matches_any(p, globs))
+        return hashlib.sha256("\n".join(chosen).encode()).hexdigest()[:16]
+    return _memo(("fp", str(root), rev, tuple(globs) if globs is not None else None), ask)
+
+
+def committed_since(root: Path, sha: str) -> list[str] | None:
+    """Files under the EGD root (outside .egd/) that differ between `sha` and HEAD, relative to
+    the root; None when git cannot tell."""
+    out = git(root, "-c", "core.quotePath=false", "diff", "-z", "--name-only", "--relative", sha, "HEAD",
+              "--", ".", f":(exclude){EGD_DIR}")
+    if out is None:
+        return None
+    return [n.strip() for n in out.split("\0") if n.strip()]
 
 
 def split_local(paths: list[str], footprint: list[str] | None) -> tuple[list[str], list[str]]:

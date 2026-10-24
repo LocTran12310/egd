@@ -1,5 +1,7 @@
 title = "Node.js / TypeScript back end"
 detect = ["package.json:express", "package.json:@nestjs", "package.json:fastify", "package.json:koa", "package.json:\"hono\"", "package.json:typeorm", "package.json:prisma"]
+# shared files: a commit that changes one makes every feature's evidence stale, footprint or not
+watch = ["**/package.json", "**/package-lock.json", "**/pnpm-lock.yaml", "**/yarn.lock", "**/tsconfig*.json"]
 
 conventions = """
 - TypeScript strict; no `any` without a comment saying why.

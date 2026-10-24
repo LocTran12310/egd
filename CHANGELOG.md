@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased
+
+- **Parallel features keep their evidence:** a committed change makes a proof stale only when
+  it touches the feature's footprint (its tasks' `touches` and `tests`, its proofs' `tests`) or
+  a shared file `watch` names. A teammate's feature merged in, in its own files, no longer sends
+  every other feature back to re-prove. Uncommitted changes count as before. A feature with a
+  task that declares no `touches` keeps the strict rule: any commit makes it stale.
+- **`watch`:** shared files whose change can break anyone. The built-in profiles name their
+  manifests and lockfiles (`package.json`, `*.lock`, `pyproject.toml`, `go.mod`, …); a
+  repository adds its own under `[proof] watch` in `.egd/config.toml`. `watch = ["**"]` is the
+  old rule.
+- **`inputs` on a proof:** path globs that replace the feature's footprint for that proof alone,
+  so a one-line CSS fix goes stale for the proofs that read the CSS, not all 26 of them. They may
+  reach beyond the footprint (shared code the proof depends on); `watch` still counts on top.
+  Adding or changing `inputs` leaves existing runs fresh (it is not part of the definition hash);
+  an empty or broken list is a lint error.
+- **`egd verify --run` re-runs only what no longer counts:** proofs still passing on this code
+  are left alone (`--all` runs them anyway). Before, every `verify --run` re-ran every proof.
+- **Squash merges and rebases keep evidence:** each run records a fingerprint of the content it
+  covered (its scope plus `watch`). When the run's commit is gone from a clone, the same content
+  is the same evidence. Runs recorded before this, on a lost commit, stay stale as before.
+- **`--jobs N` / `[proof] jobs`:** proofs run N at once; `serial = true` on a proof runs it alone,
+  after the rest. Like `inputs`, `serial` is not part of the definition hash.
+- **Quickest first, `--fail-fast`:** runs are ordered by how long each took last time (a guess
+  by kind when never timed; each run now records `ms`), so a quick failure shows before a long
+  e2e starts. `--fail-fast` starts nothing new once a required run has not passed and names what
+  it left unstarted. Both flags work on `egd proof run` and `egd verify --run`.
+- **`egd proof run --stale-only`:** runs only the proof × env pairs whose evidence does not count
+  for the code as it is — stale, failed or never run — and says "nothing to run" (exit 0) when
+  all of it does. Made for CI after a merge: no agent in the loop unless a proof fails.
+
 ## 0.1.6 — 2026-10-21
 
 A reminder only: `frame` is neither closed nor reopened, and `RULES` stays 2.

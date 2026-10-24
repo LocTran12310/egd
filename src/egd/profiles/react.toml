@@ -1,5 +1,8 @@
 title = "React / Next.js front end"
 detect = ["package.json:\"react\"", "package.json:\"next\""]
+# shared files: a commit that changes one makes every feature's evidence stale, footprint or not
+watch = ["**/package.json", "**/package-lock.json", "**/pnpm-lock.yaml", "**/yarn.lock", "**/tsconfig*.json",
+         "**/vite.config.*", "**/next.config.*"]
 
 conventions = """
 - Components stay small; data fetching lives in hooks or the framework's loaders, not in markup.

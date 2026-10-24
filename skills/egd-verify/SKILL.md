@@ -19,8 +19,10 @@ egd verify <feature> --run --by "<name>"              # next gate
 egd verify <feature> --run --by "<name>" --gate release   # everything up to release
 ```
 
-`--run` runs every task's tests (`[proof] test_command`) and every required proof, and
-records the proof runs like `egd proof run`. Without `--run` it only reads.
+`--run` runs every task's tests (`[proof] test_command`) and the proofs whose evidence does
+not count for this code — stale, failed, never run — and records them like `egd proof run`.
+Proofs still passing are left alone; `--all` re-runs them too, which is rarely worth hours of
+e2e. `--jobs N` and `--fail-fast` work as on `egd proof run`. Without `--run` it only reads.
 
 It reports, each ✅ or ❌: the plan, the tests, the proofs, the working tree (uncommitted
 code makes fresh evidence stale), and each gate ahead with what keeps it closed. Exit 0

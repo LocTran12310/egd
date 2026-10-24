@@ -148,8 +148,12 @@ Khai báo proof trong `proof.toml`. Chọn kind theo loại việc:
 ```bash
 egd proof run --by QA          # chạy proof, ghi transcript vào runs/
 egd proof list                 # trạng thái mới nhất; proof cũ sau khi code đổi bị đánh dấu "stale"
+egd proof run --by QA --stale-only   # chỉ chạy lại proof đã stale, fail hoặc chưa chạy
+egd proof run --by QA --jobs 4 --fail-fast   # chạy 4 proof cùng lúc, gặp proof fail thì không chạy thêm
 egd proof report               # bảng AC → bằng chứng
 ```
+
+**Làm song song nhiều feature:** proof chỉ bị stale khi commit mới đụng vào footprint của feature (`touches` và `tests` của các task) hoặc một file dùng chung trong `watch`. Feature khác merge vào mà chỉ sửa file của nó thì bằng chứng của feature này vẫn còn hiệu lực. File dùng chung (lockfile, `package.json`, `go.mod`…) lấy từ `watch` của các profile trong `[stack] profiles`; thêm của repo mình vào `[proof] watch` trong `.egd/config.toml`, ví dụ `["src/shared/**"]`. Đặt `["**"]` để quay về luật cũ: commit nào cũng làm stale. Feature có nhiều proof thì khai thêm `inputs = ["apps/web/src/exam/**"]` trên từng `[[proof]]`: proof đó chỉ stale khi file trong `inputs` (hoặc `watch`) đổi, nên sửa một dòng CSS không bắt chạy lại các proof API hay e2e không liên quan. Ưu tiên khai cho proof chạy lâu; nhớ ghi cả code dùng chung mà proof thực sự phụ thuộc. Thêm `inputs` vào proof đã chạy không làm nó stale. Proof dùng chung DB, port hay user seed thì đặt `serial = true` để không chạy song song với proof khác. Proof chạy theo thứ tự nhanh trước (dựa vào thời gian lần chạy trước), nên proof ngắn mà fail sẽ lộ ra trước khi e2e dài bắt đầu. Squash merge hay rebase không làm proof stale: mỗi lần chạy có lưu fingerprint nội dung các file nó bao phủ. `egd verify --run` cũng chỉ chạy lại proof chưa fresh (thêm `--all` nếu muốn chạy hết). Sau khi merge, `egd proof run --stale-only` chỉ chạy lại phần bị stale, không cần agent trừ khi có proof fail.
 
 Mật khẩu và token đặt trong `.egd/secrets.env` (không commit), tham chiếu bằng `${TEN_BIEN}`. Transcript tự che chúng thành `***`.
 

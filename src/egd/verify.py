@@ -15,14 +15,17 @@ from .gates import warnings as gate_warnings
 from .gates import CHECKS
 from .graph import validate
 from .model import Feature
-from .proof import local_note, proof_matrix, run_proofs, stale_note
+from .proof import local_note, proof_jobs, proof_matrix, run_notes, run_proofs, stale_note, unproven
 from .proof.testcmd import TESTS_UNSET, run_tests
 from .util import dirty_paths, git_memo, plural, split_local
 
 
 @git_memo()
-def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, upto: str | None = None) -> dict:
-    """Sections of (name, problems, notes) and whether the next gate (or `upto`) could be passed."""
+def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, upto: str | None = None,
+           every_proof: bool = False, jobs: int | None = None, fail_fast: bool = False) -> dict:
+    """Sections of (name, problems, notes) and whether the next gate (or `upto`) could be passed.
+    `run` re-runs only the proofs whose evidence does not count for this code; `every_proof`
+    re-runs them all."""
     sections = []
     st = replay(f)
 
@@ -50,11 +53,19 @@ def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, u
     if run and f.proofs:
         if not by:
             raise ValueError("running proofs needs a name (--by)")
-        results = run_proofs(f, cfg, by)
-        failed = [f"{r['proof']}@{r['env']}: {r['status']}" + (f" — {r['reason']}" if r.get("reason") else "")
-                  for r in results if r["status"] != "pass" and r.get("required", True)]
-        sections.append(("proofs", failed, [f"{len(results) - len(failed)}/{plural(len(results), 'run')} passed"]))
-        st = replay(f)  # the runs just recorded count for the gates below
+        pairs = None if every_proof else unproven(f, st, cfg)
+        if pairs == set():
+            states = [state for _, _, required, _, state in proof_matrix(f, st, cfg) if required]
+            sections.append(("proofs", [], [f"{len(states)}/{len(states)} pass on the current code — none re-run "
+                                             "(--all runs them anyway)"]))
+        else:
+            results = run_proofs(f, cfg, by, pairs=pairs, jobs=proof_jobs(cfg, jobs), fail_fast=fail_fast)
+            failed = [f"{r['proof']}@{r['env']}: {r['status']}" + (f" — {r['reason']}" if r.get("reason") else "")
+                      for r in results if r["status"] != "pass" and r.get("required", True)]
+            kept = "" if pairs is None else "; the rest still pass on this code"
+            sections.append(("proofs", failed, [f"{len(results) - len(failed)}/{plural(len(results), 'run')} "
+                                                f"passed{kept}"] + run_notes(results)))
+            st = replay(f)  # the runs just recorded count for the gates below
     elif f.proofs:  # what the trail already holds; the build gate below lists each one that does not count
         states = [state for _, _, required, _, state in proof_matrix(f, st, cfg) if required]
         good = states.count("pass")

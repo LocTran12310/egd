@@ -123,7 +123,7 @@ TRUST = [
      "text": "Every --by is recorded. Roles in team.toml decide who may pass gates, review, sign UAT or approve "
              "change requests. Agents work tasks; people sign."},
     {"title": "Evidence, not claims",
-     "text": "Proofs run against a known commit. Change the code or the proof and the old run no longer counts."},
+     "text": "Proofs run against a known commit. Change the feature's code, a shared file it watches, or the proof, and the old run no longer counts."},
     {"title": "Scope is a contract",
      "text": "After clarify, acceptance criteria are fingerprinted. Editing them, or dropping planned work, "
              "closes the following gates until the client approves a change request."},
@@ -232,7 +232,7 @@ TRUST_VI = [
      "text": "Mọi --by đều được ghi lại. Vai trò trong team.toml quyết định ai được pass gate, review, ký UAT hay "
              "duyệt yêu cầu thay đổi. Agent làm task; con người ký."},
     {"title": "Bằng chứng, không phải lời hứa",
-     "text": "Proof chạy trên một commit xác định. Đổi code hoặc đổi proof thì lần chạy cũ không còn được tính."},
+     "text": "Proof chạy trên một commit xác định. Đổi code của feature, file dùng chung mà nó watch, hoặc đổi proof thì lần chạy cũ không còn được tính."},
     {"title": "Phạm vi là hợp đồng",
      "text": "Sau clarify, tiêu chí chấp nhận được lấy dấu vân tay. Sửa chúng, hoặc bỏ bớt việc đã lên kế hoạch, "
              "sẽ đóng các gate phía sau cho đến khi khách hàng duyệt một yêu cầu thay đổi."},

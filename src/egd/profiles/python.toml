@@ -1,5 +1,7 @@
 title = "Python service or library"
 detect = ["pyproject.toml", "requirements.txt", "setup.py"]
+# shared files: a commit that changes one makes every feature's evidence stale, footprint or not
+watch = ["**/pyproject.toml", "**/requirements*.txt", "**/poetry.lock", "**/uv.lock", "**/setup.cfg", "**/setup.py"]
 
 conventions = """
 - Type hints on public functions; the repository's formatter and linter (ruff, black) decide style.

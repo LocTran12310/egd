@@ -1,5 +1,7 @@
 title = "Go service"
 detect = ["go.mod"]
+# shared files: a commit that changes one makes every feature's evidence stale, footprint or not
+watch = ["**/go.mod", "**/go.sum"]
 
 conventions = """
 - Errors are wrapped with context (`fmt.Errorf("…: %w", err)`) and never ignored.

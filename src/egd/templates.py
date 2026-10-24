@@ -105,6 +105,10 @@ slice_hours = 16      # longest dependency chain inside one slice
 # test_command = "pnpm vitest run {tests}"
 # test_command = ""      # no test runner in this repository: say so, and EGD stops asking for tests
 timeout = 600
+# A merged commit outside a feature's touches leaves its evidence fresh — unless it changes a
+# shared file named here (or in a [stack] profile's watch). ["**"]: any commit makes it stale.
+# watch = ["src/shared/**", "db/schema.sql"]
+# jobs = 4             # proofs run at once (`serial = true` on a proof keeps it alone); --jobs overrides
 
 [report]
 lang = "en"           # client reports and release notes: en | vi

@@ -24,7 +24,7 @@ from .events import read, record, replay
 from .graph import assignment, longest_path, ready, validate, waves
 from .model import (GATES, GATES_BY_TIER, TIERS, all_features, closest, feature_owning,
                     load_feature, resolve_feature, short_name)
-from .proof import configured_envs, proof_envs, proof_matrix, run_proofs
+from .proof import configured_envs, proof_envs, proof_jobs, proof_matrix, run_proofs
 from .team import Team, whoami
 from .util import (git, git_memo, plural, Refused, UsageError, features_dir, find_root, interpolate, load_config,
                    load_secrets, load_toml, missing_vars, slugify, tracked_but_ignored, EGD_DIR)
@@ -708,7 +708,15 @@ def cmd_proof(args):
         return 0
     only, env = _proof_filter(f, cfg, args.only, args.env)
     team.require(signer(args, root, team), "work")
-    results = run_proofs(f, cfg, args.by, only=only, env_filter=env)
+    pairs = None
+    if args.stale_only:
+        from .proof import unproven
+        pairs = unproven(f, replay(f), cfg)
+        if not any((not only or pid in only) and (not env or e == env) for pid, e in pairs):
+            out("every proof already passed on this code — nothing to run")
+            return 0
+    results = run_proofs(f, cfg, args.by, only=only, env_filter=env, pairs=pairs,
+                         jobs=proof_jobs(cfg, args.jobs), fail_fast=args.fail_fast)
     if not results:
         raise UsageError("0 proofs matched " + " ".join(x for x in (
             f"--only {','.join(only)}" if only else "", f"--env {env}" if env else "") if x)
@@ -725,6 +733,13 @@ def cmd_proof(args):
     for n in run_notes(results):
         out(f"note: {n}")
     return 1 if failed else 0
+
+
+def _scheduling(sp) -> None:
+    sp.add_argument("--jobs", type=int, metavar="N",
+                    help="run: N proofs at once ([proof] jobs in config.toml, else 1); `serial = true` ones run alone")
+    sp.add_argument("--fail-fast", action="store_true",
+                    help="run: start nothing new once a required proof has not passed (quickest run first)")
 
 
 def _proof_filter(f, cfg: dict, only_raw: str | None, env: str | None) -> tuple[list[str] | None, str | None]:
@@ -808,7 +823,8 @@ def cmd_verify(args):
         team.require(signer(args, root, team), "work")
     if args.gate and args.gate not in f.gates:
         raise UsageError(f"'{args.gate}' is not a gate for tier {f.tier} ({', '.join(f.gates)})")
-    result = verify.verify(f, cfg, run=args.run, by=args.by, upto=args.gate)
+    result = verify.verify(f, cfg, run=args.run, by=args.by, upto=args.gate, every_proof=args.all,
+                           jobs=args.jobs, fail_fast=args.fail_fast)
     out(json.dumps(result, indent=2, ensure_ascii=False) if args.json else verify.render(result))
     return 0 if result["ready"] or result["target"] is None else 1
 
@@ -1722,6 +1738,10 @@ def build_parser() -> argparse.ArgumentParser:
     by(sp)
     sp.add_argument("--env", help="run: only this environment; login: the one to log in to (default: local)")
     sp.add_argument("--only", help="comma-separated proof ids")
+    sp.add_argument("--stale-only", action="store_true",
+                    help="run: only proofs whose evidence does not count for this code — stale, failed or "
+                         "never run; the ones still passing are left alone (after a merge, in CI)")
+    _scheduling(sp)
     sp.add_argument("--path", help="login: path to open")
 
     sp = add("board", cmd_board, "team board across features (.egd/BOARD.md)")
@@ -1738,7 +1758,10 @@ def build_parser() -> argparse.ArgumentParser:
     add("pr", cmd_pr, "pull request description with evidence", feature=True)
     sp = add("verify", cmd_verify, "one last pass before a gate: plan, tests, evidence, every gate ahead",
              feature=True)
-    sp.add_argument("--run", action="store_true", help="run task tests and required proofs first (recorded)")
+    sp.add_argument("--run", action="store_true",
+                    help="run task tests, and the proofs whose evidence does not count for this code (recorded)")
+    sp.add_argument("--all", action="store_true", help="with --run: every proof, even those still passing")
+    _scheduling(sp)
     by(sp, "who runs the proofs (with --run; default: you)")
     sp.add_argument("--gate", choices=GATES, help="check every gate up to this one (default: the next)")
     sp.add_argument("--json", action="store_true", help="machine-readable output")

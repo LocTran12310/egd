@@ -52,8 +52,9 @@ the critical path are computed, never hand-drawn.
 
 **build — does it work?** Every task went through review (or a recorded solo bypass).
 Submission ran its tests and checked that it only touched what it declared. Every
-required proof passed on the current code; a proof run before the last code change
-is stale and does not count.
+required proof passed on the current code; a proof run before a change inside the
+feature's footprint (or to a watched shared file) is stale and does not count. A parallel
+feature merged in, in files this one never touches, leaves its evidence standing.
 
 **accept — does the client agree?** The client walks each slice's demo and records a
 verdict under their own name. Serious open defects keep the gate closed.

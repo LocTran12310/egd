@@ -89,7 +89,7 @@ When the last task is submitted, draft `release.md` → *Rollback* from the chan
 it is fresh: what to revert (the PR or commits), whether migrations reverse, flags to switch off,
 data written that a revert leaves behind. A person confirms it at `release`; `egd pr` shows it.
 
-When every task is done: commit the code, `egd proof run --by <you>`, `egd check build`, pass
+When every task is done: commit the code, `egd proof run --by <you> --stale-only`, `egd check build`, pass
 `build`; commit the trail when `.egd/` is shared (never when it is local). Passing proofs on the
 current code are what open the gate.
 

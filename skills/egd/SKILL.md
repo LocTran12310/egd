@@ -177,6 +177,6 @@ pass/fail, blockers, next action. No pasted logs or diffs.
 | A ticket stops: dropped mid-way, a research spike, or replaced | it will never release | `egd close <feature> --as dropped\|research\|superseded --reason "…" --by <the person who decided>` — no gate passed, open tasks recorded; `--undo` reopens. For research the reason says what it found |
 | "Review later" / "I'll review the branch at the end" | a person defers review | `egd solo <task> --by <that person> --confirm --reason "review deferred to …"` — recorded, never silent; `--confirm` attests the done_when list in that person's name |
 | Evidence is only a status line | proofs that show nothing a person can look at | `egd-proof`: `ui` screenshots for what users see, assertions on the values the AC names |
-| Build refused: proof stale | code changed after the proof ran | commit, `egd proof run` again |
+| Build refused: proof stale | the feature's code (or a watched shared file) changed after the proof ran | commit, `egd proof run --stale-only` |
 | Gates closed after editing an AC | scope changed after `clarify` | `egd cr open`, client approves |
 | Ten rounds of questions | interrogating one at a time | one batch ≤ 7; the rest become assumptions |

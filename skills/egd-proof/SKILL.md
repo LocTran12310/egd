@@ -73,6 +73,8 @@ kind = "http"
 title = "Checkout returns a pending order with the right total"
 verifies = ["AC-1.1"]
 envs = ["local", "staging"]          # default: every enabled env (test/cli: the repo itself)
+inputs = ["src/orders/**"]           # optional: only a change here (or under watch) makes runs stale
+serial = true                        # optional: never alongside other proofs (shared db, port, seeded user)
 
 [[proof.step]]
 name = "sign in"
@@ -130,15 +132,39 @@ are written as `***`.
 
 ```bash
 egd proof run [feature] --by <you> [--env staging] [--only P-1,P-2]   # an unknown env or id is an error
+egd proof run [feature] --by <you> --stale-only   # only what no longer counts: stale, failed, never run
+egd proof run [feature] --by <you> --jobs 4 --fail-fast   # 4 at once; stop starting new ones at a failure
 egd proof list [feature]          # latest status per proof × env, stale marked
 egd proof report [feature]        # reports/evidence.md: AC → evidence table + run links
 egd proof login --env staging     # ui: sign in once by hand, session saved to .egd/.auth/
 ```
 
-Freshness: each run records the commit. If anything outside `.egd/` changed since —
-or the tree was dirty when it ran — the run is **stale** and does not count for
-`build`. So: commit the code, run proofs, pass `build`; commit the trail when `.egd/` is shared
-(never when it is local).
+Freshness: each run records the commit. If a commit since changed a file inside the feature's
+footprint (its tasks' `touches` and `tests`) or a shared file `watch` names — or the tree was
+dirty there when it ran — the run is **stale** and does not count for `build`. So: commit the
+code, run proofs, pass `build`; commit the trail when `.egd/` is shared (never when it is local).
+
+A parallel feature merged in, touching only its own files, leaves this feature's evidence
+fresh. Shared files that can break anyone — lockfiles, `package.json`, `go.mod` — come from the
+`watch` of each `[stack] profiles` entry; add the repository's own under `[proof] watch` in
+`.egd/config.toml` (`["src/shared/**", "db/schema.sql"]`); `["**"]` is the strict rule, any
+commit at all. A feature with a task that declares no `touches` has no footprint: any commit
+makes it stale.
+
+A proof's `inputs` (path globs) replaces the footprint for that proof alone: in a feature with
+many proofs, a CSS fix goes stale only for the proofs that read the CSS. Give it to slow proofs
+(long e2e, ui) first — name what the proof really depends on, shared code included, since a
+change outside `inputs` and `watch` no longer re-proves it. Adding or narrowing `inputs` does not
+make existing runs stale; a broken or empty list is a lint error.
+
+Each run also records a fingerprint of the content it covered, so a squash merge or a rebase —
+which keeps the content and loses the commit — leaves the evidence fresh in every clone.
+
+Runs go quickest first, by how long each took last time, so a cheap failure shows before a
+long e2e starts. `--jobs N` (or `[proof] jobs`) runs N at once; mark a proof `serial = true`
+when it cannot share — it then runs alone, after the rest. `--fail-fast` starts nothing new once
+a required run has not passed, and names what it left unstarted. After a merge, `egd proof run --stale-only` re-runs only what went stale — no
+agent needed unless something fails.
 
 ## UI proofs
 

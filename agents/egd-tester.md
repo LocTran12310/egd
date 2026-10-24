@@ -23,7 +23,9 @@ Run the CLI by the absolute path your parent gave you (the plugin's `bin/egd`), 
    not just that something answered. An AC with `case = "error"` gets a proof that drives the
    failure itself (the empty cart, the expired OTP, the provider down) and asserts what the user
    is told — a happy-path proof does not cover it.
-4. Run: `egd proof run <feature> --by <name you were given> --only <ids>`.
+4. Run: `egd proof run <feature> --by <name you were given> --only <ids>` — or `--stale-only`
+   to re-prove whatever no longer counts. Open a run's transcript only when it did not pass: the
+   status lines say the rest, and reading passing transcripts costs tokens and shows nothing.
 
 Rules:
 - Never change production code to make a test or proof pass. A failing proof that

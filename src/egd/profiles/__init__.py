@@ -125,6 +125,7 @@ def done_when_for(profiles: list[dict], touches: list[str]) -> list[str]:
 
 TEMPLATE = '''title = "{title}"
 # detect = ["package.json:react"]      # file, or file:text — when this profile fits a repository
+# watch = ["**/package.json"]          # shared files: changing one makes every feature's evidence stale
 
 conventions = """
 - …

@@ -207,6 +207,12 @@ def validate(feature: Feature, config: dict) -> tuple[list[str], list[str]]:
                     if n not in known_envs:
                         errors.append(f"{p.get('id')}: env '{n}' is not configured — "
                                       f"known: {', '.join(sorted(known_envs))}")
+        if "inputs" in p:  # an empty or broken list must not quietly keep a run fresh forever
+            inputs = p["inputs"]
+            if not isinstance(inputs, list) or not inputs or not all(
+                    isinstance(g, str) and g.strip() for g in inputs):
+                errors.append(f"{p.get('id')}: inputs must be a non-empty list of path globs, "
+                              f"e.g. inputs = [\"apps/web/src/exam/**\"] — or leave it out for the feature's touches")
         from .proof import shape_problems  # noqa: PLC0415 — only when a plan has proofs
         errors += shape_problems(p)
         for ac in p.get("verifies", []):

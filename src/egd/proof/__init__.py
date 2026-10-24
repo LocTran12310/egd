@@ -16,14 +16,15 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..events import State, record
+from ..events import State, record, replay
 from ..model import Feature
 from ..util import (blob_hashes, clear_git_cache, dirty_paths, git_memo, head_sha, interpolate, iso, known_secrets,
-                    load_secrets, local_record, missing_vars, plural, secret_values, source_changed_since,
-                    split_local)
+                    load_secrets, local_record, missing_vars, plural, scope_fingerprint, secret_values,
+                    source_changed_since, split_local)
 
 REPO_ENV = "repo"
 LOCAL_KINDS = ("test", "cli")
@@ -31,7 +32,7 @@ KINDS = ("test", "http", "cli", "ui")
 
 # Every key a proof, a step and an `expect` may hold, per kind: a typo (`visibel`, `jsn`) must
 # fail loudly — an assertion nobody runs is a pass nobody earned.
-PROOF_KEYS = {"id", "kind", "title", "verifies", "envs", "timeout", "step"}
+PROOF_KEYS = {"id", "kind", "title", "verifies", "envs", "timeout", "step", "inputs", "serial"}
 KIND_KEYS = {"test": {"tests", "command"}, "cli": set(), "http": set(), "ui": {"viewports", "timeout_ms", "login"}}
 STEP_KEYS = {
     "http": {"name", "method", "path", "url", "query", "headers", "json", "form", "body", "capture", "safe", "expect"},
@@ -151,6 +152,7 @@ def proof_matrix(f: Feature, st: State, cfg: dict) -> list[tuple[dict, str, bool
         pass    — passed on the code as it is now
     """
     latest = st.latest_proofs()
+    shared = watched(f.root, cfg)
     out = []
     for p in f.proofs:
         for env, required in proof_envs(p, cfg):
@@ -160,18 +162,49 @@ def proof_matrix(f: Feature, st: State, cfg: dict) -> list[tuple[dict, str, bool
             elif run.get("status") != "pass":
                 state = "fail"
             else:
-                fresh = freshness(f.root, run, p, cfg, f.footprint, f.slug)
+                fresh = freshness(f.root, run, p, cfg, proof_scope(f, p), f.slug, shared)
                 state = "pass" if fresh else "stale" if fresh is False else "unknown"
             out.append((p, env, required, run, state))
     return out
 
 
+def watched(root: Path, cfg: dict) -> list[str]:
+    """Shared files whose committed change makes every feature's evidence stale, whatever its
+    footprint: `[proof] watch` in config.toml plus the `watch` of each profile in `[stack] profiles`."""
+    from ..profiles import active
+
+    def globs(value) -> list[str]:
+        return [value] if isinstance(value, str) else [str(g) for g in value or [] if str(g).strip()]
+    out = globs((cfg.get("proof") or {}).get("watch"))
+    for profile in active(root, cfg):
+        out += globs(profile.get("watch"))
+    return list(dict.fromkeys(out))
+
+
+def proof_scope(f: Feature, proof: dict) -> list[str] | None:
+    """The files whose change makes this proof's runs stale: its `inputs` (plus its own `tests`)
+    when it names them — a CSS fix leaves the API proofs alone — else the feature's footprint.
+    Shared files under `watch` count on top, either way."""
+    inputs = proof.get("inputs")
+    if isinstance(inputs, list) and inputs and all(isinstance(g, str) and g.strip() for g in inputs):
+        return [*inputs, *(proof.get("tests") or [])]
+    return f.footprint
+
+
+def unproven(f: Feature, st: State, cfg: dict) -> set[tuple[str, str]]:
+    """(proof id, env) whose evidence does not count for the code as it is now — stale, failed,
+    never run, or of unknown freshness: what `egd proof run --stale-only` runs, and only that."""
+    return {(p["id"], env) for p, env, _, _, state in proof_matrix(f, st, cfg) if state != "pass"}
+
+
 def freshness(root: Path, run: dict, proof: dict | None = None, cfg: dict | None = None,
-              footprint: list[str] | None = None, slug: str | None = None) -> bool | None:
+              footprint: list[str] | None = None, slug: str | None = None,
+              watch: list[str] | None = None) -> bool | None:
     """True: evidence of the current code and the current proof. False: stale.
     None: cannot be told (no git; or local edits it ran beside, recorded on another clone).
     Local edits outside the feature's `footprint` do not count — as long as they stay as they
-    were when the proof ran."""
+    were when the proof ran. Nor do commits outside it (a parallel feature merged in), unless
+    they touch a shared file `watch` names. `footprint` here is the proof's scope (`proof_scope`)."""
     if proof is not None and cfg is not None:
         env_cfg = configured_envs(cfg).get(run.get("env"), {})
         if run.get("def") not in (definition_hash(proof, env_cfg, cfg), legacy_hash(proof, env_cfg)):
@@ -182,7 +215,7 @@ def freshness(root: Path, run: dict, proof: dict | None = None, cfg: dict | None
             return None
         if blob_hashes(root, list(then)) != then:
             return False
-    changed = source_changed_since(root, run.get("sha"), footprint)
+    changed = source_changed_since(root, run.get("sha"), footprint, watch, run.get("fp"))
     if changed is None:
         return None
     if run.get("dirty"):
@@ -205,7 +238,15 @@ def _runner(kind: str):
 
 
 def run_proofs(feature: Feature, cfg: dict, by: str, only: list[str] | None = None,
-               env_filter: str | None = None) -> list[dict]:
+               env_filter: str | None = None, pairs: set[tuple[str, str]] | None = None,
+               jobs: int = 1, fail_fast: bool = False) -> list[dict]:
+    """Run the feature's proofs — narrowed by `only` (ids), `env_filter`, and `pairs`
+    ((proof id, env) to run, e.g. `unproven`'s) — and record each run on the trail.
+
+    Quickest first, by how long each took last time, so a cheap failure shows before a long
+    e2e has used up its hour. `jobs` > 1 runs that many at once; a proof marked `serial = true`
+    (it shares a database, a port, a seeded user) runs alone, after the rest. `fail_fast`
+    starts nothing new once a required run has not passed. Returned in plan order."""
     root = feature.root
     secrets = load_secrets(root)
     envs = configured_envs(cfg)
@@ -222,36 +263,113 @@ def run_proofs(feature: Feature, cfg: dict, by: str, only: list[str] | None = No
         local_record(root, "runs", f"{feature.slug}/{run_id}", blob_hashes(root, local))
     # one redaction set for every run: whatever config and proofs reference, plus secrets.env
     redact = known_secrets(root, cfg, feature.raw_proofs)
-    results = []
+    shared = watched(root, cfg)
+    todo = []
     for proof in feature.proofs:
         if only and proof.get("id") not in only:
             continue
         for env, required in proof_envs(proof, cfg):
             if env_filter and env != env_filter:
                 continue
-            env_cfg = envs.get(env, {})
-            out_dir = run_dir / f"{proof['id']}@{env}"
-            out_dir.mkdir(parents=True, exist_ok=True)
-            outcome = _run_one(feature, proof, env, env_cfg, secrets, out_dir, cfg, redact)
-            _pictures(outcome, out_dir)
-            (out_dir / "transcript.md").write_text(outcome.transcript or "", encoding="utf-8")
-            event = record(
-                feature, "proof_run", by,
-                proof=proof["id"], env=env, kind=proof.get("kind"),
-                verifies=proof.get("verifies", []), status=outcome.status,
-                reason=outcome.reason, sha=sha, dirty=dirty, run=run_id, local=local[:20] or None,
-                required=required, **{"def": definition_hash(proof, env_cfg, cfg)},
-                artifacts=[str(Path(a).relative_to(feature.path)) for a in outcome.artifacts]
-                + [str((out_dir / "transcript.md").relative_to(feature.path))],
-                steps=[{k: s.get(k) for k in ("name", "status", "ms")} for s in outcome.steps],
-            )
-            results.append(event)
-    if results and (dirty or local):
+            if pairs is not None and (proof["id"], env) not in pairs:
+                continue
+            todo.append((proof, env, required))
+    order = {(p["id"], env): n for n, (p, env, _) in enumerate(todo)}
+    latest = replay(feature).latest_proofs()
+    todo.sort(key=lambda item: expected_ms(item[0], latest.get((item[0]["id"], item[1]))))
+    # what each proof's evidence covers, by content: it still counts after a squash or a rebase
+    fps = {p["id"]: scope_fingerprint(root, sha, proof_scope(feature, p), shared) if sha else None
+           for p, _, _ in todo}
+
+    def one(proof: dict, env: str, required: bool) -> dict:
+        env_cfg = envs.get(env, {})
+        out_dir = run_dir / f"{proof['id']}@{env}"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        started = time.monotonic()
+        outcome = _run_one(feature, proof, env, env_cfg, secrets, out_dir, cfg, redact)
+        ms = int((time.monotonic() - started) * 1000)
+        _pictures(outcome, out_dir)
+        (out_dir / "transcript.md").write_text(outcome.transcript or "", encoding="utf-8")
+        return record(
+            feature, "proof_run", by,
+            proof=proof["id"], env=env, kind=proof.get("kind"),
+            verifies=proof.get("verifies", []), status=outcome.status,
+            reason=outcome.reason, sha=sha, dirty=dirty, run=run_id, local=local[:20] or None,
+            required=required, ms=ms, fp=fps.get(proof["id"]), **{"def": definition_hash(proof, env_cfg, cfg)},
+            artifacts=[str(Path(a).relative_to(feature.path)) for a in outcome.artifacts]
+            + [str((out_dir / "transcript.md").relative_to(feature.path))],
+            steps=[{k: s.get(k) for k in ("name", "status", "ms")} for s in outcome.steps],
+        )
+
+    results: list[dict] = []
+    stopped: list[dict] = []  # the run that stopped the rest, under fail_fast
+
+    def take(event: dict) -> None:
+        results.append(event)
+        if fail_fast and event["status"] != "pass" and event.get("required", True):
+            stopped.append(event)
+
+    def batch(items: list, width: int) -> None:
+        if width <= 1 or len(items) <= 1:
+            for item in items:
+                if stopped:
+                    return
+                take(one(*item))
+            return
+        from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+        queue = list(items)
+        with ThreadPoolExecutor(max_workers=width) as pool:
+            running: set = set()
+            while queue or running:
+                while queue and not stopped and len(running) < width:
+                    running.add(pool.submit(one, *queue.pop(0)))
+                if not running:
+                    break
+                done, running = wait(running, return_when=FIRST_COMPLETED)
+                for future in done:
+                    take(future.result())
+
+    width = max(1, int(jobs or 1))
+    batch([t for t in todo if not t[0].get("serial")], width)
+    batch([t for t in todo if t[0].get("serial")], 1)
+    results.sort(key=lambda e: order[(e["proof"], e["env"])])
+    skipped = [f"{p['id']}@{env}" for p, env, _ in todo
+               if not any(r["proof"] == p["id"] and r["env"] == env for r in results)]
+    notes = ([stale_note(paths)] if dirty else []) + ([local_note(local)] if local else [])
+    if skipped and stopped:
+        notes.append(f"--fail-fast: {stopped[0]['proof']}@{stopped[0]['env']} did not pass, so "
+                     f"{plural(len(skipped), 'run')} did not start: {', '.join(skipped)}")
+    if results and notes:
         for event in results:  # in memory only, for whoever prints the runs
             event["dirty_paths"] = paths[:5]
-            event["notes"] = ([stale_note(paths)] if dirty else []) + ([local_note(local)] if local else [])
+            event["notes"] = notes
     clear_git_cache()  # a proof may have written files; freshness is asked afresh
     return results
+
+
+def proof_jobs(cfg: dict, asked: int | None = None) -> int:
+    """How many proofs run at once: --jobs, else `[proof] jobs` in config.toml, else one."""
+    value = asked if asked is not None else (cfg.get("proof") or {}).get("jobs", 1)
+    try:
+        return max(1, int(value))
+    except (TypeError, ValueError):
+        return 1
+
+
+# how long a proof never timed is guessed to take: a browser costs more than a command
+GUESS_MS = {"test": 60_000, "cli": 30_000, "http": 30_000, "ui": 300_000}
+
+
+def expected_ms(proof: dict, last: dict | None) -> int:
+    """How long this proof took last time (its steps' sum on runs recorded before `ms`), else a
+    guess by kind — what `run_proofs` sorts by, quickest first."""
+    if last:
+        if isinstance(last.get("ms"), int):
+            return last["ms"]
+        steps = [s.get("ms") for s in last.get("steps") or [] if isinstance(s, dict)]
+        if steps and all(isinstance(m, int) for m in steps):
+            return sum(steps)
+    return GUESS_MS.get(proof.get("kind"), 60_000)
 
 
 IMAGES = (".png", ".jpg", ".jpeg", ".webp", ".gif")
@@ -371,7 +489,10 @@ def definition_hash(proof: dict, env_cfg: dict, cfg: dict | None = None) -> str:
         wanted = proof.get("viewports", ["desktop"])
         used["ui"] = {"login": login_steps(env_cfg, cfg) if proof.get("login", True) else [],
                       "viewports": {v: known.get(v) for v in ([wanted] if isinstance(wanted, str) else wanted)}}
-    canon = json.dumps([proof, used], sort_keys=True, default=str)
+    # `inputs` says when a run goes stale and `serial` how it is scheduled, not what it showed:
+    # changing either re-proves nothing
+    asserted = {k: v for k, v in proof.items() if k not in ("inputs", "serial")}
+    canon = json.dumps([asserted, used], sort_keys=True, default=str)
     return hashlib.sha256(canon.encode()).hexdigest()[:16]
 
 
