@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.7 — 2026-10-24
+
+Fewer proof re-runs. `build` still asks for fresh evidence; what makes it stale narrows, so
+`RULES` stays 2: the change only loosens it.
 
 - **Parallel features keep their evidence:** a committed change makes a proof stale only when
   it touches the feature's footprint (its tasks' `touches` and `tests`, its proofs' `tests`) or
