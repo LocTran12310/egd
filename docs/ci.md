@@ -44,7 +44,7 @@ records a fingerprint of the content it covered, so a commit missing from the CI
 make its evidence stale. Mark proofs that share a database or a port `serial = true` before
 raising `--jobs`.
 
-To pin a version, append `@v0.1.7` to the install URL. Or vendor
+To pin a version, append `@v0.1.8` to the install URL. Or vendor
 `bin/` + `src/` into the project.
 
 ## Keep GitHub Issues in sync

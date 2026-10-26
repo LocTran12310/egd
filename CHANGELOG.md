@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.8 — 2026-10-26
 
 Evidence that bites. A proof that passes on the code *before* the feature proves nothing about
 the feature, so `build` now asks for more than a green run: `RULES` is 3. Features planned
