@@ -5,7 +5,8 @@ The backlog for EGD itself. Open an issue before starting anything here.
 ## In 0.1
 - Gates, tiers, event trail with per-feature sequence numbers, task lifecycle, scope lock and CRs,
   defects, UAT
-- Proofs: `http`, `cli`, `test`, `ui` (with contact sheet); redaction; freshness
+- Proofs: `http`, `cli`, `test`, `ui` (with contact sheet); redaction; freshness; a baseline run
+  without the feature's changes that a test/cli proof must fail (0.1.8)
 - `egd verify` — one last pass before a gate (plan, task tests, required proofs, every gate ahead)
 - Team: roles, board, standup, GitHub Issues sync, client report in English and Vietnamese, metrics
 - Plan editing by command: `egd add`, `egd set`

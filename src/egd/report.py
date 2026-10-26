@@ -16,6 +16,7 @@ from .impact import summary as impact_summary
 from .i18n import strings
 from .model import Feature, all_features
 from .proof import proof_matrix
+from .proof.baseline import verdict as bite
 from .team import Team
 from .util import egd_dir, git_memo, hours_between, iso, md_cell, norm_name, now, parse_iso, plural
 
@@ -102,6 +103,8 @@ def ac_proof_status(f: Feature, st: State, cfg: dict) -> dict[str, str]:
 
 ICON = {"pass": "✅", "fail": "❌", "stale": "⏳", "unrun": "⬜", "missing": "➖"}
 LATE = {"stale": " (stale — code or proof changed since)", "unknown": " (freshness unknown — no git)"}
+BITE = {"bites": " · fails without the change", "toothless": " · ⚠ passes without the change too",
+        "unchecked": " · not run without the change"}
 
 
 # ------------------------------------------------------------------ status
@@ -355,6 +358,7 @@ def proof_report(f: Feature, cfg: dict) -> str:
             lines.append(f"| {p['id']} | {p.get('kind')} | {env} | ⬜ never run | | |")
             continue
         s = run["status"] + LATE.get(state, "")
+        s += BITE.get(bite(st, p, env, run, cfg), "")
         transcript = next((a for a in run.get("artifacts", []) if a.endswith("transcript.md")), "")
         lines.append(f"| {p['id']} | {p.get('kind')} | {env}{'' if required else ' (optional)'} | {s}"
                      + (f" — {md_cell(run['reason'])}" if run.get("reason") else "")
@@ -399,7 +403,7 @@ def pr_body(f: Feature, cfg: dict) -> str:
                         + ("" if required else " — optional"))
             continue
         ran.append(f"- {p['id']} `{p.get('kind', '?')}` on {env}: {run.get('status')}"
-                   f"{LATE.get(state, '')}"
+                   f"{LATE.get(state, '')}{BITE.get(bite(st, p, env, run, cfg), '')}"
                    f" — {(run.get('at') or '')[:16].replace('T', ' ')} by {run.get('by', '?')}"
                    f"{', commit ' + run['sha'][:8] if run.get('sha') else ''}" + _checked(run))
     gaps += [f"- Not verified: {a['id']} — no proof declared" for a in f.acs

@@ -7,7 +7,8 @@ description: EGD evidence — picks the right kind per AC by itself (http, cli, 
 
 A proof is a reproducible claim: *this acceptance criterion holds, on this code, in
 this environment*, with an artifact a reviewer or client can read. The `build` gate
-opens only when every required proof passed on the current code.
+opens only when every required proof passed on the current code — and a `test` or `cli`
+proof that also passes *without* the feature's changes is evidence of nothing.
 
 Run the CLI as the `egd` skill says: `python3 <this skill's directory>/../../bin/egd`, else `egd`
 on PATH.
@@ -102,6 +103,28 @@ the server answered, not that the total is right. Assert the value the AC names.
 A known bug is recorded honestly as a proof that asserts the correct behaviour and
 fails — the transcript becomes the bug report.
 
+**Evidence has to bite.** After a `test` or `cli` proof passes, `egd proof run` takes the
+feature's changes back out — every file in its tasks' `touches` as it was when the first task
+started; the tests stay as they are now — runs the proof again, then puts the code back. It
+must fail there:
+
+```
+✅ P-1@repo: pass
+   ↳ bites: fail without this feature's changes (step 1: exit == 0)
+✅ P-2@repo: pass
+   ↳ ⚠ toothless: passes without this feature's changes too — it proves nothing about them
+```
+
+A toothless proof closes `build`: it asserts something that already held (`exit == 0` of a
+command that always succeeds, a `>= 0` on a total, a test of untouched code). Tighten it to
+the value the AC changes, then run it again. Never add `baseline = false` to get past the gate:
+that is for a proof guarding behaviour that held before the feature too (a regression check, a
+refactor's), a person's call, and `build` lists every such proof for whoever signs it.
+`http` and `ui` proofs are not checked this way — they call a server egd did not start.
+The check is skipped (and says why) while files it would take out have uncommitted changes.
+On the `full` tier a `test`/`cli` proof never checked closes `build` too; `--stale-only` and
+`egd verify --run` run those again.
+
 ## Environments and secrets
 
 `.egd/config.toml`:
@@ -134,7 +157,8 @@ are written as `***`.
 egd proof run [feature] --by <you> [--env staging] [--only P-1,P-2]   # an unknown env or id is an error
 egd proof run [feature] --by <you> --stale-only   # only what no longer counts: stale, failed, never run
 egd proof run [feature] --by <you> --jobs 4 --fail-fast   # 4 at once; stop starting new ones at a failure
-egd proof list [feature]          # latest status per proof × env, stale marked
+egd proof run [feature] --by <you> --no-baseline   # skip the run without the feature's changes (quick loop)
+egd proof list [feature]          # latest status per proof × env, stale marked, bites / toothless
 egd proof report [feature]        # reports/evidence.md: AC → evidence table + run links
 egd proof login --env staging     # ui: sign in once by hand, session saved to .egd/.auth/
 ```

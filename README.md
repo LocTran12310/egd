@@ -70,6 +70,9 @@ options with an example, and a wrong entry comes out with `egd rm <id>`. The `st
 - **Gates are code, not advice.** `egd pass build` is refused while a task is open, a change
   request is pending, or a required proof is failing or stale. Nobody — person or agent —
   talks their way past it.
+- **Evidence that bites.** A test or cli proof that passed runs once more with the feature's
+  changes taken out, and has to fail there. One that passes either way is *toothless* — it
+  cannot tell this change from none — and `build` stays closed until it asserts what changed.
 - **Evidence for any kind of work.** `http` transcripts for APIs, `cli` for jobs and data,
   `test` for your test runner, `ui` screenshots per viewport — the proof skill picks the kind
   per AC, and ui proofs sign in by themselves. `egd proof setup` installs the browser once per
@@ -96,7 +99,7 @@ options with an example, and a wrong entry comes out with `egd rm <id>`. The `st
 |---|---|---|
 | **Plan** | `egd add ac/task/proof …`, `egd rm …` (or edit `plan.toml`), `egd pass frame/clarify/design/slice` | brief written, map signed, assumptions resolved, ACs measurable (no "fast" without a number), tasks ≤ 4 h with a footprint |
 | **Build** | `egd start` → code, commit with the task id → `egd submit --confirm` → a teammate's `egd accept` | tests pass, only declared files changed, someone else reviews |
-| **Prove** | `egd proof run`, `egd verify --run` | every required proof passes on the current code |
+| **Prove** | `egd proof run`, `egd verify --run` | every required proof passes on the current code, and fails without the feature's changes |
 | **Ship** | `egd pass build`, the client's `egd uat S-1 --pass`, `egd pass accept`, `egd pass release` | UAT per slice, no serious defect open, a rollback written |
 
 Also: `egd close` (a feature that stops: dropped, a research spike, superseded) · `egd standup` · `egd board` · `egd report <feature> --lang vi` · `egd cr impact` · `egd cr open` ·

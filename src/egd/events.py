@@ -230,6 +230,7 @@ class State:
     crs: dict[str, dict] = field(default_factory=dict)
     defects: dict[str, dict] = field(default_factory=dict)
     proof_runs: list[dict] = field(default_factory=list)
+    baselines: dict[tuple[str, str, str], dict] = field(default_factory=dict)  # (proof, env, run) → its check
     issues: dict[str, int] = field(default_factory=dict)
     issue_digest: dict[str, str] = field(default_factory=dict)
     corrupt: list[str] = field(default_factory=list)
@@ -297,7 +298,7 @@ REQUIRED = {
     "cr_opened": ("cr",), "cr_approved": ("cr", "by", "at"), "cr_rejected": ("cr", "by", "at"),
     "defect_opened": ("defect",), "defect_fixed": ("defect", "at"),
     "defect_closed": ("defect", "at"), "defect_reopened": ("defect", "at"),
-    "proof_run": ("proof", "env"),
+    "proof_run": ("proof", "env"), "proof_baseline": ("proof", "env", "run", "status"),
     "issue_linked": ("task", "number"),
 }
 
@@ -388,6 +389,8 @@ def _apply(st: State, e: dict) -> None:
             d["fix_task"] = e["task"]
     elif kind == "proof_run":
         st.proof_runs.append(e)
+    elif kind == "proof_baseline":
+        st.baselines[(e["proof"], e["env"], e["run"])] = e
     elif kind == "issue_linked":
         st.issues[e["task"]] = e["number"]
         st.issue_digest[e["task"]] = e.get("digest", "")

@@ -109,6 +109,8 @@ timeout = 600
 # shared file named here (or in a [stack] profile's watch). ["**"]: any commit makes it stale.
 # watch = ["src/shared/**", "db/schema.sql"]
 # jobs = 4             # proofs run at once (`serial = true` on a proof keeps it alone); --jobs overrides
+# A test/cli proof that passed runs again with the feature's changes taken out, and must fail there.
+# baseline = false     # turn that off for this repository (`baseline = false` on one proof: a regression check)
 
 [report]
 lang = "en"           # client reports and release notes: en | vi

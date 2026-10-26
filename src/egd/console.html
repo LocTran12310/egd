@@ -873,7 +873,7 @@ function people() {
 
 const EV_LABEL = { gate_passed: N_("passed gate"), task_accepted: N_("accepted"), task_rejected: N_("rejected"), task_done_solo: N_("finished solo"),
   cr_approved: N_("approved CR"), cr_rejected: N_("rejected CR"), uat: N_("UAT"), task_started: N_("started"), task_submitted: N_("submitted"),
-  task_blocked: N_("blocked"), task_unblocked: N_("unblocked"), cr_opened: N_("opened CR"), defect_opened: N_("reported"), proof_run: N_("ran proof"), feature_created: N_("created feature"),
+  task_blocked: N_("blocked"), task_unblocked: N_("unblocked"), cr_opened: N_("opened CR"), defect_opened: N_("reported"), proof_run: N_("ran proof"), proof_baseline: N_("ran proof without the change"), feature_created: N_("created feature"),
   feature_closed: N_("closed feature"), feature_reopened: N_("reopened feature") };
 const evLabel = type => EV_LABEL[type] ? t(EV_LABEL[type]) : type;
 const SIG_EVENTS = ["gate_passed", "task_accepted", "task_rejected", "task_done_solo", "cr_approved", "cr_rejected", "uat",

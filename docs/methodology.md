@@ -19,7 +19,8 @@ works*. Each gate answers one question that would otherwise be answered by vibes
    write its demo, it is not a slice.
 5. **Small tasks.** A task over four hours hides an unknown.
 6. **Evidence over assertion.** "It works" is a claim. A proof is a reproducible run
-   against a known commit with an artifact someone else can read.
+   against a known commit with an artifact someone else can read — and it has to fail on
+   the code before the feature: a proof that passes either way tells this change from none.
 7. **Scope is a contract.** After `clarify`, the acceptance criteria are fingerprinted;
    changes require a client-approved change request, which states what the change reaches
    (slices to accept again, tasks to reopen, proofs to rerun) from the plan's own graph rather
@@ -54,7 +55,11 @@ the critical path are computed, never hand-drawn.
 Submission ran its tests and checked that it only touched what it declared. Every
 required proof passed on the current code; a proof run before a change inside the
 feature's footprint (or to a watched shared file) is stale and does not count. A parallel
-feature merged in, in files this one never touches, leaves its evidence standing.
+feature merged in, in files this one never touches, leaves its evidence standing. A `test` or
+`cli` proof is also run once more with the feature's changes taken out (its tests kept as they
+are), and must fail there; one that passes anyway is toothless and does not count. Green tests
+that keep passing when the code under them is broken are the most common false evidence an
+agent produces.
 
 **accept — does the client agree?** The client walks each slice's demo and records a
 verdict under their own name. Serious open defects keep the gate closed.

@@ -8,7 +8,9 @@ A proof has a `kind` and the kind decides what its evidence looks like:
     ui    — browser screenshots per viewport (needs Playwright)
 
 Every run is recorded on the trail with the commit it ran against, so `build`
-can tell evidence of the current code from evidence of some earlier code.
+can tell evidence of the current code from evidence of some earlier code. A `test` or
+`cli` proof that passes is then run once more without the feature's changes, where it
+has to fail (`baseline.py`): a proof that passes either way is evidence of nothing.
 """
 
 from __future__ import annotations
@@ -32,7 +34,7 @@ KINDS = ("test", "http", "cli", "ui")
 
 # Every key a proof, a step and an `expect` may hold, per kind: a typo (`visibel`, `jsn`) must
 # fail loudly — an assertion nobody runs is a pass nobody earned.
-PROOF_KEYS = {"id", "kind", "title", "verifies", "envs", "timeout", "step", "inputs", "serial"}
+PROOF_KEYS = {"id", "kind", "title", "verifies", "envs", "timeout", "step", "inputs", "serial", "baseline"}
 KIND_KEYS = {"test": {"tests", "command"}, "cli": set(), "http": set(), "ui": {"viewports", "timeout_ms", "login"}}
 STEP_KEYS = {
     "http": {"name", "method", "path", "url", "query", "headers", "json", "form", "body", "capture", "safe", "expect"},
@@ -193,8 +195,11 @@ def proof_scope(f: Feature, proof: dict) -> list[str] | None:
 
 def unproven(f: Feature, st: State, cfg: dict) -> set[tuple[str, str]]:
     """(proof id, env) whose evidence does not count for the code as it is now — stale, failed,
-    never run, or of unknown freshness: what `egd proof run --stale-only` runs, and only that."""
-    return {(p["id"], env) for p, env, _, _, state in proof_matrix(f, st, cfg) if state != "pass"}
+    never run, or of unknown freshness, or (on the `full` tier) never checked against the code
+    before the feature: what `egd proof run --stale-only` runs, and only that."""
+    from .baseline import unchecked
+    return {(p["id"], env) for p, env, _, _, state in proof_matrix(f, st, cfg) if state != "pass"} \
+        | unchecked(f, st, cfg)
 
 
 def freshness(root: Path, run: dict, proof: dict | None = None, cfg: dict | None = None,
@@ -239,15 +244,20 @@ def _runner(kind: str):
 
 def run_proofs(feature: Feature, cfg: dict, by: str, only: list[str] | None = None,
                env_filter: str | None = None, pairs: set[tuple[str, str]] | None = None,
-               jobs: int = 1, fail_fast: bool = False) -> list[dict]:
+               jobs: int = 1, fail_fast: bool = False, baseline: bool = True) -> list[dict]:
     """Run the feature's proofs — narrowed by `only` (ids), `env_filter`, and `pairs`
     ((proof id, env) to run, e.g. `unproven`'s) — and record each run on the trail.
 
     Quickest first, by how long each took last time, so a cheap failure shows before a long
     e2e has used up its hour. `jobs` > 1 runs that many at once; a proof marked `serial = true`
     (it shares a database, a port, a seeded user) runs alone, after the rest. `fail_fast`
-    starts nothing new once a required run has not passed. Returned in plan order."""
+    starts nothing new once a required run has not passed. `baseline` then runs each `test` and
+    `cli` proof that passed once more, without the feature's changes, and records whether it bit
+    (`[proof] baseline = false` turns that off). Returned in plan order, each run's check under
+    `baseline`."""
+    from . import baseline as bl
     root = feature.root
+    recovered = bl.recover(root) if head_sha(root) else []
     secrets = load_secrets(root)
     envs = configured_envs(cfg)
     run_id = f"{iso().replace(':', '').replace('-', '')[:15]}-{os.urandom(2).hex()}"
@@ -333,9 +343,28 @@ def run_proofs(feature: Feature, cfg: dict, by: str, only: list[str] | None = No
     batch([t for t in todo if not t[0].get("serial")], width)
     batch([t for t in todo if t[0].get("serial")], 1)
     results.sort(key=lambda e: order[(e["proof"], e["env"])])
+
+    def again(proof: dict, env: str) -> tuple[Outcome, int, list[str]]:
+        out_dir = run_dir / f"{proof['id']}@{env}" / "baseline"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        started = time.monotonic()
+        outcome = _run_one(feature, proof, env, envs.get(env, {}), secrets, out_dir, cfg, redact)
+        ms = int((time.monotonic() - started) * 1000)
+        (out_dir / "transcript.md").write_text(outcome.transcript or "", encoding="utf-8")
+        return outcome, ms, [str((out_dir / "transcript.md").relative_to(feature.path))]
+
+    proofs = {p["id"]: p for p, _, _ in todo}
+    checks = bl.bite(feature, by, [(proofs[e["proof"]], e) for e in results if e["status"] == "pass"
+                                   and not bl.not_checked(proofs[e["proof"]], e["env"])],
+                     again, width) if baseline and bl.enabled(cfg) else []
+    for check in checks:
+        for event in results:
+            if (event["proof"], event["env"]) == (check["proof"], check["env"]):
+                event["baseline"] = check
     skipped = [f"{p['id']}@{env}" for p, env, _ in todo
                if not any(r["proof"] == p["id"] and r["env"] == env for r in results)]
-    notes = ([stale_note(paths)] if dirty else []) + ([local_note(local)] if local else [])
+    notes = recovered + ([stale_note(paths)] if dirty else []) + ([local_note(local)] if local else [])
+    notes += list(dict.fromkeys(n for c in checks for n in c.get("notes", [])))
     if skipped and stopped:
         notes.append(f"--fail-fast: {stopped[0]['proof']}@{stopped[0]['env']} did not pass, so "
                      f"{plural(len(skipped), 'run')} did not start: {', '.join(skipped)}")
@@ -489,9 +518,9 @@ def definition_hash(proof: dict, env_cfg: dict, cfg: dict | None = None) -> str:
         wanted = proof.get("viewports", ["desktop"])
         used["ui"] = {"login": login_steps(env_cfg, cfg) if proof.get("login", True) else [],
                       "viewports": {v: known.get(v) for v in ([wanted] if isinstance(wanted, str) else wanted)}}
-    # `inputs` says when a run goes stale and `serial` how it is scheduled, not what it showed:
-    # changing either re-proves nothing
-    asserted = {k: v for k, v in proof.items() if k not in ("inputs", "serial")}
+    # `inputs` says when a run goes stale, `serial` how it is scheduled and `baseline` whether it is
+    # also run without the change — not what it showed: changing any of them re-proves nothing
+    asserted = {k: v for k, v in proof.items() if k not in ("inputs", "serial", "baseline")}
     canon = json.dumps([asserted, used], sort_keys=True, default=str)
     return hashlib.sha256(canon.encode()).hexdigest()[:16]
 

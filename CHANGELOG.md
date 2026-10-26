@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+Evidence that bites. A proof that passes on the code *before* the feature proves nothing about
+the feature, so `build` now asks for more than a green run: `RULES` is 3. Features planned
+under rules v2 hear the new findings as warnings; nothing closes on them.
+
+- **Baseline run:** after a `test` or `cli` proof passes, `egd proof run` takes the feature's
+  changes back out and runs it again. Every file inside the tasks' `touches` goes back to how it
+  was on the commit the first task started on, and the tests (tasks' and proofs' `tests`) stay
+  as they are now. This happens in place, so dependencies, caches and services are all still
+  there, and then the code is put back. The run is recorded as a `proof_baseline` event next to
+  the run it checked: **bites** (it did not pass there), **toothless** (it passed anyway) or
+  **skipped**, with the reason. `egd proof run` prints it under each run, `egd proof list`
+  shows `pass · bites`, and `egd pr` and `reports/evidence.md` carry it to the reviewer.
+- **`build` (rules v3):** a toothless required proof keeps the gate closed, and `egd check`
+  says how to fix it. On the `full` tier, a `test`/`cli` proof never checked that way also keeps
+  it closed. `--stale-only` and `egd verify --run` run those again. Other tiers get a warning.
+- **`baseline = false` on a proof:** for a regression check, or a refactor's proof of behaviour
+  that already held. It is not run without the change. `build` lists every such proof for the
+  person signing. Like `inputs` and `serial`, it is not part of the definition hash. A value
+  other than true or false is a lint error.
+- **`[proof] baseline = false`** turns the check off for a repository. **`--no-baseline`** on
+  `egd proof run` and `egd verify --run` skips it for one run.
+- **Never loses work:** the check is skipped while a file it would take out has uncommitted
+  changes. A file edited while the baseline runs is left as edited and named. If egd is stopped
+  half-way, it leaves `.git/egd-baseline.json`, and the next `egd proof run` puts the code back
+  first.
+- `http` and `ui` proofs are not checked this way: they call a server egd did not start, and
+  that server still runs the new code.
+
 ## 0.1.7 — 2026-10-24
 
 Fewer proof re-runs. `build` still asks for fresh evidence; what makes it stale narrows, so

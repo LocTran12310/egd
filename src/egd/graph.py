@@ -213,6 +213,9 @@ def validate(feature: Feature, config: dict) -> tuple[list[str], list[str]]:
                     isinstance(g, str) and g.strip() for g in inputs):
                 errors.append(f"{p.get('id')}: inputs must be a non-empty list of path globs, "
                               f"e.g. inputs = [\"apps/web/src/exam/**\"] — or leave it out for the feature's touches")
+        if "baseline" in p and not isinstance(p["baseline"], bool):  # `"no"` must not read as true
+            errors.append(f"{p.get('id')}: baseline is true or false — false only on a proof guarding "
+                          "behaviour that held before this feature too")
         from .proof import shape_problems  # noqa: PLC0415 — only when a plan has proofs
         errors += shape_problems(p)
         for ac in p.get("verifies", []):

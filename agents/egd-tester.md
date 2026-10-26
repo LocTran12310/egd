@@ -31,6 +31,9 @@ Rules:
 - Never change production code to make a test or proof pass. A failing proof that
   asserts the correct behaviour is a bug report; open it with `egd bug open` and stop.
 - Never weaken an assertion to turn red into green.
+- A proof reported **toothless** passes without the feature's changes too: tighten what it
+  asserts to the value the AC changes and run it again. Never set `baseline = false` yourself —
+  report it, and let a person decide whether the proof only guards what already held.
 - Secrets go in `.egd/secrets.env` as `${NAME}` references, never inline.
 - Never run `egd proof setup` — it downloads ~150 MB and needs the user's OK. If Playwright is
   missing, report `Not verified: <what someone sees>` and that setup waits for the user's go-ahead.

@@ -22,7 +22,8 @@ from .util import dirty_paths, git_memo, plural, split_local
 
 @git_memo()
 def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, upto: str | None = None,
-           every_proof: bool = False, jobs: int | None = None, fail_fast: bool = False) -> dict:
+           every_proof: bool = False, jobs: int | None = None, fail_fast: bool = False,
+           baseline: bool = True) -> dict:
     """Sections of (name, problems, notes) and whether the next gate (or `upto`) could be passed.
     `run` re-runs only the proofs whose evidence does not count for this code; `every_proof`
     re-runs them all."""
@@ -59,9 +60,15 @@ def verify(f: Feature, cfg: dict, *, run: bool = False, by: str | None = None, u
             sections.append(("proofs", [], [f"{len(states)}/{len(states)} pass on the current code — none re-run "
                                              "(--all runs them anyway)"]))
         else:
-            results = run_proofs(f, cfg, by, pairs=pairs, jobs=proof_jobs(cfg, jobs), fail_fast=fail_fast)
+            results = run_proofs(f, cfg, by, pairs=pairs, jobs=proof_jobs(cfg, jobs), fail_fast=fail_fast,
+                                 baseline=baseline)
             failed = [f"{r['proof']}@{r['env']}: {r['status']}" + (f" — {r['reason']}" if r.get("reason") else "")
                       for r in results if r["status"] != "pass" and r.get("required", True)]
+            bit = [r for r in results if (r.get("baseline") or {}).get("status") == "bites"]
+            if bit:  # toothless ones are the build gate's to name, below
+                results[0].setdefault("notes", []).append(
+                    f"{plural(len(bit), 'run')} also failed without this feature's changes, as evidence should: "
+                    + ", ".join(f"{r['proof']}@{r['env']}" for r in bit))
             kept = "" if pairs is None else "; the rest still pass on this code"
             sections.append(("proofs", failed, [f"{len(results) - len(failed)}/{plural(len(results), 'run')} "
                                                 f"passed{kept}"] + run_notes(results)))

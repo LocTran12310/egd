@@ -461,6 +461,7 @@ I18N.vi = /*VI*/{
   "pending": "chờ xử lý",
   "proposed": "đề xuất",
   "ran proof": "chạy proof",
+  "ran proof without the change": "chạy proof trên code chưa có thay đổi",
   "read-only": "chỉ đọc",
   "ready": "sẵn sàng",
   "refreshed {time}": "làm mới lúc {time}",

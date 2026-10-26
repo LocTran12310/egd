@@ -10,6 +10,9 @@ Common to all proofs:
 | `verifies` | AC ids this proof demonstrates |
 | `envs` | env names to run in; default every enabled env (`test`/`cli`: `repo`) |
 | `timeout` | seconds for the whole proof |
+| `inputs` | path globs: only a change here (or under `watch`) makes its runs stale |
+| `serial` | `true`: never alongside other proofs |
+| `baseline` | `test`/`cli` only — `false` skips running it again without the feature's changes. Only for a proof guarding what already held before the feature (a regression check); a person decides, and `build` names it |
 
 ## http
 

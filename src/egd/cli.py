@@ -24,7 +24,7 @@ from .events import read, record, replay
 from .graph import assignment, longest_path, ready, validate, waves
 from .model import (GATES, GATES_BY_TIER, TIERS, all_features, closest, feature_owning,
                     load_feature, resolve_feature, short_name)
-from .proof import configured_envs, proof_envs, proof_jobs, proof_matrix, run_proofs
+from .proof import baseline, configured_envs, proof_envs, proof_jobs, proof_matrix, run_proofs
 from .team import Team, whoami
 from .util import (git, git_memo, plural, Refused, UsageError, features_dir, find_root, interpolate, load_config,
                    load_secrets, load_toml, missing_vars, slugify, tracked_but_ignored, EGD_DIR)
@@ -351,7 +351,7 @@ def cmd_check(args):
         out(f"warning: {w}")
         if hints[i] and hints[i] != hints[i + 1]:
             out(f"    Fix: {hints[i]}"
-                + (f"   (features planned under rules v{RULES} close clarify on a vague word)" if w in later else ""))
+                + ("   (features planned under rules v2 close clarify on a vague word)" if w in later else ""))
     return 1 if problems else 0
 
 
@@ -389,6 +389,8 @@ FIXES = (
      'egd cr open --title "drop {0}" --reason "…", then the client runs egd cr approve'),
     (r"^(CR-\w+): change request awaiting", "egd cr approve {0} --by <client>   (or egd cr reject {0})"),
     (r"^(BUG-\w+): open", "egd bug fix {0} --task <task>, then egd bug close {0}"),
+    (r"^(P-[\w.]+)@[\w.-]+: passes without this feature's changes",
+     "make {0} assert what the AC changes (the value, the status, the row), then egd proof run --only {0}"),
     (r"^full tier needs at least one accepted", 'egd add decision --title "…" --choice "…" --status accepted'),
     (r"^acceptance criteria changed since", 'egd cr open --title "…" --reason "…" --affects <AC ids>, '
                                             "then the client runs egd cr approve"),
@@ -689,8 +691,11 @@ def cmd_proof(args):
     f = resolve_feature(root, args.feature)
     if args.action == "list":
         with git_memo():
-            for p, env, required, run, state in proof_matrix(f, replay(f), cfg):
+            st = replay(f)
+            for p, env, required, run, state in proof_matrix(f, st, cfg):
                 s = (run["status"] if run else "never run") + {"stale": " (stale)", "unknown": " (fresh?)"}.get(state, "")
+                bites = baseline.verdict(st, p, env, run, cfg)
+                s += f" · {bites}" if bites else ""
                 out(f"{p['id']:<6} {p.get('kind', '?'):<5} {env:<9}{'' if required else '(opt)':<6} {s:<16} "
                     f"{', '.join(p.get('verifies', []))}  {p.get('title', '')}")
         if not f.proofs:
@@ -716,7 +721,7 @@ def cmd_proof(args):
             out("every proof already passed on this code — nothing to run")
             return 0
     results = run_proofs(f, cfg, args.by, only=only, env_filter=env, pairs=pairs,
-                         jobs=proof_jobs(cfg, args.jobs), fail_fast=args.fail_fast)
+                         jobs=proof_jobs(cfg, args.jobs), fail_fast=args.fail_fast, baseline=not args.no_baseline)
     if not results:
         raise UsageError("0 proofs matched " + " ".join(x for x in (
             f"--only {','.join(only)}" if only else "", f"--env {env}" if env else "") if x)
@@ -725,6 +730,8 @@ def cmd_proof(args):
     for r in results:
         mark = {"pass": "✅", "fail": "❌"}.get(r["status"], "⚠️")
         out(f"{mark} {r['proof']}@{r['env']}: {r['status']}" + (f" — {r['reason']}" if r.get("reason") else ""))
+        if r.get("baseline"):
+            out(f"   {baseline_line(r['baseline'])}")
         failed += r["status"] != "pass" and r.get("required", True)
     if results:
         out(f"transcripts: {(f.path / 'runs' / results[0]['run']).relative_to(root)}/")
@@ -735,11 +742,24 @@ def cmd_proof(args):
     return 1 if failed else 0
 
 
+def baseline_line(check: dict) -> str:
+    """What running a proof without the feature's changes showed, in one line."""
+    if check["status"] == "bites":
+        return (f"↳ bites: {check.get('outcome')} without this feature's changes"
+                + (f" ({check['reason']})" if check.get("reason") else ""))
+    if check["status"] == "toothless":
+        return "↳ ⚠ toothless: passes without this feature's changes too — it proves nothing about them"
+    return f"↳ not checked without the feature's changes — {check.get('reason')}"
+
+
 def _scheduling(sp) -> None:
     sp.add_argument("--jobs", type=int, metavar="N",
                     help="run: N proofs at once ([proof] jobs in config.toml, else 1); `serial = true` ones run alone")
     sp.add_argument("--fail-fast", action="store_true",
                     help="run: start nothing new once a required proof has not passed (quickest run first)")
+    sp.add_argument("--no-baseline", action="store_true",
+                    help="run: skip running passed test/cli proofs again without the feature's changes "
+                         "(the full tier's build gate still asks for it)")
 
 
 def _proof_filter(f, cfg: dict, only_raw: str | None, env: str | None) -> tuple[list[str] | None, str | None]:
@@ -824,7 +844,7 @@ def cmd_verify(args):
     if args.gate and args.gate not in f.gates:
         raise UsageError(f"'{args.gate}' is not a gate for tier {f.tier} ({', '.join(f.gates)})")
     result = verify.verify(f, cfg, run=args.run, by=args.by, upto=args.gate, every_proof=args.all,
-                           jobs=args.jobs, fail_fast=args.fail_fast)
+                           jobs=args.jobs, fail_fast=args.fail_fast, baseline=not args.no_baseline)
     out(json.dumps(result, indent=2, ensure_ascii=False) if args.json else verify.render(result))
     return 0 if result["ready"] or result["target"] is None else 1
 

@@ -7,6 +7,7 @@ from .events import State, record
 from .graph import validate
 from .model import Feature
 from .proof import proof_matrix, unrunnable
+from .proof import baseline
 from .team import Team
 from .tracking import agreed_plan, anyone_may_sign, gone_from, planned
 from .util import Refused, egd_dir, has_todo, is_blank_template, md_sections
@@ -151,6 +152,7 @@ def check_build(f: Feature, st: State, cfg: dict) -> list[str]:
             problems.append(f"{p['id']}@{env}: stale — the code or the proof changed since it ran")
         else:
             problems.append(f"{p['id']}@{env}: freshness cannot be verified without git")
+    problems += baseline.findings(f, st, cfg)[0]
     return problems + _scope(f, st)
 
 
@@ -197,13 +199,15 @@ GATE_ROLE = {"accept": "uat"}
 def warnings(f: Feature, st: State, cfg: dict, gate: str, problems: list[str]) -> list[str]:
     """What a person should hear at `gate` that does not close it: vague ACs that only warn (rules v1,
     an imported plan, an nfr with no number), ACs with no error case, unhandled failure modes, a
-    map that drifted from the repository."""
+    map that drifted from the repository, proofs not shown to fail without the feature's changes."""
     if gate == "frame":
         return mapdrift.notes(f)
     if gate == "clarify":
         return [w for w in vague.findings(f, cfg) if w not in problems] + cases.case_warnings(f)
     if gate == "design":
         return cases.failure_modes(f, cfg)
+    if gate == "build":
+        return baseline.findings(f, st, cfg)[1]
     return []
 
 
